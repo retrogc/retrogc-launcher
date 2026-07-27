@@ -52,6 +52,8 @@ public class App : Application
             if (!File.Exists(game.RomPath))
                 throw new FileNotFoundException("ROM not found.", game.RomPath);
 
+            Utility.NotifyLinux("Loading " + game.Name);
+
             Console.WriteLine($"game: {game.Name}");
             Console.WriteLine($"rom:  {game.RomPath}");
             Console.WriteLine($"core: {game.CorePath}");

@@ -32,6 +32,13 @@ public partial class MainWindow : Window
 
         // create app data context
         DataContext = _appContext = new AppContext(true);
+        
+        //SetFullScreen(true);
+    }
+
+    public void SetFullScreen(bool isFullScreen)
+    {
+        WindowState = isFullScreen ? WindowState.FullScreen : WindowState.Normal;
     }
 
     public void LoadPreview(string path)

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -46,8 +47,16 @@ public class App : Application
         {
             Console.WriteLine($"card inserted: {e.Volume.MountPoint}");
 
-            var definitionPath = Path.Combine(e.Volume.MountPoint, "retrogc.json");
-            var game = await Game.LoadAsync(definitionPath);
+            var configFile = Directory
+                .EnumerateFiles(e.Volume.MountPoint, "*.rgc", SearchOption.TopDirectoryOnly)
+                .FirstOrDefault();
+            if (configFile is null)
+            {
+                Console.WriteLine($"No config file (.rgc) found in: {e.Volume.MountPoint}");
+                return;
+            }
+
+            var game = await Game.LoadAsync(configFile);
 
             if (!File.Exists(game.RomPath))
                 throw new FileNotFoundException("ROM not found.", game.RomPath);
@@ -80,7 +89,7 @@ public class App : Application
             Console.WriteLine($"card removed: {e.Volume.MountPoint}");
 
             _mainWindow?.UnloadPreview();
-            
+
             // RequestClose() is optional. For removal, normally kill immediately:
             await _retroArch.KillAsync();
         }

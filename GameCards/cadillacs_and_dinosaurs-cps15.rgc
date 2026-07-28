@@ -1,13 +1,15 @@
 {
   "name": "Cadillacs & Dinosaurs",
   "description": "The plot is based on the comic Cadillacs and Dinosaurs and takes place in the City In The Sea and its neighboring nearby jungle...",
+  "platform": "CPS-1",
+  "year": "1993",
   "image": "dino.png",
   "retroarch_config": {
     "core": "fbneo_libretro",
-	"rom": "games/mame/dino.zip"
+    "rom": "games/mame/dino.zip"
   },
   "misterfpga_config": {
     "core": "_Arcade/cores/jtcps15.rbf",
-	"rom": "_Arcade/Cadillacs and Dinosaurs (World 930201).mra"
+    "rom": "_Arcade/Cadillacs and Dinosaurs (World 930201).mra"
   }
 }

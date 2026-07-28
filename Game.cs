@@ -13,6 +13,10 @@ public sealed record Game
 
     [JsonPropertyName("description")] public string Description { get; init; } = string.Empty;
 
+    [JsonPropertyName("platform")] public string Platform { get; init; } = "UNKNOWN";
+
+    [JsonPropertyName("year")] public string Year { get; init; } = "UNKNOWN";
+
     [JsonPropertyName("image")] public string Image { get; init; } = string.Empty;
 
     [JsonPropertyName("retroarch_config")] public RetroArchConfig? RetroArchConfig { get; init; }
@@ -47,6 +51,12 @@ public sealed record Game
         string.IsNullOrWhiteSpace(RetroArchConfig?.Core)
             ? null
             : ResolvePath(OperatingSystem.IsLinux() ? RetroArchConfig.Core + ".so" : RetroArchConfig.Core + ".dll");
+
+    [JsonIgnore]
+    public string? Core =>
+        string.IsNullOrWhiteSpace(RetroArchConfig?.Core)
+            ? null
+            : RetroArchConfig.Core;
 
     /// <summary>
     /// Absolute path to the optional game image on the SD card.

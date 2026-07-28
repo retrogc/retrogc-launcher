@@ -2,16 +2,309 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+        mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
         xmlns:rgc="clr-namespace:RetroGameCard"
         x:Class="RetroGameCard.MainWindow"
         Title="RetroGameCard"
-        Width="640" Height="480"
+        Width="960" Height="540"
+        MinWidth="960" MinHeight="540"
         WindowStartupLocation="CenterScreen"
-        KeyDown="OnMainWindowKeyDown">
-    <Grid RowDefinitions="Auto,*" Margin="0">
-        <Image x:Name="PreviewImage" Grid.Row="1"
-               Margin="0,0,0,0"
-               Stretch="Uniform" />
+        KeyDown="OnMainWindowKeyDown"
+        Background="#0A0C12">
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="Inter, Arial, sans-serif" />
+            <Setter Property="Foreground" Value="#EEF2FA" />
+        </Style>
+        <Style Selector="TextBlock.section-label">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="LetterSpacing" Value="1.8" />
+            <Setter Property="Foreground" Value="#8490A8" />
+        </Style>
+        <Style Selector="TextBlock.game-title">
+            <Setter Property="FontSize" Value="35" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="TextBlock.game-description">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="LineHeight" Value="23" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="#A9B3C6" />
+        </Style>
+        <Style Selector="TextBlock.clock">
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="Foreground" Value="#F6F8FC" />
+        </Style>
+        <Style Selector="TextBlock.date">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="LetterSpacing" Value="1.2" />
+            <Setter Property="Foreground" Value="#77839A" />
+        </Style>
+        <Style Selector="TextBlock.version">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="#5E6A7E" />
+        </Style>
+        <Style Selector="Border.chip">
+            <Setter Property="Background" Value="#182031" />
+            <Setter Property="BorderBrush" Value="#2A354B" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="10,5" />
+        </Style>
+        <Style Selector="Border.status-chip">
+            <Setter Property="Background" Value="#123C35" />
+            <Setter Property="BorderBrush" Value="#286A5C" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Padding" Value="10,5" />
+        </Style>
+    </Window.Styles>
+
+    <Grid ClipToBounds="True">
+        <!-- Subtle decorative background glows -->
+        <Ellipse Width="520"
+                 Height="520"
+                 Fill="#162B3A"
+                 Opacity="0.35"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Top"
+                 Margin="-260,-280,0,0"
+                 IsHitTestVisible="False" />
+
+        <Ellipse Width="440"
+                 Height="440"
+                 Fill="#201738"
+                 Opacity="0.25"
+                 HorizontalAlignment="Right"
+                 VerticalAlignment="Bottom"
+                 Margin="0,0,-220,-260"
+                 IsHitTestVisible="False" />
+        <!-- Overall responsive page layout -->
+        <Grid RowDefinitions="Auto,*,Auto"
+              Margin="36,28"
+              MinWidth="0"
+              MinHeight="0">
+            <!-- Header -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,Auto"
+                  Margin="0,0,0,18"
+                  MinWidth="0">
+
+                <StackPanel Spacing="6"
+                            MinWidth="0">
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="9">
+
+                        <Ellipse x:Name="SdActivityLight"
+                                 Width="8"
+                                 Height="8"
+                                 Fill="#5CE1B7"
+                                 VerticalAlignment="Center" />
+
+                        <TextBlock Text="RETRO GAME CARD"
+                                   Classes="section-label"
+                                   Foreground="#C3CCDC" />
+                    </StackPanel>
+
+                    <TextBlock x:Name="HeaderStatusText"
+                               Text="SD CARD MONITOR ACTIVE"
+                               Classes="section-label"
+                               Opacity="0.55"
+                               TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <!-- Computer time -->
+                <StackPanel Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            Spacing="2"
+                            Margin="20,0,0,0">
+
+                    <TextBlock x:Name="ClockText"
+                               Text="00:00"
+                               Classes="clock"
+                               HorizontalAlignment="Right" />
+
+                    <TextBlock x:Name="DateText"
+                               Text="MONDAY, 01 JANUARY"
+                               Classes="date"
+                               HorizontalAlignment="Right" />
+                </StackPanel>
+            </Grid>
+            <!-- Main responsive area -->
+            <Grid Grid.Row="1"
+                  ColumnDefinitions="1.05*,*"
+                  ColumnSpacing="40"
+                  MinWidth="0"
+                  MinHeight="0"
+                  VerticalAlignment="Stretch">
+                <!-- Cover / artwork frame -->
+                <Border Grid.Column="0"
+                        MinWidth="0"
+                        MinHeight="220"
+                        MaxHeight="720"
+                        Background="#111723"
+                        BorderBrush="#2B3750"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        BoxShadow="0 18 50 0 #90000000"
+                        ClipToBounds="True"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                    <Grid MinWidth="0"
+                          MinHeight="0">
+                        <!-- Shown when no game artwork is loaded -->
+                        <TextBlock x:Name="NoPreviewText"
+                                   Text="NO PREVIEW AVAILABLE"
+                                   Classes="section-label"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Opacity="0.45" />
+                        <!-- Keep original artwork proportions -->
+                        <Image x:Name="PreviewImage"
+                               Stretch="Uniform"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch" />
+                        <!-- Bottom artwork label -->
+                        <Border VerticalAlignment="Bottom"
+                                Background="#B0090B10"
+                                Padding="15,10">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock x:Name="PreviewCaptionText"
+                                           Text="GAME PREVIEW"
+                                           Classes="section-label"
+                                           Foreground="#D8DFEA" />
+                                <TextBlock x:Name="PreviewIndexText"
+                                           Grid.Column="1"
+                                           Text="—"
+                                           Classes="section-label"
+                                           Opacity="0.6" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+                <!-- Game details -->
+                <Grid Grid.Column="1"
+                      RowDefinitions="Auto,Auto,Auto,*,Auto"
+                      RowSpacing="16"
+                      MinWidth="0"
+                      MinHeight="0"
+                      VerticalAlignment="Stretch">
+                    <!-- Game title -->
+                    <TextBlock x:Name="GameTitleText"
+                               Grid.Row="1"
+                               Text="Waiting for game"
+                               Classes="game-title"
+                               MaxHeight="115"
+                               TextTrimming="CharacterEllipsis" />
+                    <!-- Game platform and core metadata -->
+                    <StackPanel Grid.Row="2"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                        <Border Classes="chip" MaxWidth="170">
+                            <TextBlock x:Name="YearText"
+                                       Text="WAITING"
+                                       Classes="section-label"
+                                       Foreground="#B4BED0"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Border>
+                        <Border Classes="chip" MaxWidth="150">
+                            <TextBlock x:Name="PlatformText"
+                                       Text="WAITING"
+                                       Classes="section-label"
+                                       Foreground="#B4BED0"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Border>
+                        <Border Classes="chip" MaxWidth="170">
+                            <TextBlock x:Name="CoreText"
+                                       Text="WAITING"
+                                       Classes="section-label"
+                                       Foreground="#B4BED0"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Border>
+                    </StackPanel>
+                    <!-- Flexible description row -->
+                    <ScrollViewer Grid.Row="3"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto"
+                                  MinHeight="0">
+                        <TextBlock x:Name="GameDescriptionText"
+                                   Text="Insert an SD card or select a game. The launcher is monitoring for a compatible Retro Game Card."
+                                   Classes="game-description"
+                                   VerticalAlignment="Top" />
+                    </ScrollViewer>
+                    <!-- Current activity / game launch state -->
+                    <StackPanel Grid.Row="4"
+                                Spacing="10">
+                        <Grid ColumnDefinitions="Auto,*,Auto"
+                              ColumnSpacing="10" MinWidth="0">
+                            <Border Classes="status-chip">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <Ellipse x:Name="GameStateLight"
+                                             Width="7"
+                                             Height="7"
+                                             Fill="#5CE1B7"
+                                             VerticalAlignment="Center" />
+                                    <TextBlock x:Name="StatusText"
+                                               Text="WAITING"
+                                               Classes="section-label"
+                                               Foreground="#8AF0CC" />
+                                </StackPanel>
+                            </Border>
+                            <TextBlock x:Name="StatusDetailText"
+                                       Grid.Column="1"
+                                       Text="WAITING FOR GAME"
+                                       Classes="section-label"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock x:Name="HintText"
+                                       Grid.Column="2"
+                                       Text="F11 FULLSCREEN"
+                                       Classes="section-label"
+                                       Opacity="0.45"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                        <ProgressBar x:Name="WaitingProgress"
+                                     Height="5"
+                                     Minimum="0"
+                                     Maximum="100"
+                                     IsIndeterminate="True"
+                                     Foreground="#5CE1B7"
+                                     Background="#1C2638"
+                                     BorderThickness="0"
+                                     CornerRadius="3" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <!-- Footer -->
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="*,Auto,Auto"
+                  Margin="0,20,0,0"
+                  MinWidth="0">
+                <TextBlock Text="RETRO GAME CARD FRONTEND"
+                           Classes="section-label"
+                           Opacity="0.34"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock x:Name="CardStatusText"
+                           Grid.Column="1"
+                           Text="NO CARD DETECTED"
+                           Classes="version"
+                           Margin="16,0,20,0"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" />
+
+                <TextBlock x:Name="RetroArchVersionText"
+                           Grid.Column="2"
+                           Text="RetroArch — detecting version..."
+                           Classes="version"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" />
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

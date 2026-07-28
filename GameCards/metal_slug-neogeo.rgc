@@ -1,6 +1,8 @@
 {
   "name": "Metal Slug - Super Vehicle-001",
   "description": "Metal Slug !!!",
+  "platform": "NEOGEO",
+  "year": "1996",
   "image": "mslug.png",
   "retroarch_config": {
     "core": "fbneo_libretro",

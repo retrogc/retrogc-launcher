@@ -24,14 +24,13 @@ public static class RetroArchInstaller
     public const string DownloadUrl =
         "https://buildbot.libretro.com/stable/1.22.2/windows/x86_64/RetroArch-Win64-setup.exe";
 
-    public const string ExePath = @"C:\RetroArch-Win64\retroarch.exe";
-
     public static async Task<string?> GetVersion()
     {
-        if (!File.Exists(ExePath))
+        var exePath = Utility.GetRetroArchExecutable();
+        if (!File.Exists(exePath))
             return null;
 
-        var (output, error, exitCode) = await Utility.RunProcessAsync(ExePath, "-V");
+        var (output, error, exitCode) = await Utility.RunProcessAsync(exePath, "-V");
         if (string.IsNullOrWhiteSpace(output))
             return null;
 
@@ -40,7 +39,7 @@ public static class RetroArchInstaller
             return null;
 
         var version = match.Groups[1].Value.Trim();
-        Console.WriteLine($"RetroArch executable found at {ExePath}, version: {version}");
+        Console.WriteLine($"RetroArch executable found at {exePath}, version: {version}");
 
         return version;
     }
@@ -51,12 +50,13 @@ public static class RetroArchInstaller
     /// </summary>
     public static async Task<bool> InstallAsync(Window? owner)
     {
-        if (File.Exists(ExePath)) return true;
+        var exePath = Utility.GetRetroArchExecutable();
+        if (File.Exists(exePath)) return true;
 
         var confirmed = await ConfirmDialog.ShowAsync(
             owner,
             "RetroArch Not Found",
-            $"RetroArch was not found at:\n{ExePath}\n\nDo you want to download and install it now?");
+            $"RetroArch was not found at:\n{exePath}\n\nDo you want to download and install it now?");
 
         if (!confirmed)
             return false;
@@ -103,7 +103,7 @@ public static class RetroArchInstaller
             }
         }
 
-        return success && File.Exists(ExePath);
+        return success && File.Exists(exePath);
     }
 
     private static async Task DownloadFileAsync(

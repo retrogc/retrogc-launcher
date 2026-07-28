@@ -16,8 +16,7 @@ public abstract class Utility
 
         if (OperatingSystem.IsLinux())
         {
-            // Works when `retroarch` is in PATH.
-            return "retroarch";
+            return "/usr/bin/retroarch";
         }
 
         if (OperatingSystem.IsMacOS())
@@ -65,11 +64,15 @@ public abstract class Utility
 
         process.OutputDataReceived += (_, e) =>
         {
-            if (e.Data != null) stdOutBuilder.AppendLine(e.Data);
+            if (e.Data == null) return;
+            Console.WriteLine("RunProcessAsync: OUT: " + e.Data);
+            stdOutBuilder.AppendLine(e.Data);
         };
         process.ErrorDataReceived += (_, e) =>
         {
-            if (e.Data != null) stdErrBuilder.AppendLine(e.Data);
+            if (e.Data == null) return;
+            Console.WriteLine("RunProcessAsync: ERR: " + e.Data);
+            stdErrBuilder.AppendLine(e.Data);
         };
 
         process.Start();

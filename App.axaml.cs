@@ -68,7 +68,8 @@ public class App : Application
             Console.WriteLine($"core: {game.CorePath}");
 
             // load preview image
-            if (!string.IsNullOrEmpty(game.ImagePath)) _mainWindow?.LoadPreview(game.ImagePath);
+            _mainWindow?.ShowGame(
+                game.Name, game.Description, game.Platform, game.Year, game.Core, game.ImagePath);
 
             _retroArch.Start(
                 retroArchExecutable: Utility.GetRetroArchExecutable(),
@@ -88,7 +89,7 @@ public class App : Application
         {
             Console.WriteLine($"card removed: {e.Volume.MountPoint}");
 
-            _mainWindow?.UnloadPreview();
+            _mainWindow?.ShowWaitingForGame();
 
             // RequestClose() is optional. For removal, normally kill immediately:
             await _retroArch.KillAsync();

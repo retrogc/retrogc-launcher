@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace RetroGameCard;
@@ -37,6 +38,9 @@ public sealed class RetroArchLauncher : IDisposable
 
     public event EventHandler<RetroArchExitedEventArgs>? Exited;
 
+    [DllImport("User32.dll", SetLastError = true)]
+    static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
+
     /// <summary>
     /// Starts RetroArch and opens the supplied ROM.
     /// Throws if RetroArch is already running through this launcher.
@@ -52,8 +56,7 @@ public sealed class RetroArchLauncher : IDisposable
         ArgumentException.ThrowIfNullOrWhiteSpace(retroArchExecutable);
         ArgumentException.ThrowIfNullOrWhiteSpace(romPath);
 
-        string fullRomPath = Path.GetFullPath(romPath);
-
+        var fullRomPath = Path.GetFullPath(romPath);
         if (!File.Exists(fullRomPath))
         {
             throw new FileNotFoundException(
@@ -99,6 +102,11 @@ public sealed class RetroArchLauncher : IDisposable
 
                 throw new InvalidOperationException(
                     $"Unable to launch '{retroArchExecutable}'.");
+            }
+
+            if (OperatingSystem.IsWindows())
+            {
+                SwitchToThisWindow(process.MainWindowHandle, true);
             }
 
             _process = process;

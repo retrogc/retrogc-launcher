@@ -3,11 +3,11 @@
   "description": "Metal Slug !!!",
   "image": "mslug.png",
   "retroarch_config": {
-    "core": "fbneo_libretro.so",
+    "core": "fbneo_libretro",
     "rom": "games/neogeo/mslug.zip"
   },
   "misterfpga_config": {
-    "core": "_Console/NeoGeo_20250909.rbf",
+    "core": "_Console/NeoGeo_20250909",
     "rom": "games/neogeo/mslug.neo"
   }
 }

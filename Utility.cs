@@ -9,7 +9,7 @@ public abstract class Utility
     {
         if (OperatingSystem.IsWindows())
         {
-            return @"C:\Program Files\RetroArch\retroarch.exe";
+            return @"C:\RetroArch-Win64\retroarch.exe";
         }
 
         if (OperatingSystem.IsLinux())
@@ -26,18 +26,21 @@ public abstract class Utility
         throw new PlatformNotSupportedException();
     }
 
-    public static void NotifyLinux(string message)
+    public static void Notify(string message)
     {
-        var psi = new ProcessStartInfo
+        if (OperatingSystem.IsLinux())
         {
-            FileName = "notify-send",
-            UseShellExecute = false
-        };
+            var psi = new ProcessStartInfo
+            {
+                FileName = "notify-send",
+                UseShellExecute = false
+            };
 
-        psi.ArgumentList.Add("--expire-time=3000");
-        psi.ArgumentList.Add("RetroGameCard");
-        psi.ArgumentList.Add(message);
+            psi.ArgumentList.Add("--expire-time=3000");
+            psi.ArgumentList.Add("RetroGameCard");
+            psi.ArgumentList.Add(message);
 
-        Process.Start(psi);
+            Process.Start(psi);
+        }
     }
 }

@@ -61,14 +61,14 @@ public class App : Application
             if (!File.Exists(game.RomPath))
                 throw new FileNotFoundException("ROM not found.", game.RomPath);
 
-            Utility.NotifyLinux("Loading " + game.Name);
+            Utility.Notify("Loading " + game.Name);
 
             Console.WriteLine($"game: {game.Name}");
             Console.WriteLine($"rom:  {game.RomPath}");
             Console.WriteLine($"core: {game.CorePath}");
 
             // load preview image
-            _mainWindow?.LoadPreview(game.ImagePath);
+            if (!string.IsNullOrEmpty(game.ImagePath)) _mainWindow?.LoadPreview(game.ImagePath);
 
             _retroArch.Start(
                 retroArchExecutable: Utility.GetRetroArchExecutable(),

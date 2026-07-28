@@ -15,8 +15,6 @@ public sealed record Game
 
     [JsonPropertyName("image")] public string Image { get; init; } = string.Empty;
 
-    [JsonPropertyName("rom")] public required string Rom { get; init; }
-
     [JsonPropertyName("retroarch_config")] public RetroArchConfig? RetroArchConfig { get; init; }
 
     [JsonPropertyName("misterfpga_config")]
@@ -39,13 +37,16 @@ public sealed record Game
     /// Absolute path to the ROM on the mounted RETROGC card.
     /// </summary>
     [JsonIgnore]
-    public string RomPath => ResolvePath(Rom);
+    public string? RomPath =>
+        string.IsNullOrWhiteSpace(RetroArchConfig?.Rom)
+            ? null
+            : ResolvePath(RetroArchConfig.Rom);
 
     [JsonIgnore]
     public string? CorePath =>
         string.IsNullOrWhiteSpace(RetroArchConfig?.Core)
             ? null
-            : ResolvePath(RetroArchConfig.Core);
+            : ResolvePath(OperatingSystem.IsLinux() ? RetroArchConfig.Core + ".so" : RetroArchConfig.Core + ".dll");
 
     /// <summary>
     /// Absolute path to the optional game image on the SD card.
@@ -79,7 +80,7 @@ public sealed record Game
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(definitionPath);
 
-        string fullDefinitionPath = Path.GetFullPath(definitionPath);
+        var fullDefinitionPath = Path.GetFullPath(definitionPath);
 
         if (!File.Exists(fullDefinitionPath))
         {
@@ -88,9 +89,8 @@ public sealed record Game
                 fullDefinitionPath);
         }
 
-        await using FileStream stream = File.OpenRead(fullDefinitionPath);
-
-        Game? game = await JsonSerializer.DeserializeAsync<Game>(
+        await using var stream = File.OpenRead(fullDefinitionPath);
+        var game = await JsonSerializer.DeserializeAsync<Game>(
             stream,
             JsonOptions,
             cancellationToken);
@@ -123,15 +123,15 @@ public sealed record Game
                 $"Paths in game metadata must be relative: '{relativePath}'.");
         }
 
-        string fullPath = Path.GetFullPath(
+        var fullPath = Path.GetFullPath(
             Path.Combine(BaseDirectory, relativePath));
 
-        string baseDirectoryWithSeparator =
+        var baseDirectoryWithSeparator =
             Path.EndsInDirectorySeparator(BaseDirectory)
                 ? BaseDirectory
                 : BaseDirectory + Path.DirectorySeparatorChar;
 
-        StringComparison comparison = OperatingSystem.IsWindows()
+        var comparison = OperatingSystem.IsWindows()
             ? StringComparison.OrdinalIgnoreCase
             : StringComparison.Ordinal;
 
@@ -152,14 +152,8 @@ public sealed record Game
                 $"Missing 'name' in {definitionPath}.");
         }
 
-        if (string.IsNullOrWhiteSpace(Rom))
-        {
-            throw new JsonException(
-                $"Missing 'rom' in {definitionPath}.");
-        }
-
-        // A game must target at least one supported launcher.
-        if (!SupportsRetroArch && !SupportsMisterFpga)
+        // A game must target RetroArch.
+        if (!SupportsRetroArch)
         {
             throw new JsonException(
                 $"Missing both 'retroarch_config.core' and " +
@@ -176,9 +170,11 @@ public sealed record Game
 public sealed record RetroArchConfig
 {
     [JsonPropertyName("core")] public required string Core { get; init; }
+    [JsonPropertyName("rom")] public required string Rom { get; init; }
 }
 
 public sealed record MisterFpgaConfig
 {
     [JsonPropertyName("core")] public required string Core { get; init; }
+    [JsonPropertyName("rom")] public required string Rom { get; init; }
 }

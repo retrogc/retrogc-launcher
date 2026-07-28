@@ -1,0 +1,18 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="180"
+        x:Class="RetroGameCard.Controls.ConfirmDialog"
+        Title="Confirm"
+        Width="420" Height="180"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False">
+    <StackPanel Margin="20" Spacing="16">
+        <TextBlock x:Name="MessageText" TextWrapping="Wrap" FontSize="14" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="Cancel" Click="OnCancelClick" Width="90" />
+            <Button Content="Download" Click="OnConfirmClick" Width="90" IsDefault="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

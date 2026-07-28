@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media.Imaging;
 
 namespace RetroGameCard;
@@ -12,28 +13,50 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
-        Console.WriteLine("MainWindow...");
         InitializeComponent();
+
+        // create app data context
+        DataContext = _appContext = new AppContext(true);
+
+        // check for retroarch executable
+        if (!RetroArchInstaller.ExePathExists)
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                // ask user for retroarch installation
+                Opened += async (s, _) =>
+                {
+                    var ok = await RetroArchInstaller.EnsureInstalledAsync(s as Window);
+                    Console.WriteLine("retroarch installation: " + ok);
+                };
+            }
+            else
+            {
+                // TODO: handle linux 
+            }
+        }
 
 #if !DEBUG
         // hide window at startup
-        Loaded += (s, _) => { (s as Window)?.Hide(); };
+        if (RetroArchInstaller.ExePathExists)
+            Loaded += (s, _) => { (s as Window)?.Hide(); };
 #endif
-
-        //Opened += (_, _) => _timer?.Start();
 
         // prevent closing the window (force hide)
         Closing += (s, e) =>
         {
-            //_timer?.Stop();
             (s as Window)?.Hide();
             e.Cancel = true;
         };
 
-        // create app data context
-        DataContext = _appContext = new AppContext(true);
-        
-        //SetFullScreen(true);
+        SetFullScreen(true);
+    }
+
+    private void OnMainWindowKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Escape || WindowState != WindowState.FullScreen) return;
+        SetFullScreen(false);
+        e.Handled = true;
     }
 
     public void SetFullScreen(bool isFullScreen)

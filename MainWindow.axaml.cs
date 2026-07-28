@@ -10,6 +10,7 @@ public partial class MainWindow : Window
 {
     private readonly AppContext _appContext;
     private Bitmap? _previewBitmap;
+    private string? _retroVersion;
 
     public MainWindow()
     {
@@ -18,29 +19,8 @@ public partial class MainWindow : Window
         // create app data context
         DataContext = _appContext = new AppContext(true);
 
-        // check for retroarch executable
-        if (!RetroArchInstaller.ExePathExists)
-        {
-            if (OperatingSystem.IsWindows())
-            {
-                // ask user for retroarch installation
-                Opened += async (s, _) =>
-                {
-                    var ok = await RetroArchInstaller.EnsureInstalledAsync(s as Window);
-                    Console.WriteLine("retroarch installation: " + ok);
-                };
-            }
-            else
-            {
-                // TODO: handle linux 
-            }
-        }
-
-#if !DEBUG
-        // hide window at startup
-        if (RetroArchInstaller.ExePathExists)
-            Loaded += (s, _) => { (s as Window)?.Hide(); };
-#endif
+        // 
+        Loaded += OnLoaded;
 
         // prevent closing the window (force hide)
         Closing += (s, e) =>
@@ -49,7 +29,45 @@ public partial class MainWindow : Window
             e.Cancel = true;
         };
 
+#if !DEBUG
         SetFullScreen(true);
+#endif
+    }
+
+    private async void OnLoaded(object? sender, EventArgs e)
+    {
+        try
+        {
+            // check for retroarch version (and so executable)
+            _retroVersion = await RetroArchInstaller.GetVersion();
+            if (!string.IsNullOrEmpty(_retroVersion)) return; // ok
+
+            // if we were not able to get version but executable exists, assume it's ok
+            if (File.Exists(RetroArchInstaller.ExePath)) return; // ok
+
+            if (OperatingSystem.IsWindows())
+            {
+                // ask user for retroarch installation
+                Opened += async (s, _) =>
+                {
+                    var ok = await RetroArchInstaller.InstallAsync(s as Window);
+                    Console.WriteLine("retroarch installation: " + ok);
+                };
+            }
+            else
+            {
+                // TODO: handle linux 
+            }
+#if !DEBUG
+            // hide window at startup
+            //if (RetroArchInstaller.ExePathExists)
+            //    Loaded += (s, _) => { (s as Window)?.Hide(); };
+#endif
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
     }
 
     private void OnMainWindowKeyDown(object? sender, KeyEventArgs e)

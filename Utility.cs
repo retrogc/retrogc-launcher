@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RetroGameCard;
 
@@ -42,5 +44,40 @@ public abstract class Utility
 
             Process.Start(psi);
         }
+    }
+
+    public static async Task<(string StdOut, string StdErr, int ExitCode)> RunProcessAsync(
+        string fileName, string arguments = "")
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = fileName,
+            Arguments = arguments,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = new Process { StartInfo = psi };
+        var stdOutBuilder = new StringBuilder();
+        var stdErrBuilder = new StringBuilder();
+
+        process.OutputDataReceived += (_, e) =>
+        {
+            if (e.Data != null) stdOutBuilder.AppendLine(e.Data);
+        };
+        process.ErrorDataReceived += (_, e) =>
+        {
+            if (e.Data != null) stdErrBuilder.AppendLine(e.Data);
+        };
+
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
+        await process.WaitForExitAsync();
+
+        return (stdOutBuilder.ToString(), stdErrBuilder.ToString(), process.ExitCode);
     }
 }

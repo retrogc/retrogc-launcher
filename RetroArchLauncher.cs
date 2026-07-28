@@ -2,13 +2,14 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RetroGameCard;
 
 public sealed class RetroArchLauncher : IDisposable
 {
-    private readonly object _sync = new();
+    private readonly Lock _sync = new();
     private Process? _process;
     private bool _disposed;
 
@@ -79,7 +80,7 @@ public sealed class RetroArchLauncher : IDisposable
             startInfo.ArgumentList.Add("-L");
             startInfo.ArgumentList.Add(Path.GetFullPath(corePath));
         }
-        
+
         // Fullscreen
         startInfo.ArgumentList.Add("--fullscreen");
 

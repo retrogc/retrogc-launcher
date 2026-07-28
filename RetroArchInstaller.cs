@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -20,24 +21,37 @@ public class DownloadProgressInfo
 
 public static class RetroArchInstaller
 {
-    public const string ExePath = @"C:\RetroArch-Win64\retroarch.exe";
-
     public const string DownloadUrl =
         "https://buildbot.libretro.com/stable/1.22.2/windows/x86_64/RetroArch-Win64-setup.exe";
 
-    public static bool ExePathExists => File.Exists(ExePath);
+    public const string ExePath = @"C:\RetroArch-Win64\retroarch.exe";
+
+    public static async Task<string?> GetVersion()
+    {
+        if (!File.Exists(ExePath))
+            return null;
+
+        var (output, error, exitCode) = await Utility.RunProcessAsync(ExePath, "-V");
+        if (string.IsNullOrWhiteSpace(output))
+            return null;
+
+        var match = Regex.Match(output, @"^Version:\s*(.+)$", RegexOptions.Multiline);
+        if (!match.Success)
+            return null;
+
+        var version = match.Groups[1].Value.Trim();
+        Console.WriteLine($"RetroArch executable found at {ExePath}, version: {version}");
+
+        return version;
+    }
 
     /// <summary>
     /// Checks if RetroArch exists. If not, prompts the user and installs it.
     /// Returns true if RetroArch is available (already present or freshly installed).
     /// </summary>
-    public static async Task<bool> EnsureInstalledAsync(Window? owner)
+    public static async Task<bool> InstallAsync(Window? owner)
     {
-        if (ExePathExists)
-        {
-            Console.WriteLine("retroarch executable found at : " + ExePath);
-            return true;
-        }
+        if (File.Exists(ExePath)) return true;
 
         var confirmed = await ConfirmDialog.ShowAsync(
             owner,
@@ -59,9 +73,7 @@ public static class RetroArchInstaller
         try
         {
             await DownloadFileAsync(DownloadUrl, installerPath, progressWindow, cts.Token);
-
             progressWindow.SetStatus("Launching installer...");
-
             success = await RunInstallerAsync(installerPath);
         }
         catch (OperationCanceledException)
@@ -145,7 +157,7 @@ public static class RetroArchInstaller
             var psi = new ProcessStartInfo
             {
                 FileName = installerPath,
-                // NSIS silent install; remove "/S" if you want the user to see the installer UI
+                // NSIS silent install; remove "/S" to see the installer UI
                 //Arguments = "/S",
                 UseShellExecute = true,
                 Verb = "runas" // request elevation, RetroArch installs to Program Files-like path
@@ -153,7 +165,7 @@ public static class RetroArchInstaller
 
             using var process = Process.Start(psi);
             process?.WaitForExit();
-            return process != null && process.ExitCode == 0;
+            return process is { ExitCode: 0 };
         });
     }
 }

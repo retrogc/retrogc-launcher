@@ -1,0 +1,13 @@
+{
+  "name": "Metal Slug - Super Vehicle-001",
+  "description": "Metal Slug !!!",
+  "image": "mslug.png",
+  "retroarch_config": {
+    "core": "fbneo_libretro.so",
+    "rom": "games/neogeo/mslug.zip"
+  },
+  "misterfpga_config": {
+    "core": "_Console/NeoGeo_20250909.rbf",
+    "rom": "games/neogeo/mslug.neo"
+  }
+}

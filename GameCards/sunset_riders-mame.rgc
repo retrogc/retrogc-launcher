@@ -1,0 +1,12 @@
+{
+  "name": "Sunset Riders",
+  "description": "Sunset Riders est un jeu vidéo d'action de type shoot'em up développé et édité par Konami, sorti en 1991 sur borne d'arcade...",
+  "image": "ssriders.png",
+  "rom": "games/mame/ssriders.zip",
+  "retroarch_config": {
+    "core": "fbneo_libretro.so"
+  },
+  "misterfpga_config": {
+    "core": "_Arcade/Sunset Riders (4 Players ver EAC).mra"
+  }
+}

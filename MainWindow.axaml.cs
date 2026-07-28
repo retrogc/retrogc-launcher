@@ -62,6 +62,7 @@ public partial class MainWindow : Window
     public void SetFullScreen(bool isFullScreen)
     {
         WindowState = isFullScreen ? WindowState.FullScreen : WindowState.Normal;
+        Cursor = isFullScreen ? new Cursor(StandardCursorType.None) : new Cursor(StandardCursorType.Arrow);
     }
 
     public void LoadPreview(string path)

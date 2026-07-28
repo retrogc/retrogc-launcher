@@ -79,6 +79,9 @@ public sealed class RetroArchLauncher : IDisposable
             startInfo.ArgumentList.Add("-L");
             startInfo.ArgumentList.Add(Path.GetFullPath(corePath));
         }
+        
+        // Fullscreen
+        startInfo.ArgumentList.Add("--fullscreen");
 
         // ROM path must be the final RetroArch argument.
         startInfo.ArgumentList.Add(fullRomPath);

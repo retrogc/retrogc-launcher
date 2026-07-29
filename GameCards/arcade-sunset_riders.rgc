@@ -5,11 +5,11 @@
   "year": "1991",
   "image": "ssriders.png",
   "retroarch_config": {
-    "core": "fbneo_libretro",
-	"rom": "games/mame/ssriders.zip"
+    "core": "cores/fbneo_libretro",
+    "rom": "games/mame/ssriders.zip"
   },
   "misterfpga_config": {
-    "core": "_Arcade/cores/jtriders.rbf",
-	"rom": "_Arcade/Sunset Riders (4 Players ver EAC).mra"
+    "core": "cores/mister_jtriders.rbf",
+    "rom": "games/mame/ssriders.mra"
   }
 }

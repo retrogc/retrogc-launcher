@@ -1,0 +1,15 @@
+{
+  "name": "Toki",
+  "description": "Toki is an action plaformer game originally released on December 8, 1989, for Arcades.",
+  "platform": "TAD CORP",
+  "year": "1989",
+  "image": "toki.png",
+  "retroarch_config": {
+    "core": "cores/fbneo_libretro",
+    "rom": "games/mame/toki.zip"
+  },
+  "misterfpga_config": {
+    "core": "cores/mister_jttoki.rbf",
+    "rom": "games/mame/toki.mra"
+  }
+}

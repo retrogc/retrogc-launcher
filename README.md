@@ -90,6 +90,25 @@ Replace --input and --output with the correct paths for your setup. Run the prog
 - Use per-system folders to keep playlists clean and easy to import.
 - Run the tool with a small sample first to verify naming/artwork behavior.
 
+- MisterFPGA
+  - Find which core belong to a .mra arcade rom (cadillacs and dinosaurs):
+    ```bash
+    find /media/fat/_Arcade -type f -iname '*cadillacs*.mra' |
+    while IFS= read -r file; do
+      rbf=$(sed -n 's|.*<rbf>\([^<]*\)</rbf>.*|\1|p' "$file")
+      zip=$(sed -n 's|.*zip="\([^"]*\)".*|\1|p' "$file")
+      printf '%s\n\t rbf: %s\n\t zip: %s\n' "$file" "$rbf" "$zip"
+    done
+    ```
+- Create a retro game card raw image backup (change device / size)
+  - ```
+    sudo parted /dev/sdX unit MiB print
+    sudo truncate -s 256M && sudo dd if=/dev/sdX bs=4M status=progress | xz -T0 > cps1-cadillac-and-dinosaurs.img.xz
+    ```
+- Restore a retro game card raw image backup (change device / size)
+  - ```
+    sudo xzcat cps1-cadillac-and-dinosaurs.img.xz | sudo dd of=/dev/sdX bs=4M status=progress conv=fsync
+    ```
 ---
 
 ## Contributing

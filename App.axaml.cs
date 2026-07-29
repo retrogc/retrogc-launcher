@@ -76,11 +76,12 @@ public class App : Application, IDisposable
             Console.WriteLine($"game: {game.Name}");
             Console.WriteLine($"rom:  {game.RomPath}");
             Console.WriteLine($"core: {game.CorePath}");
+            Console.WriteLine($"version: {game.Version}");
 
             // load game data to main window
             _mainWindow?.ShowGame(
                 game.Name, game.Description, game.Platform,
-                game.Year, game.Core, game.ImagePath);
+                game.Year, Path.GetFileName(game.Core), game.ImagePath, game.Version);
 
             // start retroarch
             _retroArch.Start(

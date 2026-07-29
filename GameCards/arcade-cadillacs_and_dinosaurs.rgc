@@ -4,6 +4,7 @@
   "platform": "CPS-1",
   "year": "1993",
   "image": "dino.png",
+  "version": "1.0.0",
   "retroarch_config": {
     "core": "cores/fbneo_libretro",
     "rom": "games/mame/dino.zip"

@@ -13,11 +13,13 @@ public sealed record Game
 
     [JsonPropertyName("description")] public string Description { get; init; } = string.Empty;
 
-    [JsonPropertyName("platform")] public string Platform { get; init; } = "UNKNOWN";
+    [JsonPropertyName("platform")] public string Platform { get; init; } = "WAITING";
 
-    [JsonPropertyName("year")] public string Year { get; init; } = "UNKNOWN";
+    [JsonPropertyName("year")] public string Year { get; init; } = "WAITING";
 
     [JsonPropertyName("image")] public string Image { get; init; } = string.Empty;
+
+    [JsonPropertyName("version")] public string Version { get; init; } = string.Empty;
 
     [JsonPropertyName("retroarch_config")] public RetroArchConfig? RetroArchConfig { get; init; }
 
@@ -49,13 +51,13 @@ public sealed record Game
     [JsonIgnore]
     public string CorePath =>
         string.IsNullOrWhiteSpace(RetroArchConfig?.Core)
-            ? "UNKNOWN"
+            ? "WAITING"
             : ResolvePath(OperatingSystem.IsLinux() ? RetroArchConfig.Core + ".so" : RetroArchConfig.Core + ".dll");
 
     [JsonIgnore]
     public string Core =>
         string.IsNullOrWhiteSpace(RetroArchConfig?.Core)
-            ? "UNKNOWN"
+            ? "WAITING"
             : RetroArchConfig.Core;
 
     /// <summary>

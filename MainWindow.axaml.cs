@@ -174,6 +174,7 @@ public partial class MainWindow : Window
         YearText.Text = "WAITING";
         PlatformText.Text = "WAITING";
         CoreText.Text = "WAITING";
+        VersionText.Text = "WAITING";
 
         HeaderStatusText.Text = "SD CARD MONITOR ACTIVE";
         StatusText.Text = "WAITING";
@@ -195,7 +196,7 @@ public partial class MainWindow : Window
     }
 
     public void ShowGame(string title, string description, string platform,
-        string year, string core, string preview)
+        string year, string core, string preview, string version)
     {
         GameTitleText.Text = title;
         GameDescriptionText.Text = description;
@@ -203,11 +204,12 @@ public partial class MainWindow : Window
         YearText.Text = year.ToUpperInvariant();
         PlatformText.Text = platform.ToUpperInvariant();
         CoreText.Text = core.ToUpperInvariant();
+        VersionText.Text = version.ToUpperInvariant();
 
         HeaderStatusText.Text = "GAME CARD DETECTED";
         StatusText.Text = "READY";
         StatusDetailText.Text = "RUNNING";
-        CardStatusText.Text = "CARD READY";
+        CardStatusText.Text = "RetroGameCard v." + version.ToUpperInvariant();
 
         PreviewCaptionText.Text = title;
         PreviewIndexText.Text = "READY";

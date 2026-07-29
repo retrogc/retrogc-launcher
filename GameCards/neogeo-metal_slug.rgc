@@ -4,6 +4,7 @@
   "platform": "NEOGEO",
   "year": "1996",
   "image": "mslug.png",
+  "version": "1.0.0",
   "retroarch_config": {
     "core": "cores/fbneo_libretro",
     "rom": "games/neogeo/mslug.zip"

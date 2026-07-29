@@ -216,6 +216,13 @@
                                        Foreground="#B4BED0"
                                        TextTrimming="CharacterEllipsis" />
                         </Border>
+                        <Border Classes="chip" MaxWidth="170">
+                            <TextBlock x:Name="VersionText"
+                                       Text="WAITING"
+                                       Classes="section-label"
+                                       Foreground="#B4BED0"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Border>
                     </StackPanel>
                     <!-- Flexible description row -->
                     <ScrollViewer Grid.Row="3"

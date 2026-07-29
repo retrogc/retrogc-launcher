@@ -4,6 +4,7 @@
   "platform": "KONAMI",
   "year": "1991",
   "image": "ssriders.png",
+  "version": "1.0.0",
   "retroarch_config": {
     "core": "cores/fbneo_libretro",
     "rom": "games/mame/ssriders.zip"

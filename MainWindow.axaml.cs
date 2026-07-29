@@ -82,11 +82,9 @@ public partial class MainWindow : Window
             if (OperatingSystem.IsWindows())
             {
                 // ask user for retroarch installation
-                Opened += async (s, _) =>
-                {
-                    var ok = await RetroArchInstaller.InstallAsync(s as Window);
-                    Console.WriteLine("retroarch installation: " + ok);
-                };
+                SetWindowState(StartupWindowState.Normal);
+                var ok = await RetroArchInstaller.InstallAsync(this);
+                Console.WriteLine("retroarch installation: " + ok);
             }
             else
             {
@@ -211,7 +209,7 @@ public partial class MainWindow : Window
         StatusDetailText.Text = "RUNNING";
         CardStatusText.Text = "CARD READY";
 
-        PreviewCaptionText.Text = "platform".ToUpperInvariant();
+        PreviewCaptionText.Text = title;
         PreviewIndexText.Text = "READY";
 
         RetroArchVersionText.Text = $"RetroArch {_retroVersion}";

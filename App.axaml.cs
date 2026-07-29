@@ -9,7 +9,7 @@ using Avalonia.Markup.Xaml;
 
 namespace RetroGameCard;
 
-public class App : Application
+public class App : Application, IDisposable
 {
     public static AppSettings Settings { get; private set; } = new();
 
@@ -37,10 +37,15 @@ public class App : Application
             desktop.ShutdownRequested += DesktopOnShutdownRequested;
             desktop.Exit += OnExit;
 
-            _retroArch.Exited += OnRetroArchExited;
-            _monitor.Inserted += OnCardInserted;
-            _monitor.Removed += OnCardRemoved;
-            _monitor.Start();
+            // wait for main window before starting monitoring
+            _mainWindow.Loaded += async (_, _) =>
+            {
+                await Task.Delay(2000);
+                _retroArch.Exited += OnRetroArchExited;
+                _monitor.Inserted += OnCardInserted;
+                _monitor.Removed += OnCardRemoved;
+                _monitor.Start();
+            };
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -72,11 +77,12 @@ public class App : Application
             Console.WriteLine($"rom:  {game.RomPath}");
             Console.WriteLine($"core: {game.CorePath}");
 
-            // load preview image
+            // load game data to main window
             _mainWindow?.ShowGame(
                 game.Name, game.Description, game.Platform,
                 game.Year, game.Core, game.ImagePath);
 
+            // start retroarch
             _retroArch.Start(
                 retroArchExecutable: Settings.RetroArch.ExecutablePath,
                 romPath: game.RomPath,
@@ -160,19 +166,22 @@ public class App : Application
         }
     }
 
-    public async ValueTask DisposeAsync()
+    public async void Dispose()
     {
-        _monitor.Inserted -= OnCardInserted;
-        _monitor.Removed -= OnCardRemoved;
-        _retroArch.Exited -= OnRetroArchExited;
+        try
+        {
+            _monitor.Inserted -= OnCardInserted;
+            _monitor.Removed -= OnCardRemoved;
+            _retroArch.Exited -= OnRetroArchExited;
+            await _retroArch.DisposeAsync();
+            await _monitor.StopAsync();
+            _monitor.Dispose();
+        }
+        catch (Exception ex)
+        {
+            await Console.Error.WriteLineAsync(ex.ToString());
+        }
 
-        await _retroArch.DisposeAsync();
-        await _monitor.StopAsync();
-        _monitor.Dispose();
-    }
-
-    public void Dispose()
-    {
-        _monitor.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

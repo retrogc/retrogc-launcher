@@ -49,8 +49,8 @@ public sealed class RetroArchLauncher : IDisposable
     public void Start(
         string retroArchExecutable,
         string romPath,
-        string? corePath = null,
-        string? workingDirectory = null)
+        string corePath,
+        bool fullscreen)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
@@ -68,8 +68,7 @@ public sealed class RetroArchLauncher : IDisposable
         var startInfo = new ProcessStartInfo
         {
             FileName = retroArchExecutable,
-            WorkingDirectory = workingDirectory
-                               ?? Path.GetDirectoryName(fullRomPath)
+            WorkingDirectory = Path.GetDirectoryName(fullRomPath)
                                ?? Environment.CurrentDirectory,
             UseShellExecute = false
         };
@@ -82,7 +81,10 @@ public sealed class RetroArchLauncher : IDisposable
         }
 
         // Fullscreen
-        startInfo.ArgumentList.Add("--fullscreen");
+        if (fullscreen)
+        {
+            startInfo.ArgumentList.Add("--fullscreen");
+        }
 
         // ROM path must be the final RetroArch argument.
         startInfo.ArgumentList.Add(fullRomPath);

@@ -6,12 +6,12 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using RetroGameCard.Controls;
 
 namespace RetroGameCard;
 
 public partial class MainWindow : Window
 {
-    private readonly AppContext _appContext;
     private readonly DispatcherTimer _clockTimer;
     private Bitmap? _previewBitmap;
     private string? _retroVersion;
@@ -24,10 +24,9 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
-        InitializeComponent();
+        Console.WriteLine("MainWindow");
 
-        // create app data context
-        DataContext = _appContext = new AppContext(true);
+        InitializeComponent();
 
         _clockTimer = new DispatcherTimer
         {
@@ -41,6 +40,7 @@ public partial class MainWindow : Window
 
         Opened += (_, _) =>
         {
+            Console.WriteLine("MainWindow::OnOpened...");
             UpdateClock();
             _clockTimer.Start();
         };
@@ -54,15 +54,15 @@ public partial class MainWindow : Window
 
         Closed += (_, _) => _clockTimer.Stop();
 
-//#if !DEBUG
-        SetFullScreen(true);
-//#endif
+        SetWindowState(App.Settings.Main.StartupWindowState);
     }
 
     private async void OnLoaded(object? sender, EventArgs e)
     {
         try
         {
+            Console.WriteLine("MainWindow::OnLoaded...");
+
             // check for retroarch version (and so executable)
             _retroVersion = await RetroArchInstaller.GetVersion();
             if (!string.IsNullOrEmpty(_retroVersion))
@@ -72,12 +72,13 @@ public partial class MainWindow : Window
             }
 
             // if we were not able to get version but executable exists, assume it's ok
-            if (File.Exists(Utility.GetRetroArchExecutable()))
+            if (File.Exists(App.Settings.RetroArch.ExecutablePath))
             {
                 ShowWaitingForGame();
                 return; // ok
             }
 
+            // retroarch executable not found
             if (OperatingSystem.IsWindows())
             {
                 // ask user for retroarch installation
@@ -94,11 +95,6 @@ public partial class MainWindow : Window
             }
 
             ShowWaitingForGame();
-#if !DEBUG
-            // hide window at startup
-            //if (RetroArchInstaller.ExePathExists)
-            //    Loaded += (s, _) => { (s as Window)?.Hide(); };
-#endif
         }
         catch (Exception)
         {
@@ -106,18 +102,64 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OnMainWindowKeyDown(object? sender, KeyEventArgs e)
+    private async void OnMainWindowKeyDown(object? sender, KeyEventArgs e)
     {
-        if (e.Key is not (Key.Escape or Key.F11)) return;
+        if (e.Key is not (Key.Escape or Key.F11 or Key.F12)) return;
 
-        SetFullScreen(WindowState != WindowState.FullScreen);
+        if (e.Key == Key.F12)
+        {
+            try
+            {
+                var window = new SettingsWindow(App.Settings);
+                await window.ShowDialog(this);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            e.Handled = true;
+            return;
+        }
+
+        switch (WindowState)
+        {
+            case WindowState.FullScreen:
+                SetWindowState(StartupWindowState.Normal);
+                break;
+            case WindowState.Normal:
+                SetWindowState(StartupWindowState.Fullscreen);
+                break;
+            case WindowState.Minimized:
+            case WindowState.Maximized:
+            default:
+                break;
+        }
+
         e.Handled = true;
     }
 
-    public void SetFullScreen(bool isFullScreen)
+    public void SetWindowState(StartupWindowState state)
     {
-        WindowState = isFullScreen ? WindowState.FullScreen : WindowState.Normal;
-        Cursor = isFullScreen ? new Cursor(StandardCursorType.None) : new Cursor(StandardCursorType.Arrow);
+        Console.WriteLine("MainWindow::SetWindowState: " + state);
+        switch (state)
+        {
+            case StartupWindowState.Fullscreen:
+                WindowState = WindowState.FullScreen;
+                Cursor = new Cursor(StandardCursorType.None);
+                Show();
+                break;
+            case StartupWindowState.Normal:
+                WindowState = WindowState.Normal;
+                Cursor = new Cursor(StandardCursorType.Arrow);
+                Show();
+                break;
+            case StartupWindowState.Minimized:
+            default:
+                //WindowState = WindowState.Minimized;
+                Hide();
+                break;
+        }
     }
 
     public void ShowWaitingForGame()

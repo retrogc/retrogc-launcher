@@ -47,23 +47,25 @@ public sealed record Game
             : ResolvePath(RetroArchConfig.Rom);
 
     [JsonIgnore]
-    public string? CorePath =>
+    public string CorePath =>
         string.IsNullOrWhiteSpace(RetroArchConfig?.Core)
-            ? null
+            ? "UNKNOWN"
             : ResolvePath(OperatingSystem.IsLinux() ? RetroArchConfig.Core + ".so" : RetroArchConfig.Core + ".dll");
 
     [JsonIgnore]
-    public string? Core =>
+    public string Core =>
         string.IsNullOrWhiteSpace(RetroArchConfig?.Core)
-            ? null
+            ? "UNKNOWN"
             : RetroArchConfig.Core;
 
     /// <summary>
     /// Absolute path to the optional game image on the SD card.
     /// </summary>
     [JsonIgnore]
-    public string? ImagePath =>
-        string.IsNullOrWhiteSpace(Image) ? null : ResolvePath(Image);
+    public string ImagePath =>
+        string.IsNullOrWhiteSpace(Image)
+            ? string.Empty
+            : ResolvePath(Image);
 
     /// <summary>
     /// The installed RetroArch core filename, e.g. fbneo_libretro.so.

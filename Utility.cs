@@ -7,26 +7,6 @@ namespace RetroGameCard;
 
 public abstract class Utility
 {
-    public static string GetRetroArchExecutable()
-    {
-        if (OperatingSystem.IsWindows())
-        {
-            return @"C:\RetroArch-Win64\retroarch.exe";
-        }
-
-        if (OperatingSystem.IsLinux())
-        {
-            return "/usr/bin/retroarch";
-        }
-
-        if (OperatingSystem.IsMacOS())
-        {
-            return "/Applications/RetroArch.app/Contents/MacOS/RetroArch";
-        }
-
-        throw new PlatformNotSupportedException();
-    }
-
     public static void Notify(string message)
     {
         if (OperatingSystem.IsLinux())

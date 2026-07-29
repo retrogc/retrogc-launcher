@@ -1,0 +1,228 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="RetroGameCard.Controls.SettingsWindow"
+        Title="Retro Game Card — Settings"
+        Width="620"
+        Height="460"
+        MinWidth="540"
+        MinHeight="400"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="#090B10">
+
+    <Window.Styles>
+
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="Inter, Arial, sans-serif" />
+            <Setter Property="Foreground" Value="#EEF2FA" />
+        </Style>
+
+        <Style Selector="TextBlock.section-label">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="LetterSpacing" Value="1.6" />
+            <Setter Property="Foreground" Value="#7F8BA3" />
+        </Style>
+
+        <Style Selector="TextBlock.section-title">
+            <Setter Property="FontSize" Value="19" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+
+        <Style Selector="Border.settings-card">
+            <Setter Property="Background" Value="#111723" />
+            <Setter Property="BorderBrush" Value="#29354A" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="20" />
+        </Style>
+
+        <Style Selector="Button">
+            <Setter Property="Background" Value="#1A2435" />
+            <Setter Property="BorderBrush" Value="#34425B" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="Foreground" Value="#EAF0FA" />
+        </Style>
+
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#277E68" />
+            <Setter Property="BorderBrush" Value="#48B89B" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#0C111B" />
+            <Setter Property="BorderBrush" Value="#34425B" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Foreground" Value="#F3F6FC" />
+            <Setter Property="Padding" Value="10,8" />
+        </Style>
+
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="#0C111B" />
+            <Setter Property="Foreground" Value="#F3F6FC" />
+        </Style>
+
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Margin="26">
+
+        <!-- Header -->
+        <StackPanel Spacing="6">
+
+            <TextBlock Text="SETTINGS"
+                       Classes="section-label"
+                       Foreground="#5CE1B7" />
+
+            <TextBlock Text="Retro Game Card"
+                       Classes="section-title" />
+
+            <TextBlock Text="Configure startup and RetroArch behaviour."
+                       Foreground="#98A5B9"
+                       FontSize="13" />
+        </StackPanel>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1"
+                      Margin="0,24"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Spacing="16">
+
+                <!-- Main application -->
+                <Border Classes="settings-card">
+                    <StackPanel Spacing="16">
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="MAIN"
+                                       Classes="section-label" />
+
+                            <TextBlock Text="Application startup"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+                        </StackPanel>
+
+                        <Grid ColumnDefinitions="*,220"
+                              ColumnSpacing="22">
+
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Window state at startup"
+                                           FontSize="14" />
+
+                                <TextBlock Text="Choose how Retro Game Card opens."
+                                           FontSize="12"
+                                           Foreground="#8592A7" />
+                            </StackPanel>
+
+                            <ComboBox x:Name="StartupWindowStateComboBox"
+                                      Grid.Column="1"
+                                      SelectedIndex="0">
+                                <ComboBoxItem Content="Fullscreen" />
+                                <ComboBoxItem Content="Normal window" />
+                                <ComboBoxItem Content="Minimized" />
+                            </ComboBox>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- RetroArch -->
+                <Border Classes="settings-card">
+                    <StackPanel Spacing="16">
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="RETROARCH"
+                                       Classes="section-label" />
+
+                            <TextBlock Text="Emulator launch settings"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+                        </StackPanel>
+
+                        <Grid ColumnDefinitions="*,Auto"
+                              ColumnSpacing="14">
+
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="RetroArch executable"
+                                           FontSize="14" />
+
+                                <TextBox x:Name="RetroArchPathTextBox"
+                                         IsReadOnly="True"
+                                         PlaceholderText="Select retroarch executable..." />
+                                <!-- TextTrimming="CharacterEllipsis" -->
+                            </StackPanel>
+
+                            <Button Grid.Column="1"
+                                    Content="Browse..."
+                                    VerticalAlignment="Bottom"
+                                    Click="OnBrowseRetroArchClicked" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,Auto"
+                              ColumnSpacing="22">
+
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Launch RetroArch fullscreen"
+                                           FontSize="14" />
+
+                                <TextBlock Text="Pass --fullscreen when launching a game."
+                                           FontSize="12"
+                                           Foreground="#8592A7" />
+                            </StackPanel>
+
+                            <ToggleSwitch x:Name="RetroArchFullscreenToggle"
+                                          Grid.Column="1"
+                                          VerticalAlignment="Center"
+                                          OnContent="ON"
+                                          OffContent="OFF" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Reserved future options -->
+                <Border Classes="settings-card"
+                        Opacity="0.55">
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="MORE OPTIONS"
+                                   Classes="section-label" />
+
+                        <TextBlock Text="Additional settings will appear here."
+                                   FontSize="14" />
+
+                        <TextBlock
+                            Text="Examples: SD-card polling, auto-launch, MiSTer FPGA, theme selection, and debug logging."
+                            FontSize="12"
+                            TextWrapping="Wrap"
+                            Foreground="#8592A7" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer controls -->
+        <Grid Grid.Row="2"
+              ColumnDefinitions="*,Auto,Auto"
+              ColumnSpacing="10">
+
+            <TextBlock x:Name="SettingsFileText"
+                       Text="settings.json"
+                       FontSize="11"
+                       Foreground="#647087"
+                       VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+
+            <Button Grid.Column="1"
+                    Content="Cancel"
+                    Click="OnCancelClicked" />
+
+            <Button Grid.Column="2"
+                    Content="Save"
+                    Classes="primary"
+                    Click="OnSaveClicked" />
+        </Grid>
+    </Grid>
+</Window>

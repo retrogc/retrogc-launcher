@@ -26,7 +26,7 @@ public static class RetroArchInstaller
 
     public static async Task<string?> GetVersion()
     {
-        var exePath = Utility.GetRetroArchExecutable();
+        var exePath = App.Settings.RetroArch.ExecutablePath;
         if (!File.Exists(exePath))
             return null;
 
@@ -50,7 +50,9 @@ public static class RetroArchInstaller
     /// </summary>
     public static async Task<bool> InstallAsync(Window? owner)
     {
-        var exePath = Utility.GetRetroArchExecutable();
+        if (owner == null) return false;
+
+        var exePath = App.Settings.RetroArch.ExecutablePath;
         if (File.Exists(exePath)) return true;
 
         var confirmed = await ConfirmDialog.ShowAsync(

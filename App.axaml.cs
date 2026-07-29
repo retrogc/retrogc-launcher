@@ -11,26 +11,31 @@ namespace RetroGameCard;
 
 public class App : Application
 {
+    public static AppSettings Settings { get; private set; } = new();
+
     private readonly CardMonitor _monitor = new("RETROGC");
     private readonly RetroArchLauncher _retroArch = new();
     private MainWindow? _mainWindow;
 
     public override void Initialize()
     {
+        Console.WriteLine("App::Initialize");
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            // load settings
+            Console.WriteLine("App::OnFrameworkInitializationCompleted: loading settings...");
+            Settings = await AppSettings.LoadAsync();
+
+            // create main window
             desktop.MainWindow = _mainWindow = new MainWindow();
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             desktop.ShutdownRequested += DesktopOnShutdownRequested;
             desktop.Exit += OnExit;
-
-            // set app context to main window context
-            DataContext = desktop.MainWindow.DataContext;
 
             _retroArch.Exited += OnRetroArchExited;
             _monitor.Inserted += OnCardInserted;
@@ -69,12 +74,14 @@ public class App : Application
 
             // load preview image
             _mainWindow?.ShowGame(
-                game.Name, game.Description, game.Platform, game.Year, game.Core, game.ImagePath);
+                game.Name, game.Description, game.Platform,
+                game.Year, game.Core, game.ImagePath);
 
             _retroArch.Start(
-                retroArchExecutable: Utility.GetRetroArchExecutable(),
+                retroArchExecutable: Settings.RetroArch.ExecutablePath,
                 romPath: game.RomPath,
-                corePath: game.CorePath);
+                corePath: game.CorePath,
+                fullscreen: Settings.RetroArch.StartFullscreen);
         }
         catch (Exception exception)
         {
@@ -137,18 +144,7 @@ public class App : Application
 
     private void OnOpenClicked(object? sender, EventArgs e)
     {
-        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) return;
-        desktop.MainWindow ??= new MainWindow();
-        desktop.MainWindow.WindowState = WindowState.Normal;
-        desktop.MainWindow.Show();
-    }
-
-    private void OnHideClicked(object? sender, EventArgs e)
-    {
-        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) return;
-        if (desktop.MainWindow == null) return;
-        desktop.MainWindow.WindowState = WindowState.Minimized;
-        desktop.MainWindow.Hide();
+        _mainWindow?.SetWindowState(StartupWindowState.Normal);
     }
 
     private void OnExitClicked(object? sender, EventArgs e)

@@ -24,7 +24,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <Folder Include="Platforms\" />
+      <Folder Include="Platforms\Linux\" />
     </ItemGroup>
     <!--
     <ItemGroup>

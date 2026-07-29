@@ -4,18 +4,17 @@
              RequestedThemeVariant="Dark">
 
     <Application.Styles>
-        <FluentTheme DensityStyle="Compact" />
+        <FluentTheme />
     </Application.Styles>
 
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="/Assets/rgc.png"
-                      ToolTipText="RetroGameCard"
-                      Clicked="OnTrayIconClicked">
+            <TrayIcon Icon="/Assets/Icons/tray.png" ToolTipText="RetroGameCard" Clicked="OnTrayIconClicked">
                 <TrayIcon.Menu>
                     <NativeMenu>
-                        <NativeMenuItem Header="Open" Click="OnOpenClicked" />
-                        <NativeMenuItem Header="Exit" Click="OnExitClicked" />
+                        <NativeMenuItem Header="Open" Icon="/Assets/Icons/open.png" Click="OnOpenClicked" />
+                        <NativeMenuItem Header="Settings" Icon="/Assets/Icons/settings.png" Click="OnSettingsClicked" />
+                        <NativeMenuItem Header="Exit" Icon="/Assets/Icons/exit.png" Click="OnExitClicked" />
                     </NativeMenu>
                 </TrayIcon.Menu>
             </TrayIcon>

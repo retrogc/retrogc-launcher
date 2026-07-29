@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="#FFFFFF"
+     stroke-width="2.2"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+
+    <!-- Game cartridge -->
+    <path d="M5 4h14v16H5z"/>
+
+    <!-- Cartridge label -->
+    <path d="M8 7h8v5H8z"/>
+
+    <!-- Cartridge contacts -->
+    <path d="M9 16v2"/>
+    <path d="M12 16v2"/>
+    <path d="M15 16v2"/>
+</svg>

@@ -108,16 +108,7 @@ public partial class MainWindow : Window
 
         if (e.Key == Key.F12)
         {
-            try
-            {
-                var window = new SettingsWindow(App.Settings);
-                await window.ShowDialog(this);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
+            ShowSettings();
             e.Handled = true;
             return;
         }
@@ -159,6 +150,20 @@ public partial class MainWindow : Window
                 //WindowState = WindowState.Minimized;
                 Hide();
                 break;
+        }
+    }
+
+    public async void ShowSettings()
+    {
+        try
+        {
+            Show();
+            var window = new SettingsWindow(App.Settings);
+            await window.ShowDialog(this);
+        }
+        catch (Exception)
+        {
+            // ignored
         }
     }
 

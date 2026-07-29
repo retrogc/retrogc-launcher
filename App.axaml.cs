@@ -147,6 +147,11 @@ public class App : Application
         _mainWindow?.SetWindowState(StartupWindowState.Normal);
     }
 
+    private void OnSettingsClicked(object? sender, EventArgs e)
+    {
+        _mainWindow?.ShowSettings();
+    }
+
     private void OnExitClicked(object? sender, EventArgs e)
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

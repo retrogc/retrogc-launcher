@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -48,7 +49,7 @@ public abstract class Utility
         process.OutputDataReceived += (_, e) =>
         {
             if (e.Data == null) return;
-            Console.WriteLine("RunProcessAsync: OUT: " + e.Data);
+            //Console.WriteLine("RunProcessAsync: OUT: " + e.Data);
             stdOutBuilder.AppendLine(e.Data);
         };
         process.ErrorDataReceived += (_, e) =>
@@ -89,6 +90,49 @@ public abstract class Utility
             FileOptions.Asynchronous | FileOptions.SequentialScan);
 
         await source.CopyToAsync(destination, bufferSize, cancellationToken);
+    }
+
+    public static async Task ExtractZipAsync(
+        string sourcePath,
+        string destinationPath,
+        CancellationToken cancellationToken = default)
+    {
+        if (!File.Exists(sourcePath))
+            throw new FileNotFoundException("ZIP archive not found.", sourcePath);
+
+        sourcePath = Path.GetFullPath(sourcePath);
+        destinationPath = Path.GetFullPath(destinationPath);
+
+        var parent = Path.GetDirectoryName(destinationPath);
+        if (parent is null)
+            throw new InvalidOperationException("The destination must have a parent directory.");
+
+        Directory.CreateDirectory(parent);
+
+        var stagingPath = Path.Combine(
+            parent,
+            $".{Path.GetFileName(destinationPath)}.{Guid.NewGuid():N}.tmp");
+
+        try
+        {
+            await ZipFile.ExtractToDirectoryAsync(
+                sourcePath,
+                stagingPath,
+                overwriteFiles: true,
+                cancellationToken);
+
+            if (Directory.Exists(destinationPath))
+                Directory.Delete(destinationPath, recursive: true);
+
+            Directory.Move(stagingPath, destinationPath);
+        }
+        catch
+        {
+            if (Directory.Exists(stagingPath))
+                Directory.Delete(stagingPath, recursive: true);
+
+            throw;
+        }
     }
 
     public static async Task<string?> GetRetroArchVersion(string path)

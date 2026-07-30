@@ -39,7 +39,11 @@ public sealed record Game
         ?? throw new InvalidOperationException(
             "DefinitionPath has no parent directory.");
 
-    [JsonIgnore] public string RetroArchExe => "retroarch.appimage";
+    [JsonIgnore]
+    public string RetroArchExe =>
+        OperatingSystem.IsLinux()
+            ? "retroarch-linux.appimage"
+            : "retroarch-windows.zip";
 
     [JsonIgnore]
     public string RetroArchExePath =>

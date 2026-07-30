@@ -4,12 +4,12 @@
 [![Language](https://img.shields.io/badge/Language-C%23-blue)](https://github.com/Cpasjuste/RetroGameCard)
 
 RetroGameCard is a simple, portable "card" format for SD cards / USB drives that lets a single, self-contained game
-(retroarch + rom) be automatically detected and launched by the RetroGameCard C# launcher (Windows and Linux). It is also
-compatible with MiSTer FPGA via the provided `retrogc.sh` helper script.
+(retroarch + rom) be automatically detected and launched by the RetroGameCard C# launcher (Windows and Linux). It is
+also compatible with MiSTer FPGA via the provided `retrogc.sh` helper script.
 
-The launcher offers a clean UI with icons and visual indicators for inserted cards, autostart state, and
-runner status, think retro cartridge shelf but with modern polish. Use the UI to see which card is inserted, view
-cover/box art and such, making your computer works like an old gaming console.
+The launcher offers a clean UI with icons and visual indicators for inserted cards, autostart state, and runner status,
+think retro cartridge shelf but with modern polish. Use the UI to see which card is inserted, view cover/box art and
+such, making your computer works like an old gaming console.
 
 ---
 
@@ -66,8 +66,8 @@ cover/box art and such, making your computer works like an old gaming console.
 
 ## How auto-launch works
 
-- The launcher monitors removable drives. When it detects a card/disk labeled "RETROGC" with an `.rgc` config at the root, it reads the config,
-  displays the card details in the UI, and launches the game using RetroArch.
+- The launcher monitors removable drives. When it detects a card/disk labeled "RETROGC" with an `.rgc` config at the
+  root, it reads the config, displays the card details in the UI, and launches the game using RetroArch.
 - The launcher is cross-platform and supports both Windows and Linux.
 
 ## Creating and testing a RetroGameCard
@@ -75,8 +75,7 @@ cover/box art and such, making your computer works like an old gaming console.
 1. Copy one of the `.rgc` config file example from `GameCards/` and adapt it for your game.
 2. Place the `.rgc` file at the root of the card image or folder and add all required game files.
 3. Use the included build script to create a card image or to write the contents to a target device.
-4. Run the C# launcher on your host. Insert the SD/USB device and the launcher will detect and autostart
-   the game.
+4. Run the C# launcher on your host. Insert the SD/USB device and the launcher will detect and autostart the game.
 
 ## Why use RetroGameCard?
 
@@ -91,6 +90,12 @@ cover/box art and such, making your computer works like an old gaming console.
 - Launcher code (C#) - For advanced configuration and to see how detection and autostarting are implemented.
 
 ## 💡 Tips
+
+- Remove unused retroarch (windows) assets to lower game cards size
+    - database → remove the whole folder
+    - shaders → remove the whole folder
+    - assets → ozone → keep only this folder
+    - overlays → remove the whole folder
 
 - MisterFPGA
     - Find which core belong to a .mra arcade rom (cadillacs and dinosaurs):

@@ -70,9 +70,12 @@ public class App : Application, IDisposable
             var card = await Game.LoadAsync(configFile);
             var exePath = card.RetroArchExePath;
 
-            // check for retroarch executable archive / AppImage
+            // check for retroarch executable archive / AppImage (mandatory files)
             if (!File.Exists(exePath))
-                throw new FileNotFoundException(" RetroArch executable not found.", exePath);
+                throw new FileNotFoundException(" RetroArch not found.", exePath);
+
+            if (!File.Exists(card.CorePath))
+                throw new FileNotFoundException(" RetroArch core not found.", card.CorePath);
 
             if (!File.Exists(card.RomPath))
                 throw new FileNotFoundException(" RetroArch rom not found.", card.RomPath);
@@ -84,7 +87,7 @@ public class App : Application, IDisposable
                 card.ImagePath, card.Version, "STARTING");
 
             // copy embedded retroarch app image / zip to app cache path if needed
-            if (exePath.EndsWith(".AppImage") || exePath.EndsWith(".zip"))
+            if (exePath.ToLower().EndsWith(".appimage") || exePath.ToLower().EndsWith(".zip"))
             {
                 var exeFound = false;
 
@@ -92,7 +95,13 @@ public class App : Application, IDisposable
                 exePath = Path.Combine(AppSettings.SettingsDirectory, card.RetroArchExe);
                 var cacheHashPath = exePath + ".sha256";
                 var cardHashPath = card.RetroArchExePath + ".sha256";
-                if (File.Exists(cacheHashPath) && File.Exists(cardHashPath))
+
+                // error out if retroarch sha is missing on card
+                if (!File.Exists(cardHashPath))
+                    throw new FileNotFoundException(
+                        $"card is missing retroarch checksum ({cardHashPath})", cardHashPath);
+
+                if (File.Exists(cacheHashPath))
                 {
                     Console.WriteLine($" retroarch sha found at {cacheHashPath}, comparing with {cardHashPath}");
                     // get hash
@@ -150,7 +159,7 @@ public class App : Application, IDisposable
             Console.WriteLine($"  retroarch: {exePath} ({retroVersion})");
             Console.WriteLine($"  card version: {card.Version}");
 
-            // load game data to main window
+            // set ui waiting/loading state (TODO: show loading stuff in ui)
             _mainWindow?.ShowGame(
                 card.Name, card.Description, card.Platform,
                 card.Year, Path.GetFileName(card.Core),

@@ -232,6 +232,11 @@ public partial class MainWindow : Window
         WaitingProgress.IsIndeterminate = false;
     }
 
+    public void ShowError(string error)
+    {
+        CardStatusText.Text = error;
+    }
+
     private void UpdateClock()
     {
         var now = DateTime.Now;

@@ -8,13 +8,6 @@ namespace RetroGameCard;
 
 public sealed class AppSettings
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never
-    };
-
     public MainSettings Main { get; set; } = new();
 
     public RetroArchSettings RetroArch { get; set; } = new();
@@ -43,11 +36,8 @@ public sealed class AppSettings
             }
 
             await using var stream = File.OpenRead(SettingsPath);
-
             return await JsonSerializer.DeserializeAsync<AppSettings>(
-                       stream,
-                       JsonOptions)
-                   ?? CreateDefault();
+                stream, AppJsonContext.Default.AppSettings) ?? CreateDefault();
         }
         catch (Exception exception)
         {
@@ -67,9 +57,7 @@ public sealed class AppSettings
         await using (var stream = File.Create(temporaryPath))
         {
             await JsonSerializer.SerializeAsync(
-                stream,
-                this,
-                JsonOptions);
+                stream, this, AppJsonContext.Default.AppSettings);
         }
 
         File.Move(
@@ -115,7 +103,6 @@ public sealed class RetroArchSettings
     public string ExecutablePath { get; set; } = "";
 }
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum StartupWindowState
 {
     Normal,

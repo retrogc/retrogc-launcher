@@ -174,6 +174,7 @@ public class App : Application, IDisposable
         }
         catch (Exception exception)
         {
+            _mainWindow?.ShowError(exception.Message);
             await Console.Error.WriteLineAsync(
                 $"Unable to launch RetroArch: {exception.Message}");
         }

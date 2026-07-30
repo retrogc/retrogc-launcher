@@ -99,13 +99,11 @@ public sealed record Game
         !string.IsNullOrWhiteSpace(MisterFpgaConfig?.Core);
 
     public static async Task<Game> LoadAsync(
-        string definitionPath,
-        CancellationToken cancellationToken = default)
+        string definitionPath, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(definitionPath);
 
         var fullDefinitionPath = Path.GetFullPath(definitionPath);
-
         if (!File.Exists(fullDefinitionPath))
         {
             throw new FileNotFoundException(
@@ -114,10 +112,8 @@ public sealed record Game
         }
 
         await using var stream = File.OpenRead(fullDefinitionPath);
-        var game = await JsonSerializer.DeserializeAsync<Game>(
-            stream,
-            JsonOptions,
-            cancellationToken);
+        var game = await JsonSerializer.DeserializeAsync(
+            stream, AppJsonContext.Default.Game, cancellationToken);
 
         if (game is null)
         {
@@ -127,10 +123,7 @@ public sealed record Game
 
         game.Validate(fullDefinitionPath);
 
-        return game with
-        {
-            DefinitionPath = fullDefinitionPath
-        };
+        return game with { DefinitionPath = fullDefinitionPath };
     }
 
     private string ResolvePath(string relativePath)
@@ -184,11 +177,6 @@ public sealed record Game
                 $"'misterfpga_config.core' in {definitionPath}.");
         }
     }
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
 }
 
 public sealed record RetroArchConfig

@@ -78,6 +78,18 @@ on_insert() {
           && ln -sf "$romPath" "$FAKE_ARCADE_MRA"
         printf 'load_core %s\n' "_Arcade/RetroGameCard.mra" > "$MISTER_CMD"
     else
+        if ! delay="$(jq -er '.misterfpga_config.delay' "$config")"; then
+          echo " WARN: Could not read .misterfpga_config.delay from $config" >&2
+          delay="1"
+        fi
+        if ! index="$(jq -er '.misterfpga_config.index' "$config")"; then
+          echo " WARN: Could not read .misterfpga_config.index from $config" >&2
+          index="1"
+        fi
+        if ! type="$(jq -er '.misterfpga_config.type' "$config")"; then
+          echo " WARN: Could not read .misterfpga_config.type from $config" >&2
+          type="f"
+        fi
         # link our core to fat...
         mkdir -p /media/fat/_Console \
           && ln -sf "$corePath" "$FAKE_CONSOLE_CORE"
@@ -86,11 +98,12 @@ on_insert() {
         {
           printf '%s\n' '<mistergamedescription>'
           printf '  <rbf>%s</rbf>\n' "_Console/RetroGameCard"
-          printf '  <file delay="1" type="f" index="1" path="../../%s"/>\n' "$rom"
+          printf '  <file delay="%s" index="%s" type="%s" path="../../%s"/>\n' "$delay" "$index" "$type" "$rom"
           printf '%s\n' '</mistergamedescription>'
         } > "$mgl"
         # run mgl
-        echo " Loading MiSTer core: $core with $rom"
+        echo " Loading MiSTer core: $core with $rom, mgl: "
+        echo "$(cat /tmp/game.mgl)"
         printf 'load_core %s\n' "$mgl" > "$MISTER_CMD"
     fi
 }

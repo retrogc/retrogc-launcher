@@ -1,0 +1,19 @@
+{
+  "name": "Super Mario Bros",
+  "description": "Super Mario Bros. follows Mario and Luigi as they race to rescue Princess Peach from the evil Bowser. In their debut platforming quest, the brothers leap through enemy-filled levels, dodge traps, and uncover hidden bonuses. The Super Mushroom makes Mario grow, the Fire Flower gives him firepower, and the Star grants brief invincibility. Each level ends with a flagpole and the higher you grab it, the more points you score. Secret bonus areas and warp zones allow shortcuts through the game. A timeless classic that defined a genre.",
+  "platform": "NES",
+  "year": "1989",
+  "image": "mario.png",
+  "version": "1.0.0",
+  "retroarch_config": {
+    "core": "cores/nestopia_libretro",
+    "rom": "games/nes/Super Mario Bros. (World).nes"
+  },
+  "misterfpga_config": {
+    "core": "cores/mister_NES_20260603.rbf",
+    "rom": "games/nes/Super Mario Bros. (World).nes",
+    "delay": "2",
+    "index": "1",
+    "type": "f"
+  }
+}

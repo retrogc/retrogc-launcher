@@ -11,6 +11,9 @@
   },
   "misterfpga_config": {
     "core": "cores/mister_neogeo.rbf",
-    "rom": "games/neogeo/mslug.neo"
+    "rom": "games/neogeo/mslug.neo",
+    "delay": "1",
+    "index": "1",
+    "type": "f"
   }
 }

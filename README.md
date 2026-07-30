@@ -3,11 +3,11 @@
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20Linux%20%7C%20MiSTer%20FPGA-blueviolet)](https://github.com/Cpasjuste/RetroGameCard)
 [![Language](https://img.shields.io/badge/Language-C%23-blue)](https://github.com/Cpasjuste/RetroGameCard)
 
-A small, fast tool to generate polished "game cards", playlists and metadata for retro gaming setups.
+A small launcher for retro game cards, playlists and metadata for retro gaming setups.
 
 - 🎮 Generates playlists and game-card metadata for RetroArch and MiSTer-style setups.
 - 🖥️ Works on Windows and Linux desktop systems.
-- 🕹️ Compatible with MiSTer FPGA file/playlists workflows.
+- 🕹️ Compatible with MiSTer FPGA.
 
 ---
 

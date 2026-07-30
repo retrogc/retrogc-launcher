@@ -55,39 +55,62 @@ public class App : Application, IDisposable
     {
         try
         {
-            Console.WriteLine($"card inserted: {e.Volume.MountPoint}");
+            Console.WriteLine($"OnCardInserted: {e.Volume.MountPoint}");
 
             var configFile = Directory
                 .EnumerateFiles(e.Volume.MountPoint, "*.rgc", SearchOption.TopDirectoryOnly)
                 .FirstOrDefault();
             if (configFile is null)
             {
-                Console.WriteLine($"No config file (.rgc) found in: {e.Volume.MountPoint}");
+                Console.WriteLine($" No config file (.rgc) found in: {e.Volume.MountPoint}");
                 return;
             }
 
-            var game = await Game.LoadAsync(configFile);
+            // load config file
+            var card = await Game.LoadAsync(configFile);
+            var exePath = card.RetroArchExePath;
 
-            if (!File.Exists(game.RomPath))
-                throw new FileNotFoundException("ROM not found.", game.RomPath);
+            // check for retroarch executable
+            if (!File.Exists(exePath))
+                throw new FileNotFoundException(" RetroArch executable not found.", exePath);
 
-            Utility.Notify("Loading " + game.Name);
+            if (!File.Exists(card.RomPath))
+                throw new FileNotFoundException(" RetroArch rom not found.", card.RomPath);
 
-            Console.WriteLine($"game: {game.Name}");
-            Console.WriteLine($"rom:  {game.RomPath}");
-            Console.WriteLine($"core: {game.CorePath}");
-            Console.WriteLine($"version: {game.Version}");
+            // on linux, copy embedded retroarch app image to an executable location
+            if (OperatingSystem.IsLinux() && exePath.EndsWith(".AppImage"))
+            {
+                exePath = Path.Combine(AppSettings.SettingsDirectory, card.RetroArchExe);
+                Console.WriteLine($" Copying {card.RetroArchExePath} to {exePath}");
+                Directory.CreateDirectory(AppSettings.SettingsDirectory);
+                await Utility.CopyFileAsync(card.RetroArchExePath, exePath);
+                File.SetUnixFileMode(exePath,
+                    UnixFileMode.UserRead |
+                    UnixFileMode.UserWrite |
+                    UnixFileMode.UserExecute);
+            }
+
+            // get retroarch version
+            var retroVersion = await Utility.GetRetroArchVersion(exePath);
+
+            Utility.Notify(" Loading " + card.Name);
+            Console.WriteLine($"  game: {card.Name}");
+            Console.WriteLine($"  rom:  {card.RomPath}");
+            Console.WriteLine($"  core: {card.CorePath}");
+            Console.WriteLine($"  retroarch: {exePath} ({retroVersion})");
+            Console.WriteLine($"  card version: {card.Version}");
 
             // load game data to main window
             _mainWindow?.ShowGame(
-                game.Name, game.Description, game.Platform,
-                game.Year, Path.GetFileName(game.Core), game.ImagePath, game.Version);
+                card.Name, card.Description, card.Platform,
+                card.Year, Path.GetFileName(card.Core),
+                card.ImagePath, card.Version, retroVersion);
 
             // start retroarch
             _retroArch.Start(
-                retroArchExecutable: Settings.RetroArch.ExecutablePath,
-                romPath: game.RomPath,
-                corePath: game.CorePath,
+                retroArchExecutable: exePath,
+                romPath: card.RomPath,
+                corePath: card.CorePath,
                 fullscreen: Settings.RetroArch.StartFullscreen);
         }
         catch (Exception exception)

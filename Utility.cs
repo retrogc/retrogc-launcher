@@ -1,6 +1,9 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RetroGameCard;
@@ -62,5 +65,45 @@ public abstract class Utility
         await process.WaitForExitAsync();
 
         return (stdOutBuilder.ToString(), stdErrBuilder.ToString(), process.ExitCode);
+    }
+
+    public static async Task CopyFileAsync(string sourcePath, string destinationPath,
+        CancellationToken cancellationToken = default)
+    {
+        const int bufferSize = 1024 * 1024; // 1 MiB
+
+        await using var source = new FileStream(
+            sourcePath,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read,
+            bufferSize,
+            FileOptions.Asynchronous | FileOptions.SequentialScan);
+
+        await using var destination = new FileStream(
+            destinationPath,
+            FileMode.Create,
+            FileAccess.Write,
+            FileShare.None,
+            bufferSize,
+            FileOptions.Asynchronous | FileOptions.SequentialScan);
+
+        await source.CopyToAsync(destination, bufferSize, cancellationToken);
+    }
+
+    public static async Task<string?> GetRetroArchVersion(string path)
+    {
+        if (!File.Exists(path)) return null;
+
+        var (output, error, exitCode) = await RunProcessAsync(path, "-V");
+        if (string.IsNullOrWhiteSpace(output)) return null;
+
+        var match = Regex.Match(output, @"^Version:\s*(.+)$", RegexOptions.Multiline);
+        if (!match.Success) return null;
+
+        var version = match.Groups[1].Value.Trim();
+        Console.WriteLine($"GetRetroArchVersion: executable found at {path}, version: {version}");
+
+        return version;
     }
 }

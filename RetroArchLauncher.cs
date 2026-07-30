@@ -73,6 +73,9 @@ public sealed class RetroArchLauncher : IDisposable
             UseShellExecute = false
         };
 
+        // for retroarch
+        startInfo.Environment["HOME"] = AppSettings.SettingsDirectory;
+
         // Optional: load a specific libretro core.
         if (!string.IsNullOrWhiteSpace(corePath))
         {

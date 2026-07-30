@@ -24,26 +24,6 @@ public static class RetroArchInstaller
     public const string DownloadUrl =
         "https://buildbot.libretro.com/stable/1.22.2/windows/x86_64/RetroArch-Win64-setup.exe";
 
-    public static async Task<string?> GetVersion()
-    {
-        var exePath = App.Settings.RetroArch.ExecutablePath;
-        if (!File.Exists(exePath))
-            return null;
-
-        var (output, error, exitCode) = await Utility.RunProcessAsync(exePath, "-V");
-        if (string.IsNullOrWhiteSpace(output))
-            return null;
-
-        var match = Regex.Match(output, @"^Version:\s*(.+)$", RegexOptions.Multiline);
-        if (!match.Success)
-            return null;
-
-        var version = match.Groups[1].Value.Trim();
-        Console.WriteLine($"RetroArch executable found at {exePath}, version: {version}");
-
-        return version;
-    }
-
     /// <summary>
     /// Checks if RetroArch exists. If not, prompts the user and installs it.
     /// Returns true if RetroArch is available (already present or freshly installed).

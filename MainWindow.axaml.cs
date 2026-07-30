@@ -14,7 +14,7 @@ public partial class MainWindow : Window
 {
     private readonly DispatcherTimer _clockTimer;
     private Bitmap? _previewBitmap;
-    private string? _retroVersion;
+    //private string? _retroVersion;
 
     private static readonly IBrush ReadyColor =
         Brush.Parse("#5CE1B7");
@@ -62,7 +62,7 @@ public partial class MainWindow : Window
         try
         {
             Console.WriteLine("MainWindow::OnLoaded...");
-
+#if RGC_OLD
             // check for retroarch version (and so executable)
             _retroVersion = await RetroArchInstaller.GetVersion();
             if (!string.IsNullOrEmpty(_retroVersion))
@@ -91,7 +91,7 @@ public partial class MainWindow : Window
                 Console.WriteLine("retroarch installation not found");
                 // TODO: show help
             }
-
+#endif
             ShowWaitingForGame();
         }
         catch (Exception)
@@ -184,7 +184,7 @@ public partial class MainWindow : Window
         PreviewCaptionText.Text = "GAME PREVIEW";
         PreviewIndexText.Text = "—";
 
-        RetroArchVersionText.Text = $"RetroArch {_retroVersion}";
+        RetroArchVersionText.Text = $"NO RETROARCH DETECTED";
 
         PreviewImage.Source = null;
         NoPreviewText.IsVisible = true;
@@ -196,7 +196,8 @@ public partial class MainWindow : Window
     }
 
     public void ShowGame(string title, string description, string platform,
-        string year, string core, string preview, string version)
+        string year, string core, string preview,
+        string cardVersion, string retroArchVersion)
     {
         GameTitleText.Text = title;
         GameDescriptionText.Text = description;
@@ -204,17 +205,17 @@ public partial class MainWindow : Window
         YearText.Text = year.ToUpperInvariant();
         PlatformText.Text = platform.ToUpperInvariant();
         CoreText.Text = core.ToUpperInvariant();
-        VersionText.Text = version.ToUpperInvariant();
+        VersionText.Text = cardVersion.ToUpperInvariant();
 
         HeaderStatusText.Text = "GAME CARD DETECTED";
         StatusText.Text = "READY";
         StatusDetailText.Text = "RUNNING";
-        CardStatusText.Text = "RetroGameCard v." + version.ToUpperInvariant();
+        CardStatusText.Text = "RetroGameCard v." + cardVersion.ToUpperInvariant();
 
         PreviewCaptionText.Text = title;
         PreviewIndexText.Text = "READY";
 
-        RetroArchVersionText.Text = $"RetroArch {_retroVersion}";
+        RetroArchVersionText.Text = $"RetroArch {retroArchVersion}";
 
         if (File.Exists(preview))
         {

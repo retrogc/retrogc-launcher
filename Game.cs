@@ -39,6 +39,12 @@ public sealed record Game
         ?? throw new InvalidOperationException(
             "DefinitionPath has no parent directory.");
 
+    [JsonIgnore] public string RetroArchExe => "retroarch.appimage";
+
+    [JsonIgnore]
+    public string RetroArchExePath =>
+        Path.Combine(BaseDirectory, "apps", RetroArchExe);
+
     /// <summary>
     /// Absolute path to the ROM on the mounted RETROGC card.
     /// </summary>

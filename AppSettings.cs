@@ -34,6 +34,7 @@ public sealed class AppSettings
     {
         try
         {
+            Console.WriteLine("AppSettings::LoadAsync: " + SettingsPath);
             if (!File.Exists(SettingsPath))
             {
                 var settings = CreateDefault();

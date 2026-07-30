@@ -1,119 +1,115 @@
-# 🎴 Retro Game Card
+# 🎮 Retro Game Card
 
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20Linux%20%7C%20MiSTer%20FPGA-blueviolet)](https://github.com/Cpasjuste/RetroGameCard)
 [![Language](https://img.shields.io/badge/Language-C%23-blue)](https://github.com/Cpasjuste/RetroGameCard)
 
-A small launcher for retro game cards, playlists and metadata for retro gaming setups.
+RetroGameCard is a simple, portable "card" format for SD cards / USB drives that lets a single, self-contained game
+(retroarch + rom) be automatically detected and launched by the RetroGameCard C# launcher (Windows and Linux). It is also
+compatible with MiSTer FPGA via the provided `retrogc.sh` helper script.
 
-- 🎮 Generates playlists and game-card metadata for RetroArch and MiSTer-style setups.
-- 🖥️ Works on Windows and Linux desktop systems.
-- 🕹️ Compatible with MiSTer FPGA.
+The launcher offers a clean UI with icons and visual indicators for inserted cards, autostart state, and
+runner status, think retro cartridge shelf but with modern polish. Use the UI to see which card is inserted, view
+cover/box art and such, making your computer works like an old gaming console.
 
 ---
 
-## ✨ What it does
+## ✨ Key ideas
 
-Retro Game Card scans your ROM folders and generates tidy, consistent game cards (playlists, artwork links and metadata) so your frontends (RetroArch, MiSTer, etc.) show games with proper titles and artwork. It helps automate naming, playlist creation and artwork linking so you can browse your collection cleanly.
+- One game per RetroGameCard. Each card is self-contained: all required files for that single game live on the card.
+- When the RetroGameCard launcher is running on the host system, inserting a RetroGameCard will automatically detect it
+  and autoload the game.
+- The launcher provides a simple, clean UI that shows which RetroGameCard is inserted and the current game state, with
+  icons, colors, and optional cover art.
+- Great for game preservation and for building a physical-style collection similar to old console cartridges.
 
 ---
 
 ## 🛠️ Supported platforms
 
-- Windows
-- Linux
-- MiSTer FPGA (transfer generated files to your MiSTer storage/SD)
-
-Note: On Windows and Linux this tool prepares files for RetroArch. RetroArch is required to actually run the games from the generated playlists.
-
----
-
-## ✅ Prerequisites
-
-1. Install RetroArch on Windows or Linux before using this tool:
-   - Website: https://www.retroarch.com
-   - Windows: download the installer or prebuilt binaries from the site
-   - Linux: install via your distro package manager or download from the site
-2. Have your ROMs and optional artwork organized in folders (recommended: per system/emulator).
-3. (Optional) For MiSTer: have access to your MiSTer SD/HDD to copy generated files.
+- Windows (x64)
+- Linux (x64)
+- MiSTer FPGA
 
 ---
 
 ## 🚀 Quick start
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/Cpasjuste/RetroGameCard.git
-cd RetroGameCard
-```
-
-2. Build or run the program. Depending on the provided artifacts this project is C# based; a typical dotnet run or a bundled executable may be provided:
-
-- Using dotnet (if project is a dotnet app):
-
-```bash
-dotnet build
-dotnet run -- --input "/path/to/roms" --output "/path/to/output/playlists"
-```
-
-- Using an included executable (Windows example):
-
-```powershell
-RetroGameCard.exe --input "C:\roms" --output "C:\RetroArch\playlists"
-```
-
-- Using a Linux executable:
-
-```bash
-./RetroGameCard --input "/home/user/roms" --output "/home/user/.config/retroarch/playlists"
-```
-
-Replace --input and --output with the correct paths for your setup. Run the program with --help to list available options and flags.
-
-3. Copy the generated files to your frontend:
-- RetroArch (Windows/Linux): copy playlists/artwork to your RetroArch playlists/content directory or import them from RetroArch's menu.
-- MiSTer: copy generated files to your MiSTer SD or HDD in the folders used by your MiSTer setup (commonly under a _Games or ROMs directory).
+1. Install RetroArch on Windows or Linux before using this tool:
+    - Website: https://www.retroarch.com
+    - Windows: download the installer or prebuilt binaries from the site
+    - Linux: install via your distro package manager or download from the site
+2. Run RetroGameCard launcher (should be found in any RetroGameCard inserted under `/app` directory)
+3. Insert a RetroGameCard (sdcard, usb pen, etc...) and have fun !
 
 ---
 
-## 🎨 Artwork and naming
+## What belongs on a RetroGameCard
 
-- Place artwork files next to ROMs (or in a dedicated artwork folder) and Retro Game Card will try to link them automatically.
-- Filenames are normalized by the tool, but you can preview the generated output before overwriting your MiSTer or RetroArch folders.
-- The tool supports common artwork types (png/jpg) and playlist metadata that RetroArch uses.
+- A RetroGameCard must contain a configuration file at the root named with the `.rgc` extension (for example:
+  `mygame.rgc`). This file describes the card and how to run the game.
+- Example .rgc cards config files are provided in the `GameCards/` folder, use those as your authoritative examples and
+  templates.
 
----
+## Scripts and tooling
+
+- The repository includes Linux scripts to:
+    - Build a RetroGameCard image from a game folder (folder → image).
+    - Restore an image to an SD card or USB drive (image → device).
+- There is also a `retrogc.sh` script to support MiSTer FPGA workflows, it integrates a RetroGameCard into MiSTer setups
+  where appropriate.
+- Check the `GameCards/` folder and the `scripts/` (or top-level scripts) for the exact usage examples and parameters.
+
+## Visuals, icons and screenshots
+
+- The launcher supports icons (small status icons) and color highlights in the UI. If you want your card to show a
+  cover, include a `cover.png` (or `cover.jpg`) in the card root and reference it from the `.rgc`.
+
+## How auto-launch works
+
+- The launcher monitors removable drives. When it detects a card/disk labeled "RETROGC" with an `.rgc` config at the root, it reads the config,
+  displays the card details in the UI, and launches the game using RetroArch.
+- The launcher is cross-platform and supports both Windows and Linux.
+
+## Creating and testing a RetroGameCard
+
+1. Copy one of the `.rgc` config file example from `GameCards/` and adapt it for your game.
+2. Place the `.rgc` file at the root of the card image or folder and add all required game files.
+3. Use the included build script to create a card image or to write the contents to a target device.
+4. Run the C# launcher on your host. Insert the SD/USB device and the launcher will detect and autostart
+   the game.
+
+## Why use RetroGameCard?
+
+- Simple, robust format for single-game cards that works across multiple platforms.
+- Makes physical-style collections easy to manage and share.
+- Helps with long-term preservation since each card is self-contained and easy to archive.
+
+## Where to look next
+
+- `GameCards/` - Real examples of .rgc files and game layouts.
+- `Platforms/` - Build and restore helpers; `retrogc.sh` for MiSTer compatibility.
+- Launcher code (C#) - For advanced configuration and to see how detection and autostarting are implemented.
 
 ## 💡 Tips
 
-- Back up your existing playlists before overwriting them.
-- Use per-system folders to keep playlists clean and easy to import.
-- Run the tool with a small sample first to verify naming/artwork behavior.
-
 - MisterFPGA
-  - Find which core belong to a .mra arcade rom (cadillacs and dinosaurs):
-    ```bash
-    find /media/fat/_Arcade -type f -iname '*cadillacs*.mra' |
-    while IFS= read -r file; do
-      rbf=$(sed -n 's|.*<rbf>\([^<]*\)</rbf>.*|\1|p' "$file")
-      zip=$(sed -n 's|.*zip="\([^"]*\)".*|\1|p' "$file")
-      printf '%s\n\t rbf: %s\n\t zip: %s\n' "$file" "$rbf" "$zip"
-    done
-    ```
-- Create a retro game card raw image backup (change device / size)
-  - ```
-    sudo parted /dev/sdX unit MiB print
-    sudo truncate -s 256M && sudo dd if=/dev/sdX bs=4M status=progress | xz -T0 > cps1-cadillac-and-dinosaurs.img.xz
-    ```
-- Restore a retro game card raw image backup (change device / size)
-  - ```
-    sudo xzcat cps1-cadillac-and-dinosaurs.img.xz | sudo dd of=/dev/sdX bs=4M status=progress conv=fsync
-    ```
+    - Find which core belong to a .mra arcade rom (cadillacs and dinosaurs):
+      ```bash
+      find /media/fat/_Arcade -type f -iname '*cadillacs*.mra' |
+      while IFS= read -r file; do
+        rbf=$(sed -n 's|.*<rbf>\([^<]*\)</rbf>.*|\1|p' "$file")
+        zip=$(sed -n 's|.*zip="\([^"]*\)".*|\1|p' "$file")
+        printf '%s\n\t rbf: %s\n\t zip: %s\n' "$file" "$rbf" "$zip"
+      done
+      ```
+
 ---
 
 ## Contributing
 
-Contributions and issues are welcome! If you'd like to add features (better artwork scraping, more playlist formats, per-core mapping for MiSTer), open an issue or submit a pull request with a clear description.
+- If you want to add examples, improve the build scripts, or enhance the launcher UX (more icons, extra color themes, or
+  screenshots), please open an issue or a pull request.
+- For changes to example game cards, add/modify a folder under `GameCards/` with a clear README and a valid `.rgc` file.
 
 ---
 
@@ -123,4 +119,5 @@ See the project's LICENSE file for details (if present).
 
 ---
 
-If you'd like, I can further style the README with more icons, add sample screenshots, or include a ready-made GitHub Actions workflow to produce release binaries. Would you like any of these additions?
+If you'd like, I can further style the README with more icons, add sample screenshots, or include a ready-made GitHub
+Actions workflow to produce release binaries. Would you like any of these additions?

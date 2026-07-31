@@ -77,6 +77,7 @@ public sealed class AppSettings
             RetroArch = new RetroArchSettings
             {
                 StartFullscreen = true,
+                UseCustomExecutable = false,
                 ExecutablePath = GetDefaultRetroArchPath()
             }
         };
@@ -99,6 +100,8 @@ public sealed class MainSettings
 public sealed class RetroArchSettings
 {
     public bool StartFullscreen { get; set; } = true;
+
+    public bool UseCustomExecutable { get; set; } = false;
 
     public string ExecutablePath { get; set; } = "";
 }

@@ -70,6 +70,12 @@ public class App : Application, IDisposable
             var card = await Game.LoadAsync(configFile);
             var exePath = card.RetroArchExePath;
 
+            // override retroarch executable if asked
+            if (Settings.RetroArch.UseCustomExecutable)
+            {
+                exePath = Settings.RetroArch.ExecutablePath;
+            }
+
             // check for retroarch executable archive / AppImage (mandatory files)
             if (!File.Exists(exePath))
                 throw new FileNotFoundException(" RetroArch not found.", exePath);
@@ -87,7 +93,8 @@ public class App : Application, IDisposable
                 card.ImagePath, card.Version, "STARTING");
 
             // copy embedded retroarch app image / zip to app cache path if needed
-            if (exePath.ToLower().EndsWith(".appimage") || exePath.ToLower().EndsWith(".zip"))
+            if (!Settings.RetroArch.UseCustomExecutable &&
+                exePath.ToLower().EndsWith(".appimage") || exePath.ToLower().EndsWith(".zip"))
             {
                 var exeFound = false;
 

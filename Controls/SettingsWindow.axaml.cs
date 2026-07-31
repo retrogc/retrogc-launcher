@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -35,11 +36,14 @@ public partial class SettingsWindow : Window
                 _ => 0
             };
 
-        RetroArchPathTextBox.Text =
-            _settings.RetroArch.ExecutablePath;
-
         RetroArchFullscreenToggle.IsChecked =
             _settings.RetroArch.StartFullscreen;
+
+        CustomRetroArchCheckBox.IsChecked =
+            _settings.RetroArch.UseCustomExecutable;
+
+        RetroArchPathTextBox.Text =
+            _settings.RetroArch.ExecutablePath;
 
         SettingsFileText.Text = AppSettings.SettingsPath;
     }
@@ -56,15 +60,15 @@ public partial class SettingsWindow : Window
             {
                 new FilePickerFileType("Executables")
                 {
-                    Patterns = new[] { "*.exe" },
-                    MimeTypes = new[] { "application/vnd.microsoft.portable-executable" }
+                    Patterns = ["*.exe"],
+                    MimeTypes = ["application/vnd.microsoft.portable-executable"]
                 }
             }
             : new[]
             {
                 new FilePickerFileType("Executables")
                 {
-                    Patterns = new[] { "*" }
+                    Patterns = ["*"]
                 }
             };
 
@@ -87,6 +91,15 @@ public partial class SettingsWindow : Window
 
     private async void OnSaveClicked(object? sender, RoutedEventArgs e)
     {
+        // validate custom retroarch executable if any
+        if (CustomRetroArchCheckBox.IsChecked == true
+            && !File.Exists(RetroArchPathTextBox.Text?.Trim()))
+        {
+            // error
+            CustomRetroArchCheckBox.IsChecked = false;
+            RetroArchPathTextBox.Text = string.Empty;
+        }
+
         _settings.Main.StartupWindowState =
             StartupWindowStateComboBox.SelectedIndex switch
             {
@@ -97,6 +110,9 @@ public partial class SettingsWindow : Window
 
         _settings.RetroArch.StartFullscreen =
             RetroArchFullscreenToggle.IsChecked == true;
+
+        _settings.RetroArch.UseCustomExecutable =
+            CustomRetroArchCheckBox.IsChecked == true;
 
         _settings.RetroArch.ExecutablePath =
             RetroArchPathTextBox.Text?.Trim() ?? "";

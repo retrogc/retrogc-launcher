@@ -14,7 +14,6 @@ public partial class MainWindow : Window
 {
     private readonly DispatcherTimer _clockTimer;
     private Bitmap? _previewBitmap;
-    //private string? _retroVersion;
 
     private static readonly IBrush ReadyColor =
         Brush.Parse("#5CE1B7");
@@ -36,7 +35,7 @@ public partial class MainWindow : Window
         _clockTimer.Tick += (_, _) => UpdateClock();
 
         // 
-        Loaded += OnLoaded;
+        Loaded += (_, _) => ShowWaitingForGame();
 
         Opened += (_, _) =>
         {
@@ -55,49 +54,6 @@ public partial class MainWindow : Window
         Closed += (_, _) => _clockTimer.Stop();
 
         SetWindowState(App.Settings.Main.StartupWindowState);
-    }
-
-    private async void OnLoaded(object? sender, EventArgs e)
-    {
-        try
-        {
-            Console.WriteLine("MainWindow::OnLoaded...");
-#if RGC_OLD
-            // check for retroarch version (and so executable)
-            _retroVersion = await RetroArchInstaller.GetVersion();
-            if (!string.IsNullOrEmpty(_retroVersion))
-            {
-                ShowWaitingForGame();
-                return; // ok
-            }
-
-            // if we were not able to get version but executable exists, assume it's ok
-            if (File.Exists(App.Settings.RetroArch.ExecutablePath))
-            {
-                ShowWaitingForGame();
-                return; // ok
-            }
-
-            // retroarch executable not found
-            if (OperatingSystem.IsWindows())
-            {
-                // ask user for retroarch installation
-                SetWindowState(StartupWindowState.Normal);
-                var ok = await RetroArchInstaller.InstallAsync(this);
-                Console.WriteLine("retroarch installation: " + ok);
-            }
-            else
-            {
-                Console.WriteLine("retroarch installation not found");
-                // TODO: show help
-            }
-#endif
-            ShowWaitingForGame();
-        }
-        catch (Exception)
-        {
-            // ignored
-        }
     }
 
     private async void OnMainWindowKeyDown(object? sender, KeyEventArgs e)

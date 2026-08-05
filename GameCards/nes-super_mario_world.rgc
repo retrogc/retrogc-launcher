@@ -10,7 +10,7 @@
     "rom": "games/nes/Super Mario Bros. (World).nes"
   },
   "misterfpga_config": {
-    "core": "cores/mister_NES_20260603.rbf",
+    "core": "cores/mister_nes.rbf",
     "rom": "games/nes/Super Mario Bros. (World).nes",
     "delay": "2",
     "index": "1",

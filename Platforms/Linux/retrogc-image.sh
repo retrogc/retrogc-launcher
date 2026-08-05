@@ -161,7 +161,7 @@ if [[ "$MODE" == "--restore" ]]; then
 
     info "Unmounting target partitions..."
     while read -r PART; do
-        [[ -n "$PART" ]] && sudo umount "$PART" 2>/dev/null || true
+        [[ -n "$PART" ]] && sudo umount -f "$PART" 2>/dev/null || true
     done < <(lsblk -lnpo NAME "$DEVICE" | tail -n +2)
 
     info "Restoring image to ${CYAN}${DEVICE}${RESET}..."

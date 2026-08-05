@@ -68,22 +68,25 @@ public sealed class RetroArchLauncher : IDisposable
         var startInfo = new ProcessStartInfo
         {
             FileName = retroArchExecutable,
-            WorkingDirectory = Path.GetDirectoryName(fullRomPath)
-                               ?? Environment.CurrentDirectory,
+            WorkingDirectory = Path.GetDirectoryName(fullRomPath),
             UseShellExecute = false
         };
 
-        // for retroarch
+        // retroarch: set home
         startInfo.Environment["HOME"] = AppSettings.SettingsDirectory;
 
-        // Optional: load a specific libretro core.
+        // retroarch: set system directory (bios) to rom path
+        startInfo.Environment["LIBRETRO_SYSTEM_DIRECTORY"]
+            = Path.GetDirectoryName(fullRomPath);
+
+        // retroarch: load specific libretro core.
         if (!string.IsNullOrWhiteSpace(corePath))
         {
             startInfo.ArgumentList.Add("-L");
             startInfo.ArgumentList.Add(Path.GetFullPath(corePath));
         }
 
-        // Fullscreen
+        // retroarch: fullscreen
         if (fullscreen)
         {
             startInfo.ArgumentList.Add("--fullscreen");

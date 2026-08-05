@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RetroGameCard;
 
-public sealed record Game
+public sealed record Card
 {
     [JsonPropertyName("name")] public required string Name { get; init; }
 
@@ -104,7 +104,7 @@ public sealed record Game
     public bool SupportsMisterFpga =>
         !string.IsNullOrWhiteSpace(MisterFpgaConfig?.Core);
 
-    public static async Task<Game> LoadAsync(
+    public static async Task<Card> LoadAsync(
         string definitionPath, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(definitionPath);
@@ -119,7 +119,7 @@ public sealed record Game
 
         await using var stream = File.OpenRead(fullDefinitionPath);
         var game = await JsonSerializer.DeserializeAsync(
-            stream, AppJsonContext.Default.Game, cancellationToken);
+            stream, AppJsonContext.Default.Card, cancellationToken);
 
         if (game is null)
         {

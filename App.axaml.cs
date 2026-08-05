@@ -67,7 +67,7 @@ public class App : Application, IDisposable
             }
 
             // load config file
-            var card = await Game.LoadAsync(configFile);
+            var card = await Card.LoadAsync(configFile);
             var exePath = card.RetroArchExePath;
 
             // override retroarch executable if asked

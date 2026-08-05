@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace RetroGameCard;
 
 // game card
-[JsonSerializable(typeof(Game))]
+[JsonSerializable(typeof(Card))]
 [JsonSerializable(typeof(RetroArchConfig))]
 [JsonSerializable(typeof(MisterFpgaConfig))]
 

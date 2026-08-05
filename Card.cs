@@ -49,7 +49,7 @@ public sealed record Card
     public string RetroArchExePath =>
         Path.Combine(BaseDirectory, "apps", RetroArchExe);
 
-    [JsonIgnore] public string RetroArchData => "retroarch-data.zip";
+    [JsonIgnore] public string RetroArchData => "retroarch-assets.zip";
 
     [JsonIgnore]
     public string RetroArchDataPath =>

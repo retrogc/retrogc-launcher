@@ -45,6 +45,17 @@ public partial class SettingsWindow : Window
         RetroArchPathTextBox.Text =
             _settings.RetroArch.ExecutablePath;
 
+        RetroArchShaderComboBox.SelectedIndex =
+            _settings.RetroArch.Shader switch
+            {
+                Shader.None => 0,
+                Shader.Bilinear => 1,
+                Shader.Crt => 2,
+                Shader.Retro => 2,
+                Shader.Scanline => 2,
+                _ => 1
+            };
+
         SettingsFileText.Text = AppSettings.SettingsPath;
     }
 
@@ -116,6 +127,17 @@ public partial class SettingsWindow : Window
 
         _settings.RetroArch.ExecutablePath =
             RetroArchPathTextBox.Text?.Trim() ?? "";
+
+        _settings.RetroArch.Shader =
+            RetroArchShaderComboBox.SelectedIndex switch
+            {
+                0 => Shader.None,
+                1 => Shader.Bilinear,
+                2 => Shader.Crt,
+                3 => Shader.Retro,
+                4 => Shader.Scanline,
+                _ => Shader.Bilinear
+            };
 
         await _settings.SaveAsync();
 

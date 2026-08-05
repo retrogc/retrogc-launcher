@@ -77,7 +77,8 @@ public sealed class AppSettings
             {
                 StartFullscreen = true,
                 UseCustomExecutable = false,
-                ExecutablePath = GetDefaultRetroArchPath()
+                ExecutablePath = GetDefaultRetroArchPath(),
+                Shader = Shader.Bilinear
             }
         };
     }
@@ -87,6 +88,19 @@ public sealed class AppSettings
         return OperatingSystem.IsWindows()
             ? @"C:\RetroArch-Win64\retroarch.exe"
             : "/usr/bin/retroarch";
+    }
+
+    public static string GetShaderPath(Shader shader)
+    {
+        return shader switch
+        {
+            Shader.None => Path.Combine("shaders_glsl", "nearest.glslp"),
+            Shader.Bilinear => Path.Combine("shaders_glsl", "bilinear.glslp"),
+            Shader.Crt => Path.Combine("shaders_glsl", "crt", "crt-caligari.glslp"),
+            Shader.Retro => Path.Combine("shaders_glsl", "retro", "retro.glslp"),
+            Shader.Scanline => Path.Combine("shaders_glsl", "scanlines", "scanline.glslp"),
+            _ => Path.Combine("shaders_glsl", "bilinear.glslp")
+        };
     }
 }
 
@@ -103,6 +117,9 @@ public sealed class RetroArchSettings
     public bool UseCustomExecutable { get; set; } = false;
 
     public string ExecutablePath { get; set; } = "";
+
+    public Shader Shader { get; set; } =
+        Shader.Bilinear;
 }
 
 public enum StartupWindowState
@@ -110,4 +127,13 @@ public enum StartupWindowState
     Normal,
     Fullscreen,
     Minimized
+}
+
+public enum Shader
+{
+    None,
+    Bilinear,
+    Crt,
+    Retro,
+    Scanline
 }

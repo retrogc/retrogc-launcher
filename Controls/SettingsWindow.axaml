@@ -107,23 +107,21 @@
                                        FontWeight="SemiBold" />
                         </StackPanel>
 
-                        <Grid ColumnDefinitions="*,220"
-                              ColumnSpacing="22">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="22">
 
                             <StackPanel Spacing="4">
                                 <TextBlock Text="Window state at startup"
                                            FontSize="14" />
 
-                                <TextBlock Text="Choose how Retro Game Card opens."
+                                <TextBlock Text="Choose how retrogc launcher opens."
                                            FontSize="12"
                                            Foreground="#8592A7" />
                             </StackPanel>
 
                             <ComboBox x:Name="StartupWindowStateComboBox"
-                                      Grid.Column="1"
-                                      SelectedIndex="0">
+                                      Grid.Column="1" SelectedIndex="0">
                                 <ComboBoxItem Content="Fullscreen" />
-                                <ComboBoxItem Content="Normal window" />
+                                <ComboBoxItem Content="Windowed" />
                                 <ComboBoxItem Content="Minimized" />
                             </ComboBox>
                         </Grid>
@@ -143,8 +141,7 @@
                                        FontWeight="SemiBold" />
                         </StackPanel>
 
-                        <Grid ColumnDefinitions="*,Auto"
-                              ColumnSpacing="22">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="22">
                             <StackPanel Spacing="4">
                                 <TextBlock Text="Launch RetroArch fullscreen"
                                            FontSize="14" />
@@ -157,6 +154,53 @@
                                           VerticalAlignment="Center"
                                           OnContent="ON"
                                           OffContent="OFF" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="22">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Integer Scaling"
+                                           FontSize="14" />
+                                <TextBlock Text="Enable Integer Scaling"
+                                           FontSize="12"
+                                           Foreground="#8592A7" />
+                            </StackPanel>
+                            <ToggleSwitch x:Name="RetroArchIntegerScalingToggle"
+                                          Grid.Column="1"
+                                          VerticalAlignment="Center"
+                                          OnContent="ON"
+                                          OffContent="OFF" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="22">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Shader"
+                                           FontSize="14" />
+                                <TextBlock Text="Use specified shader when launching a game."
+                                           FontSize="12"
+                                           Foreground="#8592A7" />
+                            </StackPanel>
+                            <ComboBox x:Name="RetroArchShaderComboBox"
+                                      Grid.Column="1" SelectedIndex="1">
+                                <ComboBoxItem Content="None" />
+                                <ComboBoxItem Content="Bilinear" />
+                                <ComboBoxItem Content="Crt" />
+                                <ComboBoxItem Content="Retro" />
+                                <ComboBoxItem Content="Scanline" />
+                            </ComboBox>
+                            <!--
+                            <DropDownButton x:Name="RetroArchShaderDropDown"
+                                            Grid.Column="1" Content="Bilinear">
+                                <DropDownButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem Header="None" />
+                                        <MenuItem Header="Bilinear" />
+                                        <MenuItem Header="Crt" />
+                                        <MenuItem Header="Retro" />
+                                        <MenuItem Header="Scanline" />
+                                    </MenuFlyout>
+                                </DropDownButton.Flyout>
+                            </DropDownButton>
+                            -->
                         </Grid>
 
                         <Grid ColumnDefinitions="*,Auto"
@@ -184,8 +228,7 @@
 
                     </StackPanel>
                 </Border>
-
-                <!-- Reserved future options -->
+                <!--
                 <Border Classes="settings-card"
                         Opacity="0.55">
                     <StackPanel Spacing="5">
@@ -202,6 +245,7 @@
                             Foreground="#8592A7" />
                     </StackPanel>
                 </Border>
+                -->
             </StackPanel>
         </ScrollViewer>
 

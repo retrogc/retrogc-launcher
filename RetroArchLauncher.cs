@@ -50,7 +50,8 @@ public sealed class RetroArchLauncher : IDisposable
         string retroArchExecutable,
         string romPath,
         string corePath,
-        bool fullscreen)
+        bool fullscreen,
+        string shader = "")
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
@@ -84,6 +85,13 @@ public sealed class RetroArchLauncher : IDisposable
         {
             startInfo.ArgumentList.Add("-L");
             startInfo.ArgumentList.Add(Path.GetFullPath(corePath));
+        }
+
+        // retroarch: handle shader setting
+        if (!string.IsNullOrEmpty(shader))
+        {
+            startInfo.ArgumentList.Add("--set-shader");
+            startInfo.ArgumentList.Add(shader);
         }
 
         // retroarch: fullscreen

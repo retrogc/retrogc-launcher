@@ -185,7 +185,8 @@ public class App : Application, IDisposable
                 retroArchExecutable: exePath,
                 romPath: card.RomPath,
                 corePath: card.CorePath,
-                fullscreen: Settings.RetroArch.StartFullscreen);
+                fullscreen: Settings.RetroArch.StartFullscreen,
+                shader: AppSettings.GetShaderPath(Settings.RetroArch.Shader));
         }
         catch (Exception exception)
         {

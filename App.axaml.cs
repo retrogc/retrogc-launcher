@@ -112,8 +112,8 @@ public class App : Application, IDisposable
                 {
                     Console.WriteLine($" retroarch sha found at {cacheHashPath}, comparing with {cardHashPath}");
                     // get hash
-                    var cacheHash = (await File.ReadAllTextAsync(cacheHashPath)).Trim();
-                    var cardHash = (await File.ReadAllTextAsync(cardHashPath)).Trim();
+                    var cacheHash = (await File.ReadAllTextAsync(cacheHashPath)).Trim().ToLower();
+                    var cardHash = (await File.ReadAllTextAsync(cardHashPath)).Trim().ToLower();
                     Console.WriteLine(" - cached hash: " + cacheHash);
                     Console.WriteLine(" - card hash: " + cardHash);
                     if (string.Equals(cacheHash, cardHash, StringComparison.OrdinalIgnoreCase))
@@ -140,15 +140,23 @@ public class App : Application, IDisposable
                         Directory.CreateDirectory(AppSettings.SettingsDirectory);
                         await Utility.ExtractZipAsync(card.RetroArchExePath, extractPath);
                         exePath = Path.Combine(extractPath, "retroarch.exe");
+
+                        Console.WriteLine($" Extracting {card.RetroArchDataPath} to {extractPath}");
+                        await Utility.ExtractZipAsync(card.RetroArchDataPath, extractPath);
                     }
                     else if (OperatingSystem.IsLinux())
                     {
-                        exePath = Path.Combine(AppSettings.SettingsDirectory, card.RetroArchExe);
                         Console.WriteLine($" Copying {card.RetroArchExePath} to {exePath}");
+                        exePath = Path.Combine(AppSettings.SettingsDirectory, card.RetroArchExe);
                         Directory.CreateDirectory(AppSettings.SettingsDirectory);
                         await Utility.CopyFileAsync(card.RetroArchExePath, exePath);
                         File.SetUnixFileMode(exePath,
                             UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+
+                        var dataPath = Path.Combine(AppSettings.SettingsDirectory, ".config", "retroarch");
+                        Console.WriteLine($" Extracting {card.RetroArchDataPath} to {dataPath}");
+                        Directory.CreateDirectory(dataPath);
+                        await Utility.ExtractZipAsync(card.RetroArchDataPath, dataPath);
                     }
 
                     Console.WriteLine($" Copying {cardHashPath} to {cacheHashPath}");

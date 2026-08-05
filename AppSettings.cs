@@ -16,8 +16,7 @@ public sealed class AppSettings
     public static string SettingsDirectory =>
         Path.Combine(
             Environment.GetFolderPath(
-                Environment.SpecialFolder.LocalApplicationData),
-            "RetroGameCard");
+                Environment.SpecialFolder.LocalApplicationData), "retrogc");
 
     [JsonIgnore]
     public static string SettingsPath =>

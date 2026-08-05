@@ -49,6 +49,12 @@ public sealed record Game
     public string RetroArchExePath =>
         Path.Combine(BaseDirectory, "apps", RetroArchExe);
 
+    [JsonIgnore] public string RetroArchData => "retroarch-data.zip";
+
+    [JsonIgnore]
+    public string RetroArchDataPath =>
+        Path.Combine(BaseDirectory, "apps", RetroArchData);
+
     /// <summary>
     /// Absolute path to the ROM on the mounted RETROGC card.
     /// </summary>

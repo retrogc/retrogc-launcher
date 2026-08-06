@@ -142,7 +142,7 @@ public class App : Application, IDisposable
                         exePath = Path.Combine(extractPath, "retroarch.exe");
 
                         Console.WriteLine($" Extracting {card.RetroArchDataPath} to {extractPath}");
-                        await Utility.ExtractZipAsync(card.RetroArchDataPath, extractPath);
+                        await Utility.ExtractZipAsync(card.RetroArchDataPath, extractPath, false);
                     }
                     else if (OperatingSystem.IsLinux())
                     {
@@ -156,7 +156,7 @@ public class App : Application, IDisposable
                         var dataPath = Path.Combine(AppSettings.SettingsDirectory, ".config", "retroarch");
                         Console.WriteLine($" Extracting {card.RetroArchDataPath} to {dataPath}");
                         Directory.CreateDirectory(dataPath);
-                        await Utility.ExtractZipAsync(card.RetroArchDataPath, dataPath);
+                        await Utility.ExtractZipAsync(card.RetroArchDataPath, dataPath, false);
                     }
 
                     Console.WriteLine($" Copying {cardHashPath} to {cacheHashPath}");

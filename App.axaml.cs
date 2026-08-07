@@ -73,9 +73,11 @@ public class App : Application, IDisposable
 
             var retroArchVersion = card.RetroArchConfig.Version;
             var exePath = Path.Combine(AppSettings.SettingsDirectory,
-                "retroarch", retroArchVersion, "retroarch.exe");
+                "retroarch", retroArchVersion,
+                OperatingSystem.IsWindows() ? "retroarch.exe" : "RetroArch-Linux-x86_64.AppImage");
+            var coreExt = OperatingSystem.IsWindows() ? "_libretro.dll" : "_libretro.so";
             var corePath = Path.Combine(AppSettings.SettingsDirectory,
-                "retroarch", retroArchVersion, "cores", card.RetroArchConfig.Core + "_libretro.dll");
+                "retroarch", retroArchVersion, "cores", card.RetroArchConfig.Core + coreExt);
 
             if (!File.Exists(exePath))
                 throw new FileNotFoundException(" RetroArch executable not found: ", exePath);

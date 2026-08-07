@@ -13,20 +13,21 @@ public abstract class Utility
 {
     public static void Notify(string message)
     {
-        if (OperatingSystem.IsLinux())
+        if (!OperatingSystem.IsLinux()) return;
+
+        var psi = new ProcessStartInfo
         {
-            var psi = new ProcessStartInfo
+            FileName = "notify-send",
+            UseShellExecute = false,
+            ArgumentList =
             {
-                FileName = "notify-send",
-                UseShellExecute = false
-            };
+                "--expire-time", "2000",
+                "RetroGC",
+                message
+            }
+        };
 
-            psi.ArgumentList.Add("--expire-time=3000");
-            psi.ArgumentList.Add("RetroGameCard");
-            psi.ArgumentList.Add(message);
-
-            Process.Start(psi);
-        }
+        Process.Start(psi);
     }
 
     public static async Task<(string StdOut, string StdErr, int ExitCode)> RunProcessAsync(

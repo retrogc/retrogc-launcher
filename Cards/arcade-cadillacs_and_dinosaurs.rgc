@@ -5,12 +5,12 @@
   "year": "1993",
   "image": "dino.png",
   "retroarch": {
-	"version": "1.22.2",
+    "version": "1.22.2",
     "core": "fbneo",
     "rom": "games/mame/dino.zip"
   },
   "misterfpga": {
-    "core": "cores/mister_jtcps15.rbf",
+    "core": "mister/mister_jtcps15.rbf",
     "rom": "games/mame/dino.mra"
   }
 }

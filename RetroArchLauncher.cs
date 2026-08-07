@@ -90,10 +90,20 @@ public sealed class RetroArchLauncher : IDisposable
         // retroarch: set env
         startInfo.Environment["HOME"] = startInfo.WorkingDirectory;
         startInfo.Environment["LIBRETRO_DIRECTORY"] = startInfo.WorkingDirectory;
-        //startInfo.Environment["LIBRETRO_SYSTEM_DIRECTORY"] =
-        //    Path.Combine(startInfo.WorkingDirectory, "system");
-        //startInfo.Environment["LIBRETRO_VIDEO_SHADER_DIRECTORY"] =
-        //    Path.Combine(startInfo.WorkingDirectory, "shaders");
+        startInfo.Environment["LIBRETRO_ASSETS_DIRECTORY"]
+            = Path.Combine(startInfo.WorkingDirectory, "assets");
+        startInfo.Environment["LIBRETRO_AUTOCONFIG_DIRECTORY"]
+            = Path.Combine(startInfo.WorkingDirectory, "autoconfig");
+        startInfo.Environment["LIBRETRO_CHEATS_DIRECTORY"]
+            = Path.Combine(startInfo.WorkingDirectory, "cheats");
+        startInfo.Environment["LIBRETRO_DATABASE_DIRECTORY"]
+            = Path.Combine(startInfo.WorkingDirectory, "database");
+        startInfo.Environment["LIBRETRO_SYSTEM_DIRECTORY"]
+            = Path.Combine(startInfo.WorkingDirectory, "system");
+        startInfo.Environment["LIBRETRO_VIDEO_FILTER_DIRECTORY"]
+            = Path.Combine(startInfo.WorkingDirectory, "filters");
+        startInfo.Environment["LIBRETRO_VIDEO_SHADER_DIRECTORY"]
+            = Path.Combine(startInfo.WorkingDirectory, "shaders");
 
 #if DEBUG
         startInfo.ArgumentList.Add("-v");

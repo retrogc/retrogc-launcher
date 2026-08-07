@@ -45,6 +45,9 @@ public partial class SettingsWindow : Window
         RetroArchPathTextBox.Text =
             _settings.RetroArch.ExecutablePath;
 
+        RetroArchIntegerScalingToggle.IsChecked =
+            _settings.RetroArch.IntegerScaling;
+
         RetroArchShaderComboBox.SelectedIndex =
             _settings.RetroArch.Shader switch
             {
@@ -127,6 +130,9 @@ public partial class SettingsWindow : Window
 
         _settings.RetroArch.ExecutablePath =
             RetroArchPathTextBox.Text?.Trim() ?? "";
+
+        _settings.RetroArch.IntegerScaling =
+            RetroArchIntegerScalingToggle.IsChecked == true;
 
         _settings.RetroArch.Shader =
             RetroArchShaderComboBox.SelectedIndex switch

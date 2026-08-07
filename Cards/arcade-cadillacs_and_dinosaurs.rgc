@@ -4,12 +4,12 @@
   "platform": "CPS-1",
   "year": "1993",
   "image": "dino.png",
-  "version": "1.0.0",
-  "retroarch_config": {
-    "core": "cores/fbneo_libretro",
+  "retroarch": {
+	"version": "1.22.2",
+    "core": "fbneo",
     "rom": "games/mame/dino.zip"
   },
-  "misterfpga_config": {
+  "misterfpga": {
     "core": "cores/mister_jtcps15.rbf",
     "rom": "games/mame/dino.mra"
   }

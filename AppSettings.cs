@@ -8,6 +8,8 @@ namespace RetroGameCard;
 
 public sealed class AppSettings
 {
+    [JsonIgnore] public static readonly string RETROARCH_VERSION = "1.22.2";
+
     public MainSettings Main { get; set; } = new();
 
     public RetroArchSettings RetroArch { get; set; } = new();
@@ -75,9 +77,11 @@ public sealed class AppSettings
             },
             RetroArch = new RetroArchSettings
             {
+                Version = RETROARCH_VERSION,
                 StartFullscreen = true,
                 UseCustomExecutable = false,
                 ExecutablePath = GetDefaultRetroArchPath(),
+                IntegerScaling = false,
                 Shader = Shader.Bilinear
             }
         };
@@ -94,12 +98,24 @@ public sealed class AppSettings
     {
         return shader switch
         {
-            Shader.None => Path.Combine("shaders_glsl", "nearest.glslp"),
-            Shader.Bilinear => Path.Combine("shaders_glsl", "bilinear.glslp"),
-            Shader.Crt => Path.Combine("shaders_glsl", "crt", "crt-caligari.glslp"),
-            Shader.Retro => Path.Combine("shaders_glsl", "retro", "retro.glslp"),
-            Shader.Scanline => Path.Combine("shaders_glsl", "scanlines", "scanline.glslp"),
-            _ => Path.Combine("shaders_glsl", "bilinear.glslp")
+            Shader.None => OperatingSystem.IsLinux()
+                ? Path.Combine("shaders_glsl", "nearest.glslp")
+                : Path.Combine("shaders_slang", "nearest.slangp"),
+            Shader.Bilinear => OperatingSystem.IsLinux()
+                ? Path.Combine("shaders_glsl", "bilinear.glslp")
+                : Path.Combine("shaders_slang", "bilinear.slangp"),
+            Shader.Crt => OperatingSystem.IsLinux()
+                ? Path.Combine("shaders_glsl", "crt", "crt-caligari.glslp")
+                : Path.Combine("shaders_slang", "crt", "crt-caligari.slangp"),
+            Shader.Retro => OperatingSystem.IsLinux()
+                ? Path.Combine("shaders_glsl", "handheld", "retro-v2.glslp")
+                : Path.Combine("shaders_slang", "handheld", "retro-v2.slangp"),
+            Shader.Scanline => OperatingSystem.IsLinux()
+                ? Path.Combine("shaders_glsl", "scanlines", "scanline.glslp")
+                : Path.Combine("shaders_slang", "scanlines", "scanline.slangp"),
+            _ => OperatingSystem.IsLinux()
+                ? Path.Combine("shaders_glsl", "bilinear.glslp")
+                : Path.Combine("shaders_slang", "bilinear.slangp")
         };
     }
 }
@@ -112,11 +128,15 @@ public sealed class MainSettings
 
 public sealed class RetroArchSettings
 {
+    public string Version { get; init; } = AppSettings.RETROARCH_VERSION;
+
     public bool StartFullscreen { get; set; } = true;
 
     public bool UseCustomExecutable { get; set; } = false;
 
     public string ExecutablePath { get; set; } = "";
+
+    public bool IntegerScaling { get; set; } = false;
 
     public Shader Shader { get; set; } =
         Shader.Bilinear;

@@ -19,12 +19,9 @@ public sealed record Card
 
     [JsonPropertyName("image")] public string Image { get; init; } = string.Empty;
 
-    [JsonPropertyName("version")] public string Version { get; init; } = string.Empty;
+    [JsonPropertyName("retroarch")] public RetroArchConfig? RetroArchConfig { get; init; }
 
-    [JsonPropertyName("retroarch_config")] public RetroArchConfig? RetroArchConfig { get; init; }
-
-    [JsonPropertyName("misterfpga_config")]
-    public MisterFpgaConfig? MisterFpgaConfig { get; init; }
+    [JsonPropertyName("misterfpga")] public MisterFpgaConfig? MisterFpgaConfig { get; init; }
 
     /// <summary>
     /// Absolute path to the game JSON file. This is runtime-only metadata,
@@ -39,22 +36,6 @@ public sealed record Card
         ?? throw new InvalidOperationException(
             "DefinitionPath has no parent directory.");
 
-    [JsonIgnore]
-    public string RetroArchExe =>
-        OperatingSystem.IsLinux()
-            ? "retroarch-linux.appimage"
-            : "retroarch-windows.zip";
-
-    [JsonIgnore]
-    public string RetroArchExePath =>
-        Path.Combine(BaseDirectory, "apps", RetroArchExe);
-
-    [JsonIgnore] public string RetroArchData => "retroarch-assets.zip";
-
-    [JsonIgnore]
-    public string RetroArchDataPath =>
-        Path.Combine(BaseDirectory, "apps", RetroArchData);
-
     /// <summary>
     /// Absolute path to the ROM on the mounted RETROGC card.
     /// </summary>
@@ -63,12 +44,6 @@ public sealed record Card
         string.IsNullOrWhiteSpace(RetroArchConfig?.Rom)
             ? null
             : ResolvePath(RetroArchConfig.Rom);
-
-    [JsonIgnore]
-    public string CorePath =>
-        string.IsNullOrWhiteSpace(RetroArchConfig?.Core)
-            ? "WAITING"
-            : ResolvePath(OperatingSystem.IsLinux() ? RetroArchConfig.Core + ".so" : RetroArchConfig.Core + ".dll");
 
     [JsonIgnore]
     public string Core =>
@@ -179,7 +154,7 @@ public sealed record Card
         if (!SupportsRetroArch)
         {
             throw new JsonException(
-                $"Missing both 'retroarch_config.core' and " +
+                $"Missing both 'retroarch.core' and " +
                 $"'misterfpga_config.core' in {definitionPath}.");
         }
     }
@@ -187,6 +162,7 @@ public sealed record Card
 
 public sealed record RetroArchConfig
 {
+    [JsonPropertyName("version")] public string Version { get; init; } = string.Empty;
     [JsonPropertyName("core")] public required string Core { get; init; }
     [JsonPropertyName("rom")] public required string Rom { get; init; }
 }

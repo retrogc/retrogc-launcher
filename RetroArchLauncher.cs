@@ -51,6 +51,7 @@ public sealed class RetroArchLauncher : IDisposable
         string romPath,
         string corePath,
         bool fullscreen,
+        bool integerScaling,
         string shader = "")
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -69,23 +70,34 @@ public sealed class RetroArchLauncher : IDisposable
         var startInfo = new ProcessStartInfo
         {
             FileName = retroArchExecutable,
-            WorkingDirectory = Path.GetDirectoryName(fullRomPath),
-            UseShellExecute = false
+            WorkingDirectory = Path.GetDirectoryName(retroArchExecutable),
+            UseShellExecute = false,
+            CreateNoWindow = true,
+#if DEBUG
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+#endif
         };
 
-        // retroarch: set home
-        startInfo.Environment["HOME"] = AppSettings.SettingsDirectory;
+        // override some retroarch config that can't be set via command line
+        var cfgPath = Path.Combine(startInfo.WorkingDirectory, "retrogc.cfg");
+        var settings = "video_shader_enable = \"true\"" + Environment.NewLine;
+        if (integerScaling) settings += "video_scale_integer = \"true\"" + Environment.NewLine;
+        File.WriteAllText(cfgPath, settings);
+        startInfo.ArgumentList.Add("--appendconfig");
+        startInfo.ArgumentList.Add(cfgPath);
 
-        // retroarch: set system directory (bios) to rom path
-        startInfo.Environment["LIBRETRO_SYSTEM_DIRECTORY"]
-            = Path.GetDirectoryName(fullRomPath);
+        // retroarch: set env
+        startInfo.Environment["HOME"] = startInfo.WorkingDirectory;
+        startInfo.Environment["LIBRETRO_DIRECTORY"] = startInfo.WorkingDirectory;
+        //startInfo.Environment["LIBRETRO_SYSTEM_DIRECTORY"] =
+        //    Path.Combine(startInfo.WorkingDirectory, "system");
+        //startInfo.Environment["LIBRETRO_VIDEO_SHADER_DIRECTORY"] =
+        //    Path.Combine(startInfo.WorkingDirectory, "shaders");
 
-        // retroarch: load specific libretro core.
-        if (!string.IsNullOrWhiteSpace(corePath))
-        {
-            startInfo.ArgumentList.Add("-L");
-            startInfo.ArgumentList.Add(Path.GetFullPath(corePath));
-        }
+#if DEBUG
+        startInfo.ArgumentList.Add("-v");
+#endif
 
         // retroarch: handle shader setting
         if (!string.IsNullOrEmpty(shader))
@@ -100,8 +112,22 @@ public sealed class RetroArchLauncher : IDisposable
             startInfo.ArgumentList.Add("--fullscreen");
         }
 
+        // retroarch: load specific libretro core.
+        if (!string.IsNullOrWhiteSpace(corePath))
+        {
+            startInfo.ArgumentList.Add("-L");
+            startInfo.ArgumentList.Add(Path.GetFullPath(corePath));
+        }
+
         // ROM path must be the final RetroArch argument.
         startInfo.ArgumentList.Add(fullRomPath);
+
+        Console.WriteLine("Sarting retroarch...");
+        Console.WriteLine($" - HOME: {startInfo.Environment["HOME"]}");
+        Console.WriteLine($" - LIBRETRO_DIRECTORY: {startInfo.Environment["LIBRETRO_DIRECTORY"]}");
+        Console.WriteLine($" - WORKING DIR: {startInfo.WorkingDirectory}");
+        Console.WriteLine($" - EXECUTABLE: {startInfo.FileName}");
+        Console.WriteLine($" - ARGUMENTS: {string.Join(" ", startInfo.ArgumentList)}");
 
         var process = new Process
         {
@@ -109,6 +135,18 @@ public sealed class RetroArchLauncher : IDisposable
             EnableRaisingEvents = true
         };
 
+#if DEBUG
+        process.OutputDataReceived += (_, e) =>
+        {
+            if (e.Data == null) return;
+            Console.WriteLine(e.Data);
+        };
+        process.ErrorDataReceived += (_, e) =>
+        {
+            if (e.Data == null) return;
+            Console.WriteLine(e.Data);
+        };
+#endif
         process.Exited += OnProcessExited;
 
         lock (_sync)
@@ -123,6 +161,11 @@ public sealed class RetroArchLauncher : IDisposable
                 throw new InvalidOperationException(
                     $"Unable to launch '{retroArchExecutable}'.");
             }
+
+#if DEBUG
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+#endif
 
             if (OperatingSystem.IsWindows())
             {

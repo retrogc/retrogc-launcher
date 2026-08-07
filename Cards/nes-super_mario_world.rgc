@@ -4,14 +4,18 @@
   "platform": "NES",
   "year": "1989",
   "image": "mario.png",
-  "version": "1.0.0",
-  "retroarch_config": {
-    "core": "cores/nestopia_libretro",
-    "rom": "games/nes/Super Mario Bros. (World).nes"
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "nestopia",
+    "roms": [
+      "games/nes/Super Mario Bros. (World).nes"
+    ]
   },
-  "misterfpga_config": {
-    "core": "cores/mister_nes.rbf",
-    "rom": "games/nes/Super Mario Bros. (World).nes",
+  "misterfpga": {
+    "core": "cores/NES_20260603.rbf",
+    "roms": [
+      "games/nes/Super Mario Bros. (World).nes"
+    ],
     "delay": "2",
     "index": "1",
     "type": "f"

@@ -1,12 +1,23 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 LABEL="RETROGC"
 DEVICE="/dev/disk/by-label/$LABEL"
 MISTER_CMD="/dev/MiSTer_cmd"
-FAKE_CONSOLE_CORE="/media/fat/_Console/RetroGameCard.rbf"
-FAKE_ARCADE_CORE="/media/fat/_Arcade/cores/RetroGameCard.rbf"
-FAKE_ARCADE_MRA="/media/fat/_Arcade/RetroGameCard.mra"
+FAKE_CONSOLE_CORE="/media/fat/_Console/retrogc.rbf"
+FAKE_ARCADE_CORE="/media/fat/_Arcade/cores/retrogc.rbf"
+FAKE_ARCADE_MRA="/media/fat/_Arcade/retrogc.mra"
+
+cleanup() {
+  # cleanup core link on fat device if any
+  rm -f "$FAKE_CONSOLE_CORE"
+  rm -f "$FAKE_ARCADE_CORE"
+  rm -f "$FAKE_ARCADE_MRA"
+  # load menu core
+  echo "load_core menu.rbf" > "$MISTER_CMD"
+}
+
+trap cleanup EXIT
 
 on_insert() {
     local dev="$1"
@@ -40,13 +51,13 @@ on_insert() {
     
     echo " Using configuration: $config"
 
-    if ! core="$(jq -er '.misterfpga_config.core' "$config")"; then
-        echo "ERROR: Could not read .misterfpga_config.core from $config" >&2
+    if ! core="$(jq -er '.misterfpga.core' "$config")"; then
+        echo "ERROR: Could not read .misterfpga.core from $config" >&2
         return 1
     fi
 
-    if ! rom="$(jq -er '.misterfpga_config.rom' "$config")"; then
-        echo "ERROR: Could not read .misterfpga_config.rom from $config" >&2
+    if ! rom="$(jq -er '.misterfpga.roms[0]' "$config")"; then
+        echo "ERROR: Could not read .misterfpga.rom from $config" >&2
         return 1
     fi
 
@@ -58,36 +69,40 @@ on_insert() {
 
     if [[ ! -f "$corePath" ]]; then
         echo " WARN: MiSTer CORE not found: $core" >&2
-        #return 1
+        return 1
     fi
 
     if [[ ! -f "$romPath" ]]; then
         echo " WARN: MiSTer ROM not found: $rom" >&2
-        #return 1
+        return 1
     fi
 
     if [[ ! -e "$MISTER_CMD" ]]; then
         echo "ERROR: MiSTer command device not found: $MISTER_CMD" >&2
-        #return 1
+        return 1
     fi
 
     if [[ "$rom" == *.mra ]]; then
-        echo " Loading MiSTer arcade rom: $romPath"
+        echo " Loading MiSTer arcade rom: $romPath, core: $corePath"
+        # replace mra core (rbf) value with fake/symlink one (retrogc)
+        # TODO: no write to sdcard should happen !
+        sed -i -E "/<rbf>retrogc<\/rbf>/! s|<rbf>.*?</rbf>|<rbf>retrogc</rbf>|g" $romPath \
+          && sync
         mkdir -p /media/fat/_Console \
           && ln -sf "$corePath" "$FAKE_ARCADE_CORE" \
           && ln -sf "$romPath" "$FAKE_ARCADE_MRA"
-        printf 'load_core %s\n' "_Arcade/RetroGameCard.mra" > "$MISTER_CMD"
+        printf 'load_core %s\n' "_Arcade/retrogc.mra" > "$MISTER_CMD"
     else
-        if ! delay="$(jq -er '.misterfpga_config.delay' "$config")"; then
-          echo " WARN: Could not read .misterfpga_config.delay from $config" >&2
+        if ! delay="$(jq -er '.misterfpga.delay' "$config")"; then
+          echo " WARN: Could not read .misterfpga.delay from $config" >&2
           delay="1"
         fi
-        if ! index="$(jq -er '.misterfpga_config.index' "$config")"; then
-          echo " WARN: Could not read .misterfpga_config.index from $config" >&2
+        if ! index="$(jq -er '.misterfpga.index' "$config")"; then
+          echo " WARN: Could not read .misterfpga.index from $config" >&2
           index="1"
         fi
-        if ! type="$(jq -er '.misterfpga_config.type' "$config")"; then
-          echo " WARN: Could not read .misterfpga_config.type from $config" >&2
+        if ! type="$(jq -er '.misterfpga.type' "$config")"; then
+          echo " WARN: Could not read .misterfpga.type from $config" >&2
           type="f"
         fi
         # link our core to fat...
@@ -97,7 +112,7 @@ on_insert() {
         mgl="/tmp/game.mgl"
         {
           printf '%s\n' '<mistergamedescription>'
-          printf '  <rbf>%s</rbf>\n' "_Console/RetroGameCard"
+          printf '  <rbf>%s</rbf>\n' "_Console/retrogc"
           printf '  <file delay="%s" index="%s" type="%s" path="../../%s"/>\n' "$delay" "$index" "$type" "$rom"
           printf '%s\n' '</mistergamedescription>'
         } > "$mgl"
@@ -116,13 +131,7 @@ on_remove() {
     echo " Previous device: $dev"
     echo " Previous mount point: $old_mountpoint"
 
-    # cleanup core link on fat device if any
-    rm -f "$FAKE_CONSOLE_CORE"
-    rm -f "$FAKE_ARCADE_CORE"
-    rm -f "$FAKE_ARCADE_MRA"
-
-    # load menu core
-    echo "load_core menu.rbf" > "$MISTER_CMD"
+    cleanup
 }
 
 wait_for_device() {

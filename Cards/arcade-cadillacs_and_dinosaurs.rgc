@@ -7,10 +7,18 @@
   "retroarch": {
     "version": "1.22.2",
     "core": "fbneo",
-    "rom": "games/mame/dino.zip"
+    "roms": [
+      "games/mame/dino.zip"
+    ]
   },
   "misterfpga": {
-    "core": "mister/mister_jtcps15.rbf",
-    "rom": "games/mame/dino.mra"
+    "core": "cores/jtcps15.rbf",
+    "roms": [
+      "games/mame/dino.mra",
+      "games/mame/dino.zip"
+    ],
+    "runtimes": [
+      "games/mame/qsound.zip"
+    ]
   }
 }

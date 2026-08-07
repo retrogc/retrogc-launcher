@@ -68,13 +68,20 @@ if [[ "$MODE" == "--build" ]]; then
 
     info "Calculating source size..."
     SIZE_BYTES=$(du -sb "$SRC" | awk '{print $1}')
-    SIZE_BYTES=$((SIZE_BYTES + 8 * 1024 * 1024))
-
-    MIN_MB=64
-    SIZE_MB=$((SIZE_BYTES / 1024 / 1024 + 1))
+    # Add safety overhead (16 MB) for FAT32 metadata, structures, and cluster slack
+    OVERHEAD_BYTES=$((16 * 1024 * 1024))
+    TOTAL_BYTES=$((SIZE_BYTES + OVERHEAD_BYTES))
+    
+    # Convert to MB with ceiling division
+    SIZE_MB=$(( (TOTAL_BYTES + 1024 * 1024 - 1) / (1024 * 1024) ))
+    
+    # Absolute minimum FAT32 size (32 MB recommended to satisfy FAT32 spec limits)
+    MIN_MB=32
     (( SIZE_MB < MIN_MB )) && SIZE_MB=$MIN_MB
-    SIZE_MB=$(((SIZE_MB + 15) / 16 * 16))
-
+    
+    # Round UP to the nearest multiple of 8 MB
+    SIZE_MB=$(( (SIZE_MB + 7) / 8 * 8 ))
+    
     success "Image size: ${CYAN}${SIZE_MB} MiB${RESET}"
 
     WORKDIR=$(mktemp -d)

@@ -1,0 +1,39 @@
+{
+  "name": "Metal Gear Solid",
+  "description": "The game's story follows Solid Snake, a former Special Forces operative who is pulled out of retirement by the U.S. government to infiltrate Shadow Moses...",
+  "platform": "PSX",
+  "year": "1998",
+  "image": "metalgear.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "swanstation",
+    "roms": [
+      "games/psx/Metal Gear Solid (USA) (Disc 1).cue",
+      "games/psx/Metal Gear Solid (USA) (Disc 1).bin",
+      "games/psx/Metal Gear Solid (USA) (Disc 2).cue",
+      "games/psx/Metal Gear Solid (USA) (Disc 2).bin"
+    ],
+    "runtimes": [
+      "games/psx/scph5500.bin",
+      "games/psx/scph5501.bin",
+      "games/psx/scph5502.bin"
+    ]
+  },
+  "misterfpga": {
+    "core": "cores/PSX_20260729.rbf",
+    "roms": [
+      "games/psx/Metal Gear Solid (USA) (Disc 1).cue",
+      "games/psx/Metal Gear Solid (USA) (Disc 1).bin",
+      "games/psx/Metal Gear Solid (USA) (Disc 2).cue",
+      "games/psx/Metal Gear Solid (USA) (Disc 2).bin"
+    ],
+    "runtimes": [
+      "games/psx/boot.rom",
+      "games/psx/boot1.rom",
+      "games/psx/boot2.rom"
+    ],
+    "delay": "1",
+    "index": "1",
+    "type": "s"
+  }
+}

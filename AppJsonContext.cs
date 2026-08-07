@@ -4,6 +4,7 @@ namespace RetroGameCard;
 
 // game card
 [JsonSerializable(typeof(Card))]
+[JsonSerializable(typeof(SystemConfig))]
 [JsonSerializable(typeof(RetroArchConfig))]
 [JsonSerializable(typeof(MisterFpgaConfig))]
 
@@ -11,7 +12,6 @@ namespace RetroGameCard;
 [JsonSerializable(typeof(AppSettings))]
 [JsonSerializable(typeof(MainSettings))]
 [JsonSerializable(typeof(RetroArchSettings))]
-
 internal partial class AppJsonContext : JsonSerializerContext
 {
 }

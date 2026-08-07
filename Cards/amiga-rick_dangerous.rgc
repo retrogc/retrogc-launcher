@@ -4,14 +4,24 @@
   "platform": "ARCADE",
   "year": "1989",
   "image": "rick.png",
-  "version": "1.0.0",
-  "retroarch_config": {
-    "core": "cores/puae_libretro",
-    "rom": "games/amiga/rick.adf"
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "puae",
+    "roms": [
+      "games/amiga/rick.adf"
+    ],
+    "runtimes": [
+      "games/amiga/kick34005.A500"
+    ]
   },
-  "misterfpga_config": {
-    "core": "cores/mister_minimig.rbf",
-    "rom": "games/amiga/rick.adf",
+  "misterfpga": {
+    "core": "cores/Minimig_20260603.rbf",
+    "roms": [
+      "games/amiga/rick.adf"
+    ],
+    "runtimes": [
+      "games/amiga/kick.rom"
+    ],
     "delay": "1",
     "index": "0",
     "type": "f"

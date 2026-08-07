@@ -19,7 +19,7 @@ public sealed record Card
 
     [JsonPropertyName("image")] public string Image { get; init; } = string.Empty;
 
-    [JsonPropertyName("retroarch")] public RetroArchConfig? RetroArchConfig { get; init; }
+    [JsonPropertyName("retroarch")] public required RetroArchConfig RetroArchConfig { get; init; }
 
     [JsonPropertyName("misterfpga")] public MisterFpgaConfig? MisterFpgaConfig { get; init; }
 
@@ -41,13 +41,13 @@ public sealed record Card
     /// </summary>
     [JsonIgnore]
     public string? RomPath =>
-        string.IsNullOrWhiteSpace(RetroArchConfig?.Rom)
+        string.IsNullOrWhiteSpace(RetroArchConfig.Roms[0])
             ? null
-            : ResolvePath(RetroArchConfig.Rom);
+            : ResolvePath(RetroArchConfig.Roms[0]);
 
     [JsonIgnore]
     public string Core =>
-        string.IsNullOrWhiteSpace(RetroArchConfig?.Core)
+        string.IsNullOrWhiteSpace(RetroArchConfig.Core)
             ? "WAITING"
             : RetroArchConfig.Core;
 
@@ -65,7 +65,7 @@ public sealed record Card
     /// It is intentionally not resolved relative to the SD card.
     /// </summary>
     [JsonIgnore]
-    public string? RetroArchCore => RetroArchConfig?.Core;
+    public string RetroArchCore => RetroArchConfig.Core;
 
     /// <summary>
     /// MiSTer MRA path relative to the MiSTer SD-card root.
@@ -74,7 +74,7 @@ public sealed record Card
     public string? MisterFpgaCore => MisterFpgaConfig?.Core;
 
     public bool SupportsRetroArch =>
-        !string.IsNullOrWhiteSpace(RetroArchConfig?.Core);
+        !string.IsNullOrWhiteSpace(RetroArchConfig.Core);
 
     public bool SupportsMisterFpga =>
         !string.IsNullOrWhiteSpace(MisterFpgaConfig?.Core);
@@ -160,15 +160,16 @@ public sealed record Card
     }
 }
 
-public sealed record RetroArchConfig
+public record SystemConfig
 {
-    [JsonPropertyName("version")] public string Version { get; init; } = string.Empty;
     [JsonPropertyName("core")] public required string Core { get; init; }
-    [JsonPropertyName("rom")] public required string Rom { get; init; }
+    [JsonPropertyName("roms")] public required string[] Roms { get; init; }
+    [JsonPropertyName("runtimes")] public string[]? Runtimes { get; init; } = [];
 }
 
-public sealed record MisterFpgaConfig
+public sealed record RetroArchConfig : SystemConfig
 {
-    [JsonPropertyName("core")] public required string Core { get; init; }
-    [JsonPropertyName("rom")] public required string Rom { get; init; }
+    [JsonPropertyName("version")] public required string Version { get; init; } = string.Empty;
 }
+
+public sealed record MisterFpgaConfig : SystemConfig;

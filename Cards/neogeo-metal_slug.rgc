@@ -1,17 +1,32 @@
 {
   "name": "Metal Slug - Super Vehicle-001",
-  "description": "Metal Slug !!!",
+  "description": "Metal Slug, originally released on the Neo Geo, is a side-scrolling shoot'em'up.",
   "platform": "NEOGEO",
   "year": "1996",
   "image": "mslug.png",
-  "version": "1.0.0",
-  "retroarch_config": {
-    "core": "cores/fbneo_libretro",
-    "rom": "games/neogeo/mslug.zip"
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "fbneo",
+    "roms": [
+      "games/neogeo/mslug.zip"
+    ],
+    "runtimes": [
+      "games/neogeo/neogeo.zip"
+    ]
   },
-  "misterfpga_config": {
-    "core": "cores/mister_neogeo.rbf",
-    "rom": "games/neogeo/mslug.neo",
+  "misterfpga": {
+    "core": "cores/NeoGeo_20260603.rbf",
+    "roms": [
+      "games/neogeo/mslug.neo"
+    ],
+    "runtimes": [
+      "games/neogeo/000-lo.lo",
+      "games/neogeo/neo-epo.sp1",
+      "games/neogeo/sfix.sfix",
+      "games/neogeo/sp-s2.sp1",
+      "games/neogeo/uni-bios.rom",
+      "games/neogeo/romsets.xml"
+    ],
     "delay": "1",
     "index": "1",
     "type": "f"

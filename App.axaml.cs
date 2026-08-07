@@ -72,15 +72,27 @@ public class App : Application, IDisposable
                 throw new NullReferenceException(" card.RetroArchConfig is null");
 
             var retroArchVersion = card.RetroArchConfig.Version;
-            var exePath = Path.Combine(AppSettings.SettingsDirectory,
-                "retroarch", retroArchVersion,
+            var retroArchPath = Path.Combine(AppSettings.SettingsDirectory, "retroarch", retroArchVersion);
+            var retroArchExePath = Path.Combine(retroArchPath,
                 OperatingSystem.IsWindows() ? "retroarch.exe" : "RetroArch-Linux-x86_64.AppImage");
             var coreExt = OperatingSystem.IsWindows() ? "_libretro.dll" : "_libretro.so";
             var corePath = Path.Combine(AppSettings.SettingsDirectory,
                 "retroarch", retroArchVersion, "cores", card.RetroArchConfig.Core + coreExt);
 
-            if (!File.Exists(exePath))
-                throw new FileNotFoundException(" RetroArch executable not found: ", exePath);
+            // copy required card system files, if any
+            if (card.RetroArchConfig.Runtimes != null)
+            {
+                foreach (var file in card.RetroArchConfig.Runtimes)
+                {
+                    var src = Path.Combine(card.BaseDirectory, file);
+                    var dst = Path.Combine(retroArchPath, "system", Path.GetFileName(file));
+                    Console.WriteLine($" Copying required system file `{src}` to `{dst}`");
+                    await Utility.CopyFileAsync(src, dst);
+                }
+            }
+
+            if (!File.Exists(retroArchExePath))
+                throw new FileNotFoundException(" RetroArch executable not found: ", retroArchExePath);
 
             if (!File.Exists(card.RomPath))
                 throw new FileNotFoundException(" RetroArch rom not found: ", card.RomPath);
@@ -88,7 +100,7 @@ public class App : Application, IDisposable
             Utility.Notify(" Loading " + card.Name);
             Console.WriteLine($"  game: {card.Name}");
             Console.WriteLine($"  rom:  {card.RomPath}");
-            Console.WriteLine($"  retroarch: {exePath}");
+            Console.WriteLine($"  retroarch: {retroArchExePath}");
             Console.WriteLine($"  retroarch core: {corePath}");
             Console.WriteLine($"  retroarch version: {card.RetroArchConfig.Version}");
 
@@ -100,7 +112,7 @@ public class App : Application, IDisposable
 
             // start retroarch
             _retroArch.Start(
-                retroArchExecutable: exePath,
+                retroArchExecutable: retroArchExePath,
                 romPath: card.RomPath,
                 corePath: corePath,
                 fullscreen: Settings.RetroArch.StartFullscreen,

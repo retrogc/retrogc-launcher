@@ -4,13 +4,18 @@
   "platform": "TAD CORP",
   "year": "1989",
   "image": "toki.png",
-  "version": "1.0.0",
-  "retroarch_config": {
-    "core": "cores/fbneo_libretro",
-    "rom": "games/mame/toki.zip"
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "fbneo",
+    "roms": [
+      "games/mame/toki.zip"
+    ]
   },
-  "misterfpga_config": {
-    "core": "cores/mister_jttoki.rbf",
-    "rom": "games/mame/toki.mra"
+  "misterfpga": {
+    "core": "cores/jttoki.rbf",
+    "roms": [
+      "games/mame/toki.mra",
+      "games/mame/toki.zip"
+    ]
   }
 }

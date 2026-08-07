@@ -4,13 +4,19 @@
   "platform": "KONAMI",
   "year": "1991",
   "image": "ssriders.png",
-  "version": "1.0.0",
-  "retroarch_config": {
-    "core": "cores/fbneo_libretro",
-    "rom": "games/mame/ssriders.zip"
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "fbneo",
+    "roms": [
+      "games/mame/ssriders.zip"
+    ]
   },
-  "misterfpga_config": {
-    "core": "cores/mister_jtriders.rbf",
-    "rom": "games/mame/ssriders.mra"
+  "misterfpga": {
+    "core": "cores/jtriders.rbf",
+    "roms": [
+      "games/mame/ssriders.mra",
+      "games/mame/ssriders.zip",
+      "games/mame/jtbeta.zip"
+    ]
   }
 }

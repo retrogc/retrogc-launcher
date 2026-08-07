@@ -82,6 +82,7 @@ public sealed class RetroArchLauncher : IDisposable
         // override some retroarch config that can't be set via command line
         var cfgPath = Path.Combine(startInfo.WorkingDirectory, "retrogc.cfg");
         var settings = "video_shader_enable = \"true\"" + Environment.NewLine;
+        settings += "video_fullscreen = \"" + fullscreen.ToString().ToLower() + "\"" + Environment.NewLine;
         if (integerScaling) settings += "video_scale_integer = \"true\"" + Environment.NewLine;
         File.WriteAllText(cfgPath, settings);
         startInfo.ArgumentList.Add("--appendconfig");

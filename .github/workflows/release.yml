@@ -1,0 +1,62 @@
+name: Build Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore RetroGameCard.csproj
+
+      - name: Publish Linux
+        run: >
+          dotnet publish RetroGameCard.csproj
+          -c Release
+          -r linux-x64
+          --self-contained true
+          -o publish/linux
+          -p:PublishReadyToRun=true
+          -p:PublishTrimmed=true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:IncludeAllContentForSelfExtract=true
+
+      - name: Publish Windows
+        run: >
+          dotnet publish RetroGameCard.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -o publish/windows
+          -p:PublishReadyToRun=true
+          -p:PublishTrimmed=true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:IncludeAllContentForSelfExtract=true
+
+      - name: Create archives
+        run: |
+          mkdir release
+
+          cd publish/linux
+          zip ../../release/retrogc-launcher-linux.zip retrogc-launcher
+
+          cd ../windows
+          zip ../../release/retrogc-launcher-windows.zip retrogc-launcher.exe
+
+      - name: Upload release packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: retrogc-launcher
+          path: release/*.zip

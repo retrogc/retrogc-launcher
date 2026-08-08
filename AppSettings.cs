@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 
 namespace RetroGameCard;
 
+// game card
+[JsonSerializable(typeof(Card))]
+[JsonSerializable(typeof(SystemConfig))]
+[JsonSerializable(typeof(RetroArchConfig))]
+[JsonSerializable(typeof(MisterFpgaConfig))]
+
+// launcher config
+[JsonSerializable(typeof(AppSettings))]
+[JsonSerializable(typeof(MainSettings))]
+[JsonSerializable(typeof(RetroArchSettings))]
+internal partial class AppJsonContext : JsonSerializerContext;
+
 public sealed class AppSettings
 {
     [JsonIgnore] public static readonly string RETROARCH_VERSION = "1.22.2";
@@ -132,11 +144,11 @@ public sealed class RetroArchSettings
 
     public bool StartFullscreen { get; set; } = true;
 
-    public bool UseCustomExecutable { get; set; } = false;
+    public bool UseCustomExecutable { get; set; }
 
     public string ExecutablePath { get; set; } = "";
 
-    public bool IntegerScaling { get; set; } = false;
+    public bool IntegerScaling { get; set; }
 
     public Shader Shader { get; set; } =
         Shader.Bilinear;

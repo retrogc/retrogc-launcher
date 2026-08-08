@@ -12,9 +12,9 @@
     ]
   },
   "misterfpga": {
-    "core": "cores/jtriders.rbf",
+    "core": "_Arcade/cores/jtriders.rbf",
     "roms": [
-      "games/mame/ssriders.mra",
+      "_Arcade/Sunset Riders (4 Players ver EAC).mra",
       "games/mame/ssriders.zip",
       "games/mame/jtbeta.zip"
     ]

@@ -12,7 +12,7 @@
     ]
   },
   "misterfpga": {
-    "core": "cores/NES_20260603.rbf",
+    "core": "_Console/NES_20260603.rbf",
     "roms": [
       "games/nes/Super Mario Bros. (World).nes"
     ],

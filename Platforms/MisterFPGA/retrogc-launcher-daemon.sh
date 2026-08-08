@@ -7,10 +7,7 @@ MISTER_CMD="/dev/MiSTer_cmd"
 PIDFILE="/tmp/retrogc-launcher.pid"
 LOCKDIR="/tmp/retrogc-launcher.lock"
 
-FAKE_CONSOLE_CORE="/media/fat/_Console/retrogc.rbf"
-FAKE_ARCADE_CORE="/media/fat/_Arcade/cores/retrogc.rbf"
-FAKE_ARCADE_MRA="/media/fat/_Arcade/retrogc.mra"
-
+FAKE_MGL_CORE="/media/fat/_Console/retrogc.rbf"
 
 # ------------------------------------------------------------
 # Single-instance lock
@@ -21,21 +18,17 @@ if ! mkdir "$LOCKDIR" 2>/dev/null; then
     exit 0
 fi
 
-
 # ------------------------------------------------------------
 # Game cleanup
 # ------------------------------------------------------------
 
 cleanup_game() {
-    rm -f "$FAKE_CONSOLE_CORE"
-    rm -f "$FAKE_ARCADE_CORE"
-    rm -f "$FAKE_ARCADE_MRA"
+    rm -f "$FAKE_MGL_CORE"
 
     if [[ -e "$MISTER_CMD" ]]; then
         echo "load_core menu.rbf" > "$MISTER_CMD"
     fi
 }
-
 
 # ------------------------------------------------------------
 # Daemon cleanup
@@ -43,11 +36,10 @@ cleanup_game() {
 
 cleanup_daemon() {
     cleanup_game
-
+    
     rm -f "$PIDFILE"
     rm -rf "$LOCKDIR"
 }
-
 
 # ------------------------------------------------------------
 # Signals / exit
@@ -56,31 +48,24 @@ cleanup_daemon() {
 trap cleanup_daemon EXIT
 trap 'exit 143' TERM INT
 
-
 # ------------------------------------------------------------
 # PID
 # ------------------------------------------------------------
 
 echo "$$" > "$PIDFILE"
 
-
 # ------------------------------------------------------------
 # RETROGC insertion
 # ------------------------------------------------------------
-
 on_insert() {
     local dev="$1"
     local mountpoint="$2"
-
     local config
     local configs=()
-
     local core
     local corePath
-
     local rom
     local romPath
-
     local delay
     local index
     local type
@@ -100,7 +85,6 @@ on_insert() {
     fi
 
     config="${configs[0]}"
-
     if [[ ! -f "$config" ]]; then
         echo "ERROR: Missing configuration file: $config" >&2
         return 1
@@ -120,7 +104,6 @@ on_insert() {
 
     core="${core#/}"
     rom="${rom#/}"
-
     corePath="$mountpoint/$core"
     romPath="$mountpoint/$rom"
 
@@ -139,37 +122,19 @@ on_insert() {
         return 1
     fi
 
-
     # --------------------------------------------------------
     # Arcade MRA
     # --------------------------------------------------------
 
     if [[ "$rom" == *.mra ]]; then
-
         echo "Loading MiSTer arcade rom:"
         echo "  ROM : $romPath"
         echo "  CORE: $corePath"
-
-        # Modify MRA directly on RETROGC card.
-        sed -i -E \
-            "/<rbf>retrogc<\/rbf>/! s|<rbf>.*?</rbf>|<rbf>retrogc</rbf>|g" \
-            "$romPath" \
-            && sync
-
-        mkdir -p /media/fat/_Arcade/cores
-
-        ln -sf "$corePath" "$FAKE_ARCADE_CORE"
-        ln -sf "$romPath" "$FAKE_ARCADE_MRA"
-
-        printf 'load_core %s\n' "_Arcade/retrogc.mra" > "$MISTER_CMD"
-
-
+        printf 'load_core %s\n' "$romPath" > "$MISTER_CMD"
     # --------------------------------------------------------
     # Normal ROM
     # --------------------------------------------------------
-
     else
-
         if ! delay="$(jq -er '.misterfpga.delay' "$config")"; then
             echo "WARN: Could not read .misterfpga.delay" >&2
             delay="1"
@@ -185,12 +150,10 @@ on_insert() {
             type="f"
         fi
 
-        mkdir -p /media/fat/_Console
-
-        ln -sf "$corePath" "$FAKE_CONSOLE_CORE"
-
+        # TODO: find why i can't use "/media/usb0/_Console/xxx.rbf" 
+        mkdir -p /media/fat/_Console \
+          && ln -sf "$corePath" "$FAKE_MGL_CORE"
         mgl="/tmp/game.mgl"
-
         {
             printf '%s\n' '<mistergamedescription>'
             printf '  <rbf>%s</rbf>\n' "_Console/retrogc"
@@ -207,11 +170,9 @@ on_insert() {
     fi
 }
 
-
 # ------------------------------------------------------------
 # RETROGC removal
 # ------------------------------------------------------------
-
 on_remove() {
     local dev="$1"
     local old_mountpoint="$2"
@@ -224,7 +185,6 @@ on_remove() {
     # DO NOT remove PIDFILE or LOCKDIR here.
     cleanup_game
 }
-
 
 # ------------------------------------------------------------
 # Wait for device
@@ -241,7 +201,6 @@ wait_for_device() {
 
     echo "Device detected: $DEVICE_PATH" >&2
 }
-
 
 # ------------------------------------------------------------
 # Wait for automount
@@ -278,7 +237,6 @@ wait_for_removal() {
         sleep 0.5
     done
 }
-
 
 # ------------------------------------------------------------
 # Main loop

@@ -15,7 +15,7 @@
     ]
   },
   "misterfpga": {
-    "core": "cores/NeoGeo_20260603.rbf",
+    "core": "_Console/NeoGeo_20260603.rbf",
     "roms": [
       "games/neogeo/mslug.neo"
     ],

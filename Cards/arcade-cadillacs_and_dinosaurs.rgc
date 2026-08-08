@@ -12,12 +12,10 @@
     ]
   },
   "misterfpga": {
-    "core": "cores/jtcps15.rbf",
+    "core": "_Arcade/cores/jtcps15.rbf",
     "roms": [
-      "games/mame/dino.mra",
-      "games/mame/dino.zip"
-    ],
-    "runtimes": [
+      "_Arcade/Cadillacs and Dinosaurs (World 930201).mra",
+      "games/mame/dino.zip",
       "games/mame/qsound.zip"
     ]
   }

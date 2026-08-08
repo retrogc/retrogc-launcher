@@ -15,7 +15,7 @@
     ]
   },
   "misterfpga": {
-    "core": "cores/Minimig_20260603.rbf",
+    "core": "_Computer/Minimig_20260603.rbf",
     "roms": [
       "games/amiga/rick.adf"
     ],

@@ -20,7 +20,7 @@
     ]
   },
   "misterfpga": {
-    "core": "cores/PSX_20260729.rbf",
+    "core": "_Console/PSX_20260729.rbf",
     "roms": [
       "games/psx/Metal Gear Solid (USA) (Disc 1).cue",
       "games/psx/Metal Gear Solid (USA) (Disc 1).bin",

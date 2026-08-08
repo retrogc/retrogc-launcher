@@ -12,9 +12,9 @@
     ]
   },
   "misterfpga": {
-    "core": "cores/jttoki.rbf",
+    "core": "_Arcade/cores/jttoki.rbf",
     "roms": [
-      "games/mame/toki.mra",
+      "_Arcade/Toki (World, set 1).mra",
       "games/mame/toki.zip"
     ]
   }

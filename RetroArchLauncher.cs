@@ -67,10 +67,18 @@ public sealed class RetroArchLauncher : IDisposable
                 fullRomPath);
         }
 
+        var workingDir = Path.GetDirectoryName(retroArchExecutable);
+        if (workingDir == null)
+        {
+            throw new FileNotFoundException(
+                "Could not set working directory",
+                retroArchExecutable);
+        }
+
         var startInfo = new ProcessStartInfo
         {
             FileName = retroArchExecutable,
-            WorkingDirectory = Path.GetDirectoryName(retroArchExecutable),
+            WorkingDirectory = workingDir,
             UseShellExecute = false,
             CreateNoWindow = true,
 #if DEBUG
@@ -80,7 +88,7 @@ public sealed class RetroArchLauncher : IDisposable
         };
 
         // override some retroarch config that can't be set via command line
-        var cfgPath = Path.Combine(startInfo.WorkingDirectory, "retrogc.cfg");
+        var cfgPath = Path.Combine(workingDir, "retrogc.cfg");
         var settings = "video_shader_enable = \"true\"" + Environment.NewLine;
         settings += "video_fullscreen = \"" + fullscreen.ToString().ToLower() + "\"" + Environment.NewLine;
         if (integerScaling) settings += "video_scale_integer = \"true\"" + Environment.NewLine;
@@ -89,22 +97,22 @@ public sealed class RetroArchLauncher : IDisposable
         startInfo.ArgumentList.Add(cfgPath);
 
         // retroarch: set env
-        startInfo.Environment["HOME"] = startInfo.WorkingDirectory;
-        startInfo.Environment["LIBRETRO_DIRECTORY"] = startInfo.WorkingDirectory;
+        startInfo.Environment["HOME"] = workingDir;
+        startInfo.Environment["LIBRETRO_DIRECTORY"] = workingDir;
         startInfo.Environment["LIBRETRO_ASSETS_DIRECTORY"]
-            = Path.Combine(startInfo.WorkingDirectory, "assets");
+            = Path.Combine(workingDir, "assets");
         startInfo.Environment["LIBRETRO_AUTOCONFIG_DIRECTORY"]
-            = Path.Combine(startInfo.WorkingDirectory, "autoconfig");
+            = Path.Combine(workingDir, "autoconfig");
         startInfo.Environment["LIBRETRO_CHEATS_DIRECTORY"]
-            = Path.Combine(startInfo.WorkingDirectory, "cheats");
+            = Path.Combine(workingDir, "cheats");
         startInfo.Environment["LIBRETRO_DATABASE_DIRECTORY"]
-            = Path.Combine(startInfo.WorkingDirectory, "database");
+            = Path.Combine(workingDir, "database");
         startInfo.Environment["LIBRETRO_SYSTEM_DIRECTORY"]
-            = Path.Combine(startInfo.WorkingDirectory, "system");
+            = Path.Combine(workingDir, "system");
         startInfo.Environment["LIBRETRO_VIDEO_FILTER_DIRECTORY"]
-            = Path.Combine(startInfo.WorkingDirectory, "filters");
+            = Path.Combine(workingDir, "filters");
         startInfo.Environment["LIBRETRO_VIDEO_SHADER_DIRECTORY"]
-            = Path.Combine(startInfo.WorkingDirectory, "shaders");
+            = Path.Combine(workingDir, "shaders");
 
 #if DEBUG
         startInfo.ArgumentList.Add("-v");

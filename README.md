@@ -1,3 +1,5 @@
+![](Data/retrogc-256.png)
+
 # 🎮 Retro Game Card
 
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20Linux%20%7C%20MiSTer%20FPGA-blueviolet)](https://github.com/Cpasjuste/RetroGameCard)

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace RetroGameCard;
 
+[JsonSourceGenerationOptions(WriteIndented = true)]
+
 // game card
 [JsonSerializable(typeof(Card))]
 [JsonSerializable(typeof(SystemConfig))]

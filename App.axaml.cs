@@ -72,12 +72,29 @@ public class App : Application, IDisposable
                 throw new NullReferenceException(" card.RetroArchConfig is null");
 
             var retroArchVersion = card.RetroArchConfig.Version;
-            var retroArchPath = Path.Combine(AppSettings.SettingsDirectory, "retroarch", retroArchVersion);
-            var retroArchExePath = Path.Combine(retroArchPath,
+            if (retroArchVersion != Settings.RetroArch.Version)
+            {
+                Console.WriteLine(
+                    $" RetroArch version mismatch, card: {retroArchVersion}, app: {Settings.RetroArch.Version}");
+                retroArchVersion = Settings.RetroArch.Version;
+            }
+
+            // setup paths
+            var dataPath = Path.Combine(AppSettings.SettingsDirectory, "data", retroArchVersion);
+            var exePath = Path.Combine(dataPath,
                 OperatingSystem.IsWindows() ? "retroarch.exe" : "RetroArch-Linux-x86_64.AppImage");
+            var homePath = OperatingSystem.IsWindows()
+                ? dataPath
+                : Path.Combine(dataPath, "RetroArch-Linux-x86_64.AppImage.home");
+            var retroPath = OperatingSystem.IsWindows() ? dataPath : Path.Combine(homePath, ".config", "retroarch");
             var coreExt = OperatingSystem.IsWindows() ? "_libretro.dll" : "_libretro.so";
-            var corePath = Path.Combine(AppSettings.SettingsDirectory,
-                "retroarch", retroArchVersion, "cores", card.RetroArchConfig.Core + coreExt);
+            var corePath = Path.Combine(retroPath, "cores", card.RetroArchConfig.Core + coreExt);
+
+            // check mandatory files
+            if (!File.Exists(exePath))
+                throw new FileNotFoundException(" RetroArch executable not found: ", exePath);
+            if (!File.Exists(card.RomPath))
+                throw new FileNotFoundException(" RetroArch rom not found: ", card.RomPath);
 
             // copy required card system files, if any
             if (card.RetroArchConfig.Runtimes != null)
@@ -85,22 +102,16 @@ public class App : Application, IDisposable
                 foreach (var file in card.RetroArchConfig.Runtimes)
                 {
                     var src = Path.Combine(card.BaseDirectory, file);
-                    var dst = Path.Combine(retroArchPath, "system", Path.GetFileName(file));
+                    var dst = Path.Combine(retroPath, "system", Path.GetFileName(file));
                     Console.WriteLine($" Copying required system file `{src}` to `{dst}`");
                     await Utility.CopyFileAsync(src, dst);
                 }
             }
 
-            if (!File.Exists(retroArchExePath))
-                throw new FileNotFoundException(" RetroArch executable not found: ", retroArchExePath);
-
-            if (!File.Exists(card.RomPath))
-                throw new FileNotFoundException(" RetroArch rom not found: ", card.RomPath);
-
             Utility.Notify(" Loading " + card.Name);
             Console.WriteLine($"  game: {card.Name}");
             Console.WriteLine($"  rom:  {card.RomPath}");
-            Console.WriteLine($"  retroarch: {retroArchExePath}");
+            Console.WriteLine($"  retroarch: {exePath}");
             Console.WriteLine($"  retroarch core: {corePath}");
             Console.WriteLine($"  retroarch version: {card.RetroArchConfig.Version}");
 
@@ -112,7 +123,9 @@ public class App : Application, IDisposable
 
             // start retroarch
             _retroArch.Start(
-                retroArchExecutable: retroArchExePath,
+                exePath: exePath,
+                homePath: homePath,
+                retroPath: retroPath,
                 romPath: card.RomPath,
                 corePath: corePath,
                 fullscreen: Settings.RetroArch.StartFullscreen,

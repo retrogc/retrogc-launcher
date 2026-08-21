@@ -47,7 +47,9 @@ public sealed class RetroArchLauncher : IDisposable
     /// Throws if RetroArch is already running through this launcher.
     /// </summary>
     public void Start(
-        string retroArchExecutable,
+        string exePath,
+        string homePath,
+        string retroPath,
         string romPath,
         string corePath,
         bool fullscreen,
@@ -56,29 +58,19 @@ public sealed class RetroArchLauncher : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        ArgumentException.ThrowIfNullOrWhiteSpace(retroArchExecutable);
+        ArgumentException.ThrowIfNullOrWhiteSpace(exePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(romPath);
 
         var fullRomPath = Path.GetFullPath(romPath);
         if (!File.Exists(fullRomPath))
         {
-            throw new FileNotFoundException(
-                $"ROM file does not exist: {fullRomPath}",
-                fullRomPath);
-        }
-
-        var workingDir = Path.GetDirectoryName(retroArchExecutable);
-        if (workingDir == null)
-        {
-            throw new FileNotFoundException(
-                "Could not set working directory",
-                retroArchExecutable);
+            throw new FileNotFoundException($"ROM file does not exist: {fullRomPath}", fullRomPath);
         }
 
         var startInfo = new ProcessStartInfo
         {
-            FileName = retroArchExecutable,
-            WorkingDirectory = workingDir,
+            FileName = exePath,
+            WorkingDirectory = retroPath,
             UseShellExecute = false,
             CreateNoWindow = true,
 #if DEBUG
@@ -88,7 +80,7 @@ public sealed class RetroArchLauncher : IDisposable
         };
 
         // override some retroarch config that can't be set via command line
-        var cfgPath = Path.Combine(workingDir, "retrogc.cfg");
+        var cfgPath = Path.Combine(retroPath, "retrogc.cfg");
         var settings = "video_shader_enable = \"true\"" + Environment.NewLine;
         settings += "video_fullscreen = \"" + fullscreen.ToString().ToLower() + "\"" + Environment.NewLine;
         if (integerScaling) settings += "video_scale_integer = \"true\"" + Environment.NewLine;
@@ -97,22 +89,22 @@ public sealed class RetroArchLauncher : IDisposable
         startInfo.ArgumentList.Add(cfgPath);
 
         // retroarch: set env
-        startInfo.Environment["HOME"] = workingDir;
-        startInfo.Environment["LIBRETRO_DIRECTORY"] = workingDir;
+        startInfo.Environment["HOME"] = homePath;
+        startInfo.Environment["LIBRETRO_DIRECTORY"] = retroPath;
         startInfo.Environment["LIBRETRO_ASSETS_DIRECTORY"]
-            = Path.Combine(workingDir, "assets");
+            = Path.Combine(retroPath, "assets");
         startInfo.Environment["LIBRETRO_AUTOCONFIG_DIRECTORY"]
-            = Path.Combine(workingDir, "autoconfig");
+            = Path.Combine(retroPath, "autoconfig");
         startInfo.Environment["LIBRETRO_CHEATS_DIRECTORY"]
-            = Path.Combine(workingDir, "cheats");
+            = Path.Combine(retroPath, "cheats");
         startInfo.Environment["LIBRETRO_DATABASE_DIRECTORY"]
-            = Path.Combine(workingDir, "database");
+            = Path.Combine(retroPath, "database");
         startInfo.Environment["LIBRETRO_SYSTEM_DIRECTORY"]
-            = Path.Combine(workingDir, "system");
+            = Path.Combine(retroPath, "system");
         startInfo.Environment["LIBRETRO_VIDEO_FILTER_DIRECTORY"]
-            = Path.Combine(workingDir, "filters");
+            = Path.Combine(retroPath, "filters");
         startInfo.Environment["LIBRETRO_VIDEO_SHADER_DIRECTORY"]
-            = Path.Combine(workingDir, "shaders");
+            = Path.Combine(retroPath, "shaders");
 
 #if DEBUG
         startInfo.ArgumentList.Add("-v");
@@ -177,8 +169,7 @@ public sealed class RetroArchLauncher : IDisposable
                 process.Exited -= OnProcessExited;
                 process.Dispose();
 
-                throw new InvalidOperationException(
-                    $"Unable to launch '{retroArchExecutable}'.");
+                throw new InvalidOperationException($"Unable to launch '{exePath}'.");
             }
 
 #if DEBUG

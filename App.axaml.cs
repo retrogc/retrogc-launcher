@@ -80,6 +80,7 @@ public class App : Application, IDisposable
             }
 
             // setup paths
+            // TODO: handle "AppSettings.UseCustomExecutable"
             var dataPath = Path.Combine(AppSettings.SettingsDirectory, "data", retroArchVersion);
             var exePath = Path.Combine(dataPath,
                 OperatingSystem.IsWindows() ? "retroarch.exe" : "RetroArch-Linux-x86_64.AppImage");

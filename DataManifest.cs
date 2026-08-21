@@ -24,6 +24,7 @@ public sealed class DataManifestPlatform
 
 public sealed class DataManifestFile
 {
+    [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
     [JsonPropertyName("file")] public string File { get; set; } = string.Empty;
     [JsonPropertyName("url")] public string Url { get; set; } = string.Empty;
 }

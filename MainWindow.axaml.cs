@@ -113,6 +113,7 @@ public partial class MainWindow : Window
         {
             Show();
             var window = new SettingsWindow(App.Settings);
+            //var window = new DataDownloadWindow();
             await window.ShowDialog(this);
         }
         catch (Exception)

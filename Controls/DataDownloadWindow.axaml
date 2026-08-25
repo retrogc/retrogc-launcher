@@ -1,0 +1,210 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="RetroGameCard.Controls.DataDownloadWindow"
+        Title="RetroGC Data Installer"
+        Width="720" Height="560"
+        MinWidth="640" MinHeight="480"
+        Background="#090B10">
+
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="Inter, Arial, sans-serif" />
+            <Setter Property="Foreground" Value="#EEF2FA" />
+        </Style>
+        <Style Selector="TextBlock.section-label">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="LetterSpacing" Value="1.8" />
+            <Setter Property="Foreground" Value="#8490A8" />
+        </Style>
+        <Style Selector="TextBlock.game-title">
+            <Setter Property="FontSize" Value="35" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="TextBlock.game-description">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="LineHeight" Value="23" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="#A9B3C6" />
+        </Style>
+        <Style Selector="TextBlock.version">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="#5E6A7E" />
+        </Style>
+        <Style Selector="Border.chip">
+            <Setter Property="Background" Value="#182031" />
+            <Setter Property="BorderBrush" Value="#2A354B" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="10,5" />
+        </Style>
+        <Style Selector="Border.status-chip">
+            <Setter Property="Background" Value="#123C35" />
+            <Setter Property="BorderBrush" Value="#286A5C" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Padding" Value="10,5" />
+        </Style>
+        <Style Selector="Border.warning-chip">
+            <Setter Property="Background" Value="#3C2A12" />
+            <Setter Property="BorderBrush" Value="#6A5028" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Padding" Value="10,5" />
+        </Style>
+        <Style Selector="Border.mode-card">
+            <Setter Property="Background" Value="#182031" />
+            <Setter Property="BorderBrush" Value="#2A354B" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="Width" Value="260" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel Margin="20">
+
+        <!-- Header (docked top) -->
+        <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,16">
+            <TextBlock Classes="game-title" Text="RetroGC Data Installation" />
+        </StackPanel>
+
+        <!-- Footer (docked bottom, always reserved so buttons never get clipped) -->
+        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" Margin="0,16,0,0">
+            <Button x:Name="BackButton"
+                    Grid.Column="0"
+                    Content="‹ Back"
+                    IsVisible="False"
+                    Click="OnBackClick" />
+
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+                <Button x:Name="StartButton"
+                        Content="Start"
+                        IsVisible="False"
+                        IsEnabled="False"
+                        Click="OnStartClick" />
+                <Button Content="Close" Click="OnCloseClick" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Content (fills remaining space, scrolls if needed) -->
+        <ScrollViewer>
+            <Grid>
+
+                <!-- Mode selection root -->
+                <StackPanel x:Name="ModeSelectionRoot" Spacing="20" HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+
+                    <Border x:Name="ExistingDataInfoBorder" Classes="status-chip" IsVisible="False"
+                            HorizontalAlignment="Center">
+                        <TextBlock x:Name="ExistingDataInfoTextBlock" FontSize="12" Text="" />
+                    </Border>
+
+                    <TextBlock Classes="section-label" Text="CHOOSE INSTALLATION SOURCE" HorizontalAlignment="Center" />
+
+                    <StackPanel x:Name="ModeButtonsPanel" Orientation="Horizontal" Spacing="16">
+                        <Button x:Name="OnlineModeButton" Click="OnOnlineModeClick">
+                            <Border Classes="mode-card">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Online" FontWeight="Bold" FontSize="18" />
+                                    <TextBlock Classes="game-description"
+                                               Text="Download the latest data package from the internet." />
+                                </StackPanel>
+                            </Border>
+                        </Button>
+
+                        <Button x:Name="LocalModeButton" Click="OnLocalModeClick">
+                            <Border Classes="mode-card">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Local File" FontWeight="Bold" FontSize="18" />
+                                    <TextBlock Classes="game-description"
+                                               Text="Install from a retrogc-data.rgc file already on disk." />
+                                </StackPanel>
+                            </Border>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel x:Name="LocalBrowsePanel" IsVisible="False" Spacing="10" HorizontalAlignment="Center">
+                        <Button x:Name="BrowseButton"
+                                Content="Browse for retrogc-data.rgc…"
+                                Click="OnBrowseClick"
+                                HorizontalAlignment="Center" />
+
+                        <Border Classes="chip">
+                            <TextBlock x:Name="SelectedManifestPathTextBlock" Classes="version" Text="No file selected"
+                                       TextWrapping="Wrap" />
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Install panel -->
+                <Grid x:Name="InstallPanel" IsVisible="False" RowDefinitions="Auto,Auto,Auto">
+
+                    <StackPanel Grid.Row="0" Spacing="4">
+                        <TextBlock x:Name="PhaseTextBlock" Text="Idle" FontSize="16" FontWeight="Bold"
+                                   Foreground="#4FD1C5" />
+                        <TextBlock x:Name="StatusTextBlock" Text="Ready." Classes="game-description"
+                                   TextWrapping="Wrap" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Margin="0,16,0,12" Spacing="6">
+                        <TextBlock Classes="section-label" Text="DETAILS" />
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border Classes="chip">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="File:" Classes="version" />
+                                    <TextBlock x:Name="DownloadFileInfoTextBlock" Classes="version" Text="(loading…)" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border x:Name="DestinationStatusBorder" Classes="status-chip" IsVisible="False">
+                                <TextBlock x:Name="DestinationStatusTextBlock" FontSize="11" Text="Destination status" />
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Margin="0,6,0,0" Spacing="4">
+                            <TextBlock Classes="section-label" Text="DATA SOURCE" />
+                            <Border Classes="chip">
+                                <TextBlock x:Name="DownloadLocationTextBlock" Classes="game-description"
+                                           Text="(pending initialization)" TextWrapping="Wrap" />
+                            </Border>
+
+                            <TextBlock Classes="section-label" Margin="0,8,0,0" Text="EXTRACTION DESTINATION" />
+                            <Border Classes="chip">
+                                <TextBlock x:Name="ExtractionLocationTextBlock" Classes="game-description"
+                                           Text="(pending initialization)" TextWrapping="Wrap" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Spacing="12">
+                        <GroupBox Header="Download / Read" Padding="8">
+                            <StackPanel Spacing="6">
+                                <ProgressBar x:Name="DownloadProgressBar" Minimum="0" Maximum="100" Value="0"
+                                             ShowProgressText="True" ProgressTextFormat="{}{1:0}%" />
+                                <TextBlock x:Name="DownloadBytesTextBlock" FontSize="12" Foreground="#A9B3C6"
+                                           Text="0 B" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Extraction" Padding="8">
+                            <StackPanel Spacing="6">
+                                <ProgressBar x:Name="ExtractProgressBar" Minimum="0" Maximum="100" Value="0"
+                                             ShowProgressText="True" ProgressTextFormat="{}{1:0}%" />
+                                <TextBlock x:Name="ExtractFilesTextBlock" FontSize="12" Foreground="#A9B3C6"
+                                           Text="Extracted 0 files" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </Grid>
+
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

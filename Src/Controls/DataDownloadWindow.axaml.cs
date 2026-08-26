@@ -297,8 +297,7 @@ public partial class DataDownloadWindow : Window
 
     private static RetrogcManifest ParseManifest(string json)
     {
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        return JsonSerializer.Deserialize<RetrogcManifest>(json, options)
+        return JsonSerializer.Deserialize(json, AppJsonContext.Default.RetrogcManifest)
                ?? throw new InvalidOperationException("Failed to parse manifest.");
     }
 
@@ -373,8 +372,7 @@ public partial class DataDownloadWindow : Window
     private static string? GetPlatformKey()
     {
         if (OperatingSystem.IsWindows()) return "win-x64";
-        if (OperatingSystem.IsLinux()) return "linux-x64";
-        return null;
+        return OperatingSystem.IsLinux() ? "linux-x64" : null;
     }
 
     #endregion
@@ -385,31 +383,25 @@ public partial class DataDownloadWindow : Window
         {
             if (_manifest == null || _dataFile == null || _platformKey == null) return;
 
-            if (_downloadFileInfoTextBlock != null)
-                _downloadFileInfoTextBlock.Text = $"{_dataFile.Name} {_manifest.Default} ({_platformKey})";
+            _downloadFileInfoTextBlock?.Text = $"{_dataFile.Name} {_manifest.Default} ({_platformKey})";
 
-            if (_downloadLocationTextBlock != null)
-            {
-                _downloadLocationTextBlock.Text = _isSourceRemote
-                    ? _tempZipPath ?? "(pending)"
-                    : $"Local file (no download needed): {_resolvedSourcePathOrUrl}";
-            }
+            _downloadLocationTextBlock?.Text = _isSourceRemote
+                ? _tempZipPath ?? "(pending)"
+                : $"Local file (no download needed): {_resolvedSourcePathOrUrl}";
 
             if (_extractionLocationTextBlock != null && _versionDir != null)
                 _extractionLocationTextBlock.Text = _versionDir;
 
-            if (_versionDir != null && _destinationStatusBorder != null && _destinationStatusTextBlock != null)
-            {
-                var exists = Directory.Exists(_versionDir);
+            if (_versionDir == null || _destinationStatusBorder == null || _destinationStatusTextBlock == null) return;
 
-                _destinationStatusBorder.IsVisible = true;
-                _destinationStatusTextBlock.Text = exists
-                    ? "Destination already exists — existing data will be overwritten."
-                    : "Destination does not exist — fresh install.";
+            var exists = Directory.Exists(_versionDir);
 
-                if (_startButton != null)
-                    _startButton.Content = exists ? "Overwrite" : "Start";
-            }
+            _destinationStatusBorder.IsVisible = true;
+            _destinationStatusTextBlock.Text = exists
+                ? "Destination already exists — existing data will be overwritten."
+                : "Destination does not exist — fresh install.";
+
+            _startButton?.Content = exists ? "Overwrite" : "Start";
         });
     }
 
@@ -425,7 +417,7 @@ public partial class DataDownloadWindow : Window
 
         _isRunning = true;
         SetStartEnabled(false);
-        if (_backButton != null) _backButton.IsEnabled = false;
+        _backButton?.IsEnabled = false;
         ResetProgressVisuals();
 
         try
@@ -488,7 +480,7 @@ public partial class DataDownloadWindow : Window
         {
             _isRunning = false;
             SetStartEnabled(true);
-            if (_backButton != null) _backButton.IsEnabled = true;
+            _backButton?.IsEnabled = true;
         }
     }
 
@@ -548,7 +540,7 @@ public partial class DataDownloadWindow : Window
 
         await Task.Run(async () =>
         {
-            int attempt = 0;
+            var attempt = 0;
             while (true)
             {
                 ct.ThrowIfCancellationRequested();
@@ -599,44 +591,34 @@ public partial class DataDownloadWindow : Window
     {
         Dispatcher.UIThread.Post(() =>
         {
-            if (_downloadProgressBar != null) _downloadProgressBar.Value = 0;
-            if (_extractProgressBar != null) _extractProgressBar.Value = 0;
-            if (_downloadBytesTextBlock != null) _downloadBytesTextBlock.Text = "0 B";
-            if (_extractFilesTextBlock != null) _extractFilesTextBlock.Text = "Extracted 0 files";
+            _downloadProgressBar?.Value = 0;
+            _extractProgressBar?.Value = 0;
+            _downloadBytesTextBlock?.Text = "0 B";
+            _extractFilesTextBlock?.Text = "Extracted 0 files";
         });
     }
 
     private void SetPhase(string text) =>
-        Dispatcher.UIThread.Post(() =>
-        {
-            if (_phaseTextBlock != null) _phaseTextBlock.Text = text;
-        });
+        Dispatcher.UIThread.Post(() => { _phaseTextBlock?.Text = text; });
 
     private void SetStatus(string text) =>
-        Dispatcher.UIThread.Post(() =>
-        {
-            if (_statusTextBlock != null) _statusTextBlock.Text = text;
-        });
+        Dispatcher.UIThread.Post(() => { _statusTextBlock?.Text = text; });
 
     private void SetStartEnabled(bool enabled) =>
-        Dispatcher.UIThread.Post(() =>
-        {
-            if (_startButton != null) _startButton.IsEnabled = enabled;
-        });
+        Dispatcher.UIThread.Post(() => { _startButton?.IsEnabled = enabled; });
 
     private void UpdateDownloadProgress(long bytesRead, long totalBytes, double percentage)
     {
         Dispatcher.UIThread.Post(() =>
         {
-            if (_downloadProgressBar != null) _downloadProgressBar.Value = percentage;
+            _downloadProgressBar?.Value = percentage;
 
-            if (_downloadBytesTextBlock != null)
-            {
-                var label = _isSourceRemote ? "Downloaded" : "Read";
-                _downloadBytesTextBlock.Text = totalBytes > 0
-                    ? $"{label} {FormatBytes(bytesRead)} / {FormatBytes(totalBytes)}"
-                    : $"{label} {FormatBytes(bytesRead)}";
-            }
+            if (_downloadBytesTextBlock == null) return;
+
+            var label = _isSourceRemote ? "Downloaded" : "Read";
+            _downloadBytesTextBlock.Text = totalBytes > 0
+                ? $"{label} {FormatBytes(bytesRead)} / {FormatBytes(totalBytes)}"
+                : $"{label} {FormatBytes(bytesRead)}";
         });
     }
 
@@ -644,14 +626,11 @@ public partial class DataDownloadWindow : Window
     {
         Dispatcher.UIThread.Post(() =>
         {
-            if (_extractProgressBar != null) _extractProgressBar.Value = percentage;
+            _extractProgressBar?.Value = percentage;
 
-            if (_extractFilesTextBlock != null)
-            {
-                _extractFilesTextBlock.Text = totalFiles > 0
-                    ? $"Extracted {filesExtracted} / {totalFiles} files"
-                    : $"Extracted {filesExtracted} files";
-            }
+            _extractFilesTextBlock?.Text = totalFiles > 0
+                ? $"Extracted {filesExtracted} / {totalFiles} files"
+                : $"Extracted {filesExtracted} files";
         });
     }
 
@@ -686,7 +665,7 @@ public class ExtractProgressInfo
     public double Percentage { get; init; }
 }
 
-public class RetrogcManifest
+public sealed class RetrogcManifest
 {
     public string Default { get; init; } = string.Empty;
     public List<RetrogcVersion> Versions { get; init; } = [];
@@ -703,18 +682,18 @@ public class RetrogcManifest
     }
 }
 
-public abstract class RetrogcVersion
+public sealed class RetrogcVersion
 {
     public string Version { get; set; } = string.Empty;
-    public Dictionary<string, RetrogcPlatform> Platforms { get; set; } = new();
+    public Dictionary<string, RetrogcPlatform> Platforms { get; set; } = [];
 }
 
-public abstract class RetrogcPlatform
+public sealed class RetrogcPlatform
 {
-    public List<RetrogcDataFile> Data { get; set; } = new();
+    public List<RetrogcDataFile> Data { get; set; } = [];
 }
 
-public abstract class RetrogcDataFile
+public sealed class RetrogcDataFile
 {
     public string Name { get; set; } = string.Empty;
     public string File { get; set; } = string.Empty;

@@ -3,10 +3,11 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using RetroGameCard.Controls;
 
 namespace RetroGameCard;
 
-[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSourceGenerationOptions(WriteIndented = true, PropertyNameCaseInsensitive = true)]
 
 // game card
 [JsonSerializable(typeof(Card))]
@@ -18,6 +19,12 @@ namespace RetroGameCard;
 [JsonSerializable(typeof(AppSettings))]
 [JsonSerializable(typeof(MainSettings))]
 [JsonSerializable(typeof(RetroArchSettings))]
+
+// data downloader
+[JsonSerializable(typeof(RetrogcManifest))]
+[JsonSerializable(typeof(RetrogcVersion))]
+[JsonSerializable(typeof(RetrogcPlatform))]
+[JsonSerializable(typeof(RetrogcDataFile))]
 internal partial class AppJsonContext : JsonSerializerContext;
 
 public sealed class AppSettings

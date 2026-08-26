@@ -27,7 +27,7 @@ public partial class DataDownloadWindow : Window
     private const string ManifestUrl =
         "https://raw.githubusercontent.com/retrogc/retrogc-data/refs/heads/main/retrogc-data.rgc";
 
-    private static readonly HttpClient SharedHttpClient = new HttpClient();
+    private static readonly HttpClient SharedHttpClient = new();
 
     private RetrogcManifest? _manifest;
     private RetrogcDataFile? _dataFile;

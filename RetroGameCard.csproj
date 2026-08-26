@@ -3,7 +3,7 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationManifest>Src\app.manifest</ApplicationManifest>
         <AssemblyName>retrogc-launcher</AssemblyName>
     </PropertyGroup>
 
@@ -16,24 +16,15 @@
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
+        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-        <None Remove="Assets\**" />
-        <AvaloniaResource Include="Assets\**" />
+        <None Remove="Src\Assets\**"/>
+        <AvaloniaResource Include="Src\Assets\**" Link="Assets\%(RecursiveDir)%(Filename)%(Extension)"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <Folder Include="Platforms\Linux\" />
+        <Content Include=".github\workflows\release.yml"/>
     </ItemGroup>
-    
-    <ItemGroup>
-      <Content Include=".github\workflows\release.yml" />
-    </ItemGroup>
-    <!--
-    <ItemGroup>
-      <Folder Include="Assets\" />
-    </ItemGroup>
-    -->
 </Project>

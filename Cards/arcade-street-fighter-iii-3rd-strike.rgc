@@ -1,0 +1,22 @@
+{
+  "name": "Street Fighter III 3rd Strike: Fight for the Future",
+  "description": "Street Fighter III 3rd Strike: Fight for the Future is a 2D fighting game and the third and final entry in the Street Fighter III series of fighting games. Fight for the Future, first released in arcades in 1999, brought back the classic Street Fighter II character Chun-Li, along with four new characters (Makoto, Remy, Q and Twelve), extending the selectable roster to twenty characters with Akuma now a regular character. All of the returning characters from the previous Street Fighter III games were given new stages, endings and even voice actors, continuing the overall storyline from where the first two games left off.",
+  "platform": "CPS-3",
+  "year": "1999",
+  "image": "sfiii3.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "fbneo",
+    "roms": [
+      "games/mame/sfiii3n.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Arcade/cores/jvcps3.rbf",
+    "roms": [
+      "_Arcade/Street Fighter III 3rd Strike Fight for the Future (Japan 990608, NO CD).mra",
+      "games/mame/sfiii3.zip",
+      "games/mame/sfiii3n.zip"
+    ]
+  }
+}

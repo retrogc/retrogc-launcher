@@ -15,8 +15,7 @@
     "core": "_Arcade/cores/jtriders.rbf",
     "roms": [
       "_Arcade/Sunset Riders (4 Players ver EAC).mra",
-      "games/mame/ssriders.zip",
-      "games/mame/jtbeta.zip"
+      "games/mame/ssriders.zip"
     ]
   }
 }

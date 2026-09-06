@@ -49,7 +49,7 @@ such, making your computer works like an old gaming console.
 ## What belongs on a RetroGameCard
 
 - A RetroGameCard must contain a configuration file at the root named with the `.rgc` extension (for example:
-  `mygame.rgc`). This file describes the card and how to run the game.
+  `mygame.rgc`). This file describes the card and how to run the game. It also contains all required game files: roms, bios (and cores for MisterFPGA)
 - Example .rgc cards config files are provided in the [Cards](https://github.com/retrogc/retrogc-launcher/tree/main/Cards) folder, use those as your authoritative examples and
   templates. Alternatively, you'll find some complete and prebuilt cards in [retrogc-gamecards](https://github.com/retrogc/retrogc-gamecards) repository.
 

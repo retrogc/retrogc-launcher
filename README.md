@@ -5,11 +5,11 @@
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20Linux%20%7C%20MiSTer%20FPGA-blueviolet)](https://github.com/Cpasjuste/RetroGameCard)
 [![Language](https://img.shields.io/badge/Language-C%23-blue)](https://github.com/Cpasjuste/RetroGameCard)
 
-RetroGameCard is a simple, portable "card" format for SD cards / USB drives that lets a single, self-contained game
-(retroarch + rom) be automatically detected and launched by the RetroGameCard C# launcher (Windows and Linux). It is
-also compatible with MiSTer FPGA via the provided `retrogc.sh` helper script.
+RetroGameCard is a simple portable "card" format for USB drives / SD cards that lets a single, self-contained game be 
+automatically detected and launched by the RetroGameCard C# launcher (Windows and Linux). It is
+also compatible with MiSTer FPGA via the provided `retrogc-launcher.sh` helper script.
 
-The launcher offers a clean UI with icons and visual indicators for inserted cards, autostart state, and runner status,
+The Windows / Linux launcher offers a clean UI with icons and visual indicators for inserted cards, autostart state, and runner status,
 think retro cartridge shelf but with modern polish. Use the UI to see which card is inserted, view cover/box art and
 such, making your computer works like an old gaming console.
 
@@ -20,8 +20,6 @@ such, making your computer works like an old gaming console.
 - One game per RetroGameCard. Each card is self-contained: all required files for that single game live on the card.
 - When the RetroGameCard launcher is running on the host system, inserting a RetroGameCard will automatically detect it
   and autoload the game.
-- The launcher provides a simple, clean UI that shows which RetroGameCard is inserted and the current game state, with
-  icons, colors, and optional cover art.
 - Great for game preservation and for building a physical-style collection similar to old console cartridges.
 
 ---
@@ -34,37 +32,31 @@ such, making your computer works like an old gaming console.
 
 ---
 
-## 🚀 Quick start
+## 🚀 Quick start (Windows / Linux)
 
-1. Install RetroArch on Windows or Linux before using this tool:
-    - Website: https://www.retroarch.com
-    - Windows: download the installer or prebuilt binaries from the site
-    - Linux: install via your distro package manager or download from the site
-2. Run RetroGameCard launcher (should be found in any RetroGameCard inserted under `/app` directory)
-3. Insert a RetroGameCard (sdcard, usb pen, etc...) and have fun !
+1. Download RetroGameCard launcher: [retrogc-launcher](https://github.com/retrogc/retrogc-launcher/releases)
+2. Run RetroGameCard launcher
+3. Let the launcher download required data (retroarch)
+4. Insert a RetroGameCard (sdcard, usb pen, etc...) and have fun !
 
+## 🚀 Quick start (MisterFPGA)
+1. Download [retrogc-launcher.sh](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/MisterFPGA/retrogc-launcher.sh) and [retrogc-launcher-daemon.sh](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/MisterFPGA/retrogc-launcher-daemon.sh)
+2. Copy the files to MisterFPGA script directory: `/media/fat/Scripts/`
+3. Load `retrogc-launcher.sh` from Main menu > Scripts
+3. More information: [readme-misterfpga.txt](https://github.com/retrogc/retrogc-launcher/blob/main/Platforms/MisterFPGA/readme-misterfpga.txt)
 ---
 
 ## What belongs on a RetroGameCard
 
 - A RetroGameCard must contain a configuration file at the root named with the `.rgc` extension (for example:
   `mygame.rgc`). This file describes the card and how to run the game.
-- Example .rgc cards config files are provided in the `GameCards/` folder, use those as your authoritative examples and
-  templates.
+- Example .rgc cards config files are provided in the [Cards](https://github.com/retrogc/retrogc-launcher/tree/main/Cards) folder, use those as your authoritative examples and
+  templates. Alternatively, you'll find some complete and prebuilt cards in [retrogc-gamecards](https://github.com/retrogc/retrogc-gamecards) repository.
 
-## Scripts and tooling
+## Covers
 
-- The repository includes Linux scripts to:
-    - Build a RetroGameCard image from a game folder (folder → image).
-    - Restore an image to an SD card or USB drive (image → device).
-- There is also a `retrogc.sh` script to support MiSTer FPGA workflows, it integrates a RetroGameCard into MiSTer setups
-  where appropriate.
-- Check the `GameCards/` folder and the `scripts/` (or top-level scripts) for the exact usage examples and parameters.
-
-## Visuals, icons and screenshots
-
-- The launcher supports icons (small status icons) and color highlights in the UI. If you want your card to show a
-  cover, include a `cover.png` (or `cover.jpg`) in the card root and reference it from the `.rgc`.
+- The launcher supports a game cover. If you want your card to show a
+  cover, include a `cover.png` in the card root and reference it from the `.rgc`.
 
 ## How auto-launch works
 
@@ -74,10 +66,19 @@ such, making your computer works like an old gaming console.
 
 ## Creating and testing a RetroGameCard
 
-1. Copy one of the `.rgc` config file example from `GameCards/` and adapt it for your game.
-2. Place the `.rgc` file at the root of the card image or folder and add all required game files.
-3. Use the included build script to create a card image or to write the contents to a target device.
+1. Copy one of the `.rgc` config file example from `Cards` folder and adapt it for your game.
+2. Place the `.rgc` file at the root of the card folder and add all required game files.
+3. Use the Linux [retrogc-image.sh](https://github.com/retrogc/retrogc-launcher/blob/main/Platforms/Linux/retrogc-image.sh) script to create a card image or to write the contents to a target device.
 4. Run the C# launcher on your host. Insert the SD/USB device and the launcher will detect and autostart the game.
+
+## Building a card
+
+- The repository includes the Linux [retrogc-image.sh](https://github.com/retrogc/retrogc-launcher/blob/main/Platforms/Linux/retrogc-image.sh) script to:
+    - Build an image from a game folder (folder → image).
+    - Restore an image to an SD card or USB drive (image → device).
+- Example .rgc cards config files are provided in the [Cards](https://github.com/retrogc/retrogc-launcher/tree/main/Cards) folder, use those as your authoritative examples and
+  templates. Alternatively, you'll find some complete and prebuilt cards in [retrogc-gamecards](https://github.com/retrogc/retrogc-gamecards) repository.
+
 
 ## Why use RetroGameCard?
 
@@ -85,19 +86,7 @@ such, making your computer works like an old gaming console.
 - Makes physical-style collections easy to manage and share.
 - Helps with long-term preservation since each card is self-contained and easy to archive.
 
-## Where to look next
-
-- `GameCards/` - Real examples of .rgc files and game layouts.
-- `Platforms/` - Build and restore helpers; `retrogc.sh` for MiSTer compatibility.
-- Launcher code (C#) - For advanced configuration and to see how detection and autostarting are implemented.
-
 ## 💡 Tips
-
-- Remove unused retroarch (windows) assets to lower game cards size
-    - database → remove the whole folder
-    - shaders → remove the whole folder
-    - assets → ozone → keep only this folder
-    - overlays → remove the whole folder
 
 - MisterFPGA
     - Find which core belong to a .mra arcade rom (cadillacs and dinosaurs):
@@ -116,15 +105,11 @@ such, making your computer works like an old gaming console.
 
 - If you want to add examples, improve the build scripts, or enhance the launcher UX (more icons, extra color themes, or
   screenshots), please open an issue or a pull request.
-- For changes to example game cards, add/modify a folder under `GameCards/` with a clear README and a valid `.rgc` file.
 
 ---
 
 ## License
 
-See the project's LICENSE file for details (if present).
+See the project's LICENSE file for details.
 
 ---
-
-If you'd like, I can further style the README with more icons, add sample screenshots, or include a ready-made GitHub
-Actions workflow to produce release binaries. Would you like any of these additions?

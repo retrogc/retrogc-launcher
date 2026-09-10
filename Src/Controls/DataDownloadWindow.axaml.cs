@@ -107,35 +107,14 @@ public partial class DataDownloadWindow : Window
 
     private void RefreshExistingDataInfo()
     {
-        try
+        var versions = GetDataVersions();
+        if (versions.Count == 0)
         {
-            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var dataRoot = Path.Combine(localAppData, "retrogc", "data");
-
-            if (!Directory.Exists(dataRoot))
-            {
-                SetExistingDataInfo("No RetroGC data detected — data is required to continue.", isWarning: true);
-                return;
-            }
-
-            var versionDirs = Directory.GetDirectories(dataRoot)
-                .Select(Path.GetFileName)
-                .Where(name => !string.IsNullOrEmpty(name))
-                .OrderByDescending(name => name)
-                .ToList();
-
-            if (versionDirs.Count == 0)
-            {
-                SetExistingDataInfo("No RetroGC data detected — data is required to continue.", isWarning: true);
-            }
-            else
-            {
-                SetExistingDataInfo($"RetroGC data v{versionDirs[0]} is already installed.", isWarning: false);
-            }
+            SetExistingDataInfo("No RetroGC data detected — data is required to continue.", isWarning: true);
         }
-        catch
+        else
         {
-            SetExistingDataInfo("Could not determine current data status.", isWarning: true);
+            SetExistingDataInfo($"RetroGC data v{versions[0]} is already installed.", isWarning: false);
         }
     }
 
@@ -644,6 +623,34 @@ public partial class DataDownloadWindow : Window
             >= kb => $"{bytes / (double)kb:0.00} KB",
             _ => $"{bytes} B"
         };
+    }
+
+    #endregion
+
+    #region Utility
+
+    public static List<string?> GetDataVersions()
+    {
+        try
+        {
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var dataRoot = Path.Combine(localAppData, "retrogc", "data");
+
+            if (!Directory.Exists(dataRoot))
+            {
+                return [];
+            }
+
+            return Directory.GetDirectories(dataRoot)
+                .Select(Path.GetFileName)
+                .Where(name => !string.IsNullOrEmpty(name))
+                .OrderByDescending(name => name)
+                .ToList();
+        }
+        catch
+        {
+            return [];
+        }
     }
 
     #endregion

@@ -37,11 +37,18 @@ public partial class MainWindow : Window
         // 
         Loaded += (_, _) => ShowWaitingForGame();
 
-        Opened += (_, _) =>
+        Opened += async (_, _) =>
         {
             Console.WriteLine("MainWindow::OnOpened...");
             UpdateClock();
             _clockTimer.Start();
+
+            var dataVersions = DataDownloadWindow.GetDataVersions();
+            if (dataVersions.Count != 0) return;
+
+            // no data found
+            var window = new DataDownloadWindow();
+            await window.ShowDialog(this);
         };
 
         // prevent closing the window (force hide)
@@ -113,7 +120,6 @@ public partial class MainWindow : Window
         {
             Show();
             var window = new SettingsWindow(App.Settings);
-            //var window = new DataDownloadWindow();
             await window.ShowDialog(this);
         }
         catch (Exception)

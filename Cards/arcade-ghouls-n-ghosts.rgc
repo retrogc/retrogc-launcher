@@ -1,0 +1,21 @@
+{
+  "name": "Ghouls'n Ghosts",
+  "description": "As the story goes, three years have passed since this game's prequel. Now the Knight Arthur must fight against the true king of the Demon World, Lucifer, who has taken many souls including that of Arthur's beloved Princess Prin Prin.",
+  "platform": "CPS-1",
+  "year": "1988",
+  "image": "ghouls.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "fbneo",
+    "roms": [
+      "games/mame/ghouls.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Arcade/cores/jtcps1.rbf",
+    "roms": [
+      "_Arcade/Ghouls'n Ghosts (World).mra",
+      "games/mame/ghouls.zip"
+    ]
+  }
+}

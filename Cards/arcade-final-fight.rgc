@@ -1,0 +1,22 @@
+{
+  "name": "Final Fight",
+  "description": "The streets of Metro City are filled with criminals who are part of a gang called Mad Gear. Former wrestler and newly elected mayor Mike Haggar tries to do something about it, much to the displeasure of the Mad Gear Gang who kidnap his daughter Jessica. Only three people are brave enough to venture into the crime-infested streets and try to bring Jessica back.",
+  "platform": "CPS-1",
+  "year": "1993",
+  "image": "ffight.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "fbneo",
+    "roms": [
+      "games/mame/ffight.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Arcade/cores/jtcps1.rbf",
+    "roms": [
+      "_Arcade/Final Fight (World, set 1).mra",
+      "games/mame/ffight.zip",
+      "games/mame/qsound.zip"
+    ]
+  }
+}

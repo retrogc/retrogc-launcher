@@ -1,0 +1,34 @@
+{
+  "name": "Windjammers",
+  "description": "Windjammers (also known as Flying Power Disc in Japan) is a fast pace, sport arcade game released by Data East on the Neo Geo arcade system in 1994.",
+  "platform": "NEOGEO",
+  "year": "1994",
+  "image": "windjammers.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "fbneo",
+    "roms": [
+      "games/neogeo/wjammers.zip"
+    ],
+    "runtimes": [
+      "games/neogeo/neogeo.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Console/NeoGeo_20260603.rbf",
+    "roms": [
+      "games/neogeo/wjammers.neo"
+    ],
+    "runtimes": [
+      "games/neogeo/000-lo.lo",
+      "games/neogeo/neo-epo.sp1",
+      "games/neogeo/sfix.sfix",
+      "games/neogeo/sp-s2.sp1",
+      "games/neogeo/uni-bios.rom",
+      "games/neogeo/romsets.xml"
+    ],
+    "delay": "1",
+    "index": "1",
+    "type": "f"
+  }
+}

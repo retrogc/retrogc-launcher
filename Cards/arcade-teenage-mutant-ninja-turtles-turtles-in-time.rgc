@@ -1,0 +1,22 @@
+{
+  "name": "Teenage Mutant Ninja Turtles - Turtles in Time",
+  "description": "When Krang steals the Statue of Liberty, the turtles pursue the Foot Clan to the Technodrome, where Shredder sends them through a time warp. The Turtles must fight Shredder's army in both the past and the future in order to get home.",
+  "platform": "KONAMI",
+  "year": "1991",
+  "image": "tmnt2.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "fbneo",
+    "roms": [
+      "games/mame/tmnt2.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Arcade/cores/jtriders.rbf",
+    "roms": [
+      "_Arcade/Teenage Mutant Ninja Turtles Turtles in Time (4 Players ver UAA).mra",
+      "games/mame/tmnt2.zip"
+    ]
+  }
+}
+

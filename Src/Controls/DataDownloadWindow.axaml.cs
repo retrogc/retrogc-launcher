@@ -460,6 +460,7 @@ public partial class DataDownloadWindow : Window
             _isRunning = false;
             SetStartEnabled(true);
             _backButton?.IsEnabled = true;
+            Hide();
         }
     }
 

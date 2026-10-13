@@ -2,8 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="RetroGameCard.Controls.DataDownloadWindow"
         Title="RetroGC Data Installer"
-        Width="720" Height="560"
+        Width="720" Height="640"
         MinWidth="640" MinHeight="480"
+        WindowStartupLocation="CenterScreen"
         Background="#090B10">
 
     <Window.Styles>

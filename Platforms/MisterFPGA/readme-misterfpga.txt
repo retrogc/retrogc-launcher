@@ -1,16 +1,15 @@
 RetroGC MiSTer background launcher
 =================================
 
-Install these files:
+Install the file "retrogc.sh" to :
 
-  /media/fat/Scripts/retrogc-launcher.sh
-  /media/fat/Scripts/retrogc-launcher-daemon.sh
+  /media/fat/Scripts/retrogc.sh
 
-Then make both executable.
+Then make it executable.
 
-The file retrogc-launcher.sh is the file you select from:
+The file retrogc.sh is the file you select from:
 
-  Main menu -> Scripts -> retrogc-launcher.sh
+  Main menu -> Scripts -> retrogc.sh
 
 Selecting it toggles the background launcher.
 

@@ -7,7 +7,7 @@
 
 RetroGameCard is a simple portable "card" format for USB drives / SD cards that lets a single, self-contained game be 
 automatically detected and launched by the RetroGameCard C# launcher (Windows and Linux). It is
-also compatible with MiSTer FPGA via the provided `retrogc-launcher.sh` helper script.
+also compatible with MiSTer FPGA via the provided `retrogc.sh` helper script.
 
 The Windows / Linux launcher offers a clean UI with icons and visual indicators for inserted cards, autostart state, and runner status,
 think retro cartridge shelf but with modern polish. Use the UI to see which card is inserted, view cover/box art and
@@ -40,10 +40,11 @@ such, making your computer works like an old gaming console.
 4. Insert a RetroGameCard (sdcard, usb pen, etc...) and have fun !
 
 ## 🚀 Quick start (MisterFPGA)
-1. Download [retrogc-launcher.sh](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/MisterFPGA/retrogc-launcher.sh) and [retrogc-launcher-daemon.sh](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/MisterFPGA/retrogc-launcher-daemon.sh)
-2. Copy the files to MisterFPGA script directory: `/media/fat/Scripts/`
-3. Load `retrogc-launcher.sh` from Main menu > Scripts
-3. More information: [readme-misterfpga.txt](https://github.com/retrogc/retrogc-launcher/blob/main/Platforms/MisterFPGA/readme-misterfpga.txt)
+1. Download [retrogc.sh](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/MisterFPGA/retrogc.sh)
+2. Copy the file to MisterFPGA script directory: `/media/fat/Scripts/`
+3. Make it executable: `chmod a+x /media/fat/Scripts/retrogc.sh`
+4. Load `retrogc.sh` from Main menu > Scripts
+5. More information: [readme-misterfpga.txt](https://github.com/retrogc/retrogc-launcher/blob/main/Platforms/MisterFPGA/readme-misterfpga.txt)
 ---
 
 ## What belongs on a RetroGameCard

@@ -61,7 +61,7 @@ esac
 if [[ "$MODE" == "--build" ]]; then
     title "🎮 RETROGC FAT32 Image Builder v$VERSION"
 
-    for cmd in parted mkfs.fat mount umount rsync xz truncate losetup; do
+    for cmd in parted mkfs.fat mount umount rsync xz truncate mcopy; do
         command -v "$cmd" >/dev/null || error "Missing dependency: $cmd"
     done
     success "Dependencies OK"
@@ -75,8 +75,8 @@ if [[ "$MODE" == "--build" ]]; then
     # Convert to MB with ceiling division
     SIZE_MB=$(( (TOTAL_BYTES + 1024 * 1024 - 1) / (1024 * 1024) ))
     
-    # Absolute minimum FAT32 size (32 MB recommended to satisfy FAT32 spec limits)
-    MIN_MB=32
+    # Absolute minimum FAT32 size (64 MB recommended to satisfy FAT32 spec limits)
+    MIN_MB=64
     (( SIZE_MB < MIN_MB )) && SIZE_MB=$MIN_MB
     
     # Round UP to the nearest multiple of 8 MB
@@ -86,14 +86,8 @@ if [[ "$MODE" == "--build" ]]; then
 
     WORKDIR=$(mktemp -d)
     IMAGE="$WORKDIR/retrogc.img"
-    MOUNT="$WORKDIR/mount"
-    LOOP=""
-
-    mkdir "$MOUNT"
 
     cleanup() {
-        mountpoint -q "$MOUNT" 2>/dev/null && sudo umount "$MOUNT" 2>/dev/null || true
-        [[ -n "$LOOP" ]] && sudo losetup -d "$LOOP" 2>/dev/null || true
         rm -rf "$WORKDIR"
     }
     trap cleanup EXIT
@@ -105,29 +99,40 @@ if [[ "$MODE" == "--build" ]]; then
     parted -s "$IMAGE" mklabel msdos
     parted -s "$IMAGE" mkpart primary fat32 1MiB 100%
     success "Partition created"
+    
+    info "Formatting FAT32 partition..."
+    # Partition begins at 1 MiB = sector 2048.
+    OFFSET_SECTORS=2048
+    OFFSET_BYTES=$((OFFSET_SECTORS * 512))
+    IMAGE_BYTES=$((SIZE_MB * 1024 * 1024))
+    PARTITION_BLOCKS=$(((IMAGE_BYTES - OFFSET_BYTES) / 1024))
 
-    info "Attaching loop device..."
-    LOOP=$(sudo losetup --find --show --partscan "$IMAGE")
-    PART="${LOOP}p1"
-    sleep 1
+    # Format the partition directly inside the image file.
+    mkfs.fat \
+        --offset="$OFFSET_SECTORS" \
+        -F 32 \
+        -n RETROGC \
+        "$IMAGE" \
+        "$PARTITION_BLOCKS" \
+        > /dev/null
 
-    info "Formatting FAT32..."
-    sudo mkfs.fat -F32 -n RETROGC "$PART"
-    success "Filesystem created"
+    success "FAT32 filesystem created"
 
     info "Copying files..."
-    sudo mount "$PART" "$MOUNT"
-    sudo rsync -rlt --info=progress2 "$SRC/" "$MOUNT/"
-    sync
-    sudo umount "$MOUNT"
+    shopt -s dotglob nullglob
+    FILES=("$SRC"/*)
+    shopt -u dotglob nullglob
 
-    sudo losetup -d "$LOOP"
-    LOOP=""
-    success "Image generated"
+    if [[ ${#FILES[@]} -gt 0 ]]; then
+        mcopy -s \
+            -i "${IMAGE}@@${OFFSET_BYTES}" \
+            "${FILES[@]}" \
+            ::/
+    fi
+    success "Files copied"   
 
     info "Compressing with xz..."
     xz -T0 -9 -c "$IMAGE" > "$OUTPUT"
-
     COMPRESSED_SIZE=$(du -h "$OUTPUT" | awk '{print $1}')
 
     title "🎉 BUILD COMPLETE!"

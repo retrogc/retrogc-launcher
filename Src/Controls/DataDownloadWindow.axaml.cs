@@ -10,8 +10,12 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+
+using Ellipse = Avalonia.Controls.Shapes.Ellipse;
+using Rectangle = Avalonia.Controls.Shapes.Rectangle;
 
 namespace RetroGameCard.Controls;
 
@@ -38,22 +42,45 @@ public partial class DataDownloadWindow : Window
     private bool _isSourceRemote;
     private string? _resolvedSourcePathOrUrl;
     private bool _isRunning;
+    private InstallStage _currentStage = InstallStage.ModeSelect;
+    private bool _hasError;
+    private bool _isPrepared;
+    private bool _isCompleted;
+
+    private static readonly IBrush IdleBrush = Brush.Parse("#5E6A7E");
+    private static readonly IBrush ActiveBrush = Brush.Parse("#5CE1B7");
+    private static readonly IBrush ErrorBrush = Brush.Parse("#F2777A");
 
     // Mode selection controls
     private TextBlock? _existingDataInfoTextBlock;
     private Border? _existingDataInfoBorder;
-    private StackPanel? _modeButtonsPanel;
-    private StackPanel? _localBrowsePanel;
+    private Border? _localBrowsePanel;
     private TextBlock? _selectedManifestPathTextBlock;
+    private Button? _onlineModeButton;
+    private Button? _localModeButton;
 
     private Panel? _modeSelectionRoot;
-    private Grid? _installPanel;
+    private Panel? _installPanel;
+
+    // Step indicator
+    private Border? _stepSource;
+    private Border? _stepPrepare;
+    private Border? _stepInstall;
+    private TextBlock? _stepSourceText;
+    private TextBlock? _stepPrepareText;
+    private TextBlock? _stepInstallText;
+    private Rectangle? _stepLine1;
+    private Rectangle? _stepLine2;
 
     // Install panel controls
     private TextBlock? _phaseTextBlock;
     private TextBlock? _statusTextBlock;
+    private Ellipse? _phaseLight;
     private TextBlock? _downloadBytesTextBlock;
+    private TextBlock? _downloadPercentTextBlock;
     private TextBlock? _extractFilesTextBlock;
+    private TextBlock? _extractPercentTextBlock;
+    private TextBlock? _downloadStepTitleTextBlock;
     private ProgressBar? _downloadProgressBar;
     private ProgressBar? _extractProgressBar;
     private TextBlock? _downloadFileInfoTextBlock;
@@ -80,17 +107,31 @@ public partial class DataDownloadWindow : Window
     {
         _existingDataInfoBorder = this.FindControl<Border>("ExistingDataInfoBorder");
         _existingDataInfoTextBlock = this.FindControl<TextBlock>("ExistingDataInfoTextBlock");
-        _modeButtonsPanel = this.FindControl<StackPanel>("ModeButtonsPanel");
-        _localBrowsePanel = this.FindControl<StackPanel>("LocalBrowsePanel");
+        _localBrowsePanel = this.FindControl<Border>("LocalBrowsePanel");
         _selectedManifestPathTextBlock = this.FindControl<TextBlock>("SelectedManifestPathTextBlock");
+        _onlineModeButton = this.FindControl<Button>("OnlineModeButton");
+        _localModeButton = this.FindControl<Button>("LocalModeButton");
 
         _modeSelectionRoot = this.FindControl<Panel>("ModeSelectionRoot");
-        _installPanel = this.FindControl<Grid>("InstallPanel");
+        _installPanel = this.FindControl<Panel>("InstallPanel");
+
+        _stepSource = this.FindControl<Border>("StepSource");
+        _stepPrepare = this.FindControl<Border>("StepPrepare");
+        _stepInstall = this.FindControl<Border>("StepInstall");
+        _stepSourceText = this.FindControl<TextBlock>("StepSourceText");
+        _stepPrepareText = this.FindControl<TextBlock>("StepPrepareText");
+        _stepInstallText = this.FindControl<TextBlock>("StepInstallText");
+        _stepLine1 = this.FindControl<Rectangle>("StepLine1");
+        _stepLine2 = this.FindControl<Rectangle>("StepLine2");
 
         _phaseTextBlock = this.FindControl<TextBlock>("PhaseTextBlock");
         _statusTextBlock = this.FindControl<TextBlock>("StatusTextBlock");
+        _phaseLight = this.FindControl<Ellipse>("PhaseLight");
         _downloadBytesTextBlock = this.FindControl<TextBlock>("DownloadBytesTextBlock");
+        _downloadPercentTextBlock = this.FindControl<TextBlock>("DownloadPercentTextBlock");
         _extractFilesTextBlock = this.FindControl<TextBlock>("ExtractFilesTextBlock");
+        _extractPercentTextBlock = this.FindControl<TextBlock>("ExtractPercentTextBlock");
+        _downloadStepTitleTextBlock = this.FindControl<TextBlock>("DownloadStepTitleTextBlock");
         _downloadProgressBar = this.FindControl<ProgressBar>("DownloadProgressBar");
         _extractProgressBar = this.FindControl<ProgressBar>("ExtractProgressBar");
         _downloadFileInfoTextBlock = this.FindControl<TextBlock>("DownloadFileInfoTextBlock");
@@ -123,10 +164,94 @@ public partial class DataDownloadWindow : Window
         if (_existingDataInfoTextBlock == null || _existingDataInfoBorder == null) return;
 
         _existingDataInfoTextBlock.Text = text;
-        _existingDataInfoBorder.Classes.Remove("status-chip");
-        _existingDataInfoBorder.Classes.Remove("warning-chip");
-        _existingDataInfoBorder.Classes.Add(isWarning ? "warning-chip" : "status-chip");
+        _existingDataInfoBorder.Classes.Remove("ok");
+        _existingDataInfoBorder.Classes.Remove("warning");
+        _existingDataInfoBorder.Classes.Add(isWarning ? "warning" : "ok");
         _existingDataInfoBorder.IsVisible = true;
+    }
+
+    #endregion
+
+    #region Step indicator
+
+    private enum StepState
+    {
+        Pending,
+        Active,
+        Done,
+        Error
+    }
+
+    private void SetStepClasses(Border? step, StepState state)
+    {
+        if (step == null) return;
+
+        step.Classes.Remove("active");
+        step.Classes.Remove("done");
+        step.Classes.Remove("error");
+
+        if (state == StepState.Active) step.Classes.Add("active");
+        else if (state == StepState.Done) step.Classes.Add("done");
+        else if (state == StepState.Error) step.Classes.Add("error");
+    }
+
+    /// <summary>
+    /// Swaps the step badge between its number and a checkmark once the step is done.
+    /// </summary>
+    private static void SetStepBadge(TextBlock? text, string number, string label, bool done)
+    {
+        if (text == null) return;
+
+        text.Text = done ? $"✓ {label}" : $"{number} · {label}";
+    }
+
+    private void SetStepLineClasses(Rectangle? line, bool done)
+    {
+        if (line == null) return;
+
+        line.Classes.Remove("done");
+        if (done) line.Classes.Add("done");
+    }
+
+    /// <summary>
+    /// Reflects the current flow state in the header step indicator.
+    /// </summary>
+    private void UpdateStepIndicator(InstallStage stage)
+    {
+        StepState source, prepare, install;
+
+        if (stage != InstallStage.Install)
+        {
+            source = StepState.Active;
+            prepare = StepState.Pending;
+            install = StepState.Pending;
+        }
+        else if (!_isPrepared)
+        {
+            // Still resolving the manifest: that is the "prepare" step.
+            source = StepState.Done;
+            prepare = _hasError ? StepState.Error : StepState.Active;
+            install = StepState.Pending;
+        }
+        else
+        {
+            source = StepState.Done;
+            prepare = StepState.Done;
+            install = _hasError ? StepState.Error
+                : _isCompleted ? StepState.Done
+                : StepState.Active;
+        }
+
+        SetStepClasses(_stepSource, source);
+        SetStepClasses(_stepPrepare, prepare);
+        SetStepClasses(_stepInstall, install);
+
+        SetStepBadge(_stepSourceText, "1", "SOURCE", source == StepState.Done);
+        SetStepBadge(_stepPrepareText, "2", "PREPARE", prepare == StepState.Done);
+        SetStepBadge(_stepInstallText, "3", "INSTALL", install == StepState.Done);
+
+        SetStepLineClasses(_stepLine1, source == StepState.Done);
+        SetStepLineClasses(_stepLine2, prepare == StepState.Done);
     }
 
     #endregion
@@ -135,12 +260,27 @@ public partial class DataDownloadWindow : Window
 
     private void GoToStage(InstallStage stage)
     {
+        _currentStage = stage;
+        if (stage != InstallStage.Install)
+        {
+            _hasError = false;
+            _isPrepared = false;
+            _isCompleted = false;
+        }
+
         _modeSelectionRoot?.IsVisible = stage != InstallStage.Install;
-        _modeButtonsPanel?.IsVisible = stage == InstallStage.ModeSelect;
         _localBrowsePanel?.IsVisible = stage == InstallStage.LocalBrowse;
         _installPanel?.IsVisible = stage == InstallStage.Install;
         _backButton?.IsVisible = stage != InstallStage.ModeSelect;
         _startButton?.IsVisible = stage == InstallStage.Install;
+
+        // The local file row lives under the source cards, so both cards stay visible;
+        // the picked one is highlighted to show which source is being configured.
+        _onlineModeButton?.Classes.Remove("selected");
+        _localModeButton?.Classes.Remove("selected");
+        if (stage == InstallStage.LocalBrowse) _localModeButton?.Classes.Add("selected");
+
+        UpdateStepIndicator(stage);
     }
 
     private void OnBackClick(object? sender, RoutedEventArgs e)
@@ -156,6 +296,14 @@ public partial class DataDownloadWindow : Window
 
         if (_selectedManifestPathTextBlock != null)
             _selectedManifestPathTextBlock.Text = "No file selected";
+
+        _hasError = false;
+        _isPrepared = false;
+        _isCompleted = false;
+        SetStartLabel("Start");
+        SetPhase("Idle");
+        SetStatus("Ready.");
+        ResetProgressVisuals();
 
         RefreshExistingDataInfo();
         GoToStage(InstallStage.ModeSelect);
@@ -219,6 +367,18 @@ public partial class DataDownloadWindow : Window
 
     #region Initialization (online / local)
 
+    /// <summary>
+    /// Reports a failure that prevents the installation from starting.
+    /// </summary>
+    private void ReportInitializationError(string message)
+    {
+        _hasError = true;
+        SetPhase("Error");
+        SetStatus(message);
+        SetStartEnabled(false);
+        UpdateStepIndicator(_currentStage);
+    }
+
     private async Task InitializeOnlineAsync(CancellationToken ct = default)
     {
         try
@@ -238,9 +398,7 @@ public partial class DataDownloadWindow : Window
         }
         catch (Exception ex)
         {
-            SetPhase("Error");
-            SetStatus($"Initialization failed: {ex.Message}");
-            SetStartEnabled(false);
+            ReportInitializationError($"Initialization failed: {ex.Message}");
         }
     }
 
@@ -253,9 +411,7 @@ public partial class DataDownloadWindow : Window
 
             if (!File.Exists(manifestFilePath))
             {
-                SetPhase("Error");
-                SetStatus("Selected manifest file does not exist.");
-                SetStartEnabled(false);
+                ReportInitializationError("Selected manifest file does not exist.");
                 return;
             }
 
@@ -268,9 +424,7 @@ public partial class DataDownloadWindow : Window
         }
         catch (Exception ex)
         {
-            SetPhase("Error");
-            SetStatus($"Initialization failed: {ex.Message}");
-            SetStartEnabled(false);
+            ReportInitializationError($"Initialization failed: {ex.Message}");
         }
     }
 
@@ -287,18 +441,14 @@ public partial class DataDownloadWindow : Window
         _platformKey = GetPlatformKey();
         if (_platformKey == null)
         {
-            SetPhase("Error");
-            SetStatus("Unsupported OS (only Windows and Linux x64 are handled).");
-            SetStartEnabled(false);
+            ReportInitializationError("Unsupported OS (only Windows and Linux x64 are handled).");
             return;
         }
 
         _dataFile = _manifest.GetDataFile(_platformKey, "retrogc-data");
         if (_dataFile == null)
         {
-            SetPhase("Error");
-            SetStatus($"No data file named 'retrogc-data' for platform '{_platformKey}'.");
-            SetStartEnabled(false);
+            ReportInitializationError($"No data file named 'retrogc-data' for platform '{_platformKey}'.");
             return;
         }
 
@@ -312,9 +462,8 @@ public partial class DataDownloadWindow : Window
         {
             if (string.IsNullOrEmpty(_localManifestBaseDir))
             {
-                SetPhase("Error");
-                SetStatus("Manifest references a relative local file, but no local manifest folder is known.");
-                SetStartEnabled(false);
+                ReportInitializationError(
+                    "Manifest references a relative local file, but no local manifest folder is known.");
                 return;
             }
 
@@ -322,9 +471,7 @@ public partial class DataDownloadWindow : Window
 
             if (!File.Exists(_resolvedSourcePathOrUrl))
             {
-                SetPhase("Error");
-                SetStatus($"Local data file not found: {_resolvedSourcePathOrUrl}");
-                SetStartEnabled(false);
+                ReportInitializationError($"Local data file not found: {_resolvedSourcePathOrUrl}");
                 return;
             }
         }
@@ -339,6 +486,12 @@ public partial class DataDownloadWindow : Window
 
         SetPhase("Ready");
         SetStatus(_isSourceRemote ? "Ready to download and install." : "Ready to install from local file.");
+
+        // Preparation succeeded: the source is resolved and the install can start.
+        _isPrepared = true;
+        _hasError = false;
+        _isCompleted = false;
+        UpdateStepIndicator(_currentStage);
 
         UpdateMetadataUi();
         SetStartEnabled(true);
@@ -364,9 +517,13 @@ public partial class DataDownloadWindow : Window
 
             _downloadFileInfoTextBlock?.Text = $"{_dataFile.Name} {_manifest.Default} ({_platformKey})";
 
+            // Show the actual origin the user picked, not the internal temp file.
             _downloadLocationTextBlock?.Text = _isSourceRemote
-                ? _tempZipPath ?? "(pending)"
-                : $"Local file (no download needed): {_resolvedSourcePathOrUrl}";
+                ? _dataFile.Url
+                : _resolvedSourcePathOrUrl ?? "(pending)";
+
+            if (_downloadStepTitleTextBlock != null)
+                _downloadStepTitleTextBlock.Text = _isSourceRemote ? "DOWNLOAD" : "READ";
 
             if (_extractionLocationTextBlock != null && _versionDir != null)
                 _extractionLocationTextBlock.Text = _versionDir;
@@ -376,11 +533,14 @@ public partial class DataDownloadWindow : Window
             var exists = Directory.Exists(_versionDir);
 
             _destinationStatusBorder.IsVisible = true;
+            _destinationStatusBorder.Classes.Remove("ok");
+            _destinationStatusBorder.Classes.Remove("warning");
+            _destinationStatusBorder.Classes.Add(exists ? "warning" : "ok");
             _destinationStatusTextBlock.Text = exists
                 ? "Destination already exists — existing data will be overwritten."
                 : "Destination does not exist — fresh install.";
 
-            _startButton?.Content = exists ? "Overwrite" : "Start";
+            SetStartLabel(exists ? "Overwrite" : "Start");
         });
     }
 
@@ -395,9 +555,12 @@ public partial class DataDownloadWindow : Window
             return;
 
         _isRunning = true;
+        _hasError = false;
+        _isCompleted = false;
         SetStartEnabled(false);
         _backButton?.IsEnabled = false;
         ResetProgressVisuals();
+        UpdateStepIndicator(_currentStage);
 
         try
         {
@@ -449,18 +612,26 @@ public partial class DataDownloadWindow : Window
 
             SetPhase("Completed");
             SetStatus($"Data installed to: {_versionDir}");
+
+            _isRunning = false;
+            _isCompleted = true;
+            _hasError = false;
+            UpdateStepIndicator(_currentStage);
+
+            // Only auto-close once the data is really installed; failures stay on screen.
+            Hide();
         }
         catch (Exception ex)
         {
+            _isRunning = false;
+            _hasError = true;
+            _isCompleted = false;
             SetPhase("Error");
             SetStatus($"Installation failed: {ex.Message}");
-        }
-        finally
-        {
-            _isRunning = false;
             SetStartEnabled(true);
+            SetStartLabel("Retry");
             _backButton?.IsEnabled = true;
-            Hide();
+            UpdateStepIndicator(_currentStage);
         }
     }
 
@@ -575,11 +746,25 @@ public partial class DataDownloadWindow : Window
             _extractProgressBar?.Value = 0;
             _downloadBytesTextBlock?.Text = "0 B";
             _extractFilesTextBlock?.Text = "Extracted 0 files";
+            _downloadPercentTextBlock?.Text = "0%";
+            _extractPercentTextBlock?.Text = "0%";
         });
     }
 
     private void SetPhase(string text) =>
-        Dispatcher.UIThread.Post(() => { _phaseTextBlock?.Text = text; });
+        Dispatcher.UIThread.Post(() =>
+        {
+            _phaseTextBlock?.Text = text;
+
+            if (_phaseLight == null) return;
+
+            _phaseLight.Fill = text switch
+            {
+                "Error" => ErrorBrush,
+                "Idle" => IdleBrush,
+                _ => ActiveBrush
+            };
+        });
 
     private void SetStatus(string text) =>
         Dispatcher.UIThread.Post(() => { _statusTextBlock?.Text = text; });
@@ -587,11 +772,18 @@ public partial class DataDownloadWindow : Window
     private void SetStartEnabled(bool enabled) =>
         Dispatcher.UIThread.Post(() => { _startButton?.IsEnabled = enabled; });
 
+    private void SetStartLabel(string text) =>
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (_startButton != null) _startButton.Content = text;
+        });
+
     private void UpdateDownloadProgress(long bytesRead, long totalBytes, double percentage)
     {
         Dispatcher.UIThread.Post(() =>
         {
             _downloadProgressBar?.Value = percentage;
+            _downloadPercentTextBlock?.Text = $"{percentage:0}%";
 
             if (_downloadBytesTextBlock == null) return;
 
@@ -607,6 +799,7 @@ public partial class DataDownloadWindow : Window
         Dispatcher.UIThread.Post(() =>
         {
             _extractProgressBar?.Value = percentage;
+            _extractPercentTextBlock?.Text = $"{percentage:0}%";
 
             _extractFilesTextBlock?.Text = totalFiles > 0
                 ? $"Extracted {filesExtracted} / {totalFiles} files"

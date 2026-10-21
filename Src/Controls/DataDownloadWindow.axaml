@@ -2,38 +2,75 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="RetroGameCard.Controls.DataDownloadWindow"
         Title="RetroGC Data Installer"
-        Width="720" Height="640"
-        MinWidth="640" MinHeight="480"
+        Width="780" Height="700"
+        MinWidth="640" MinHeight="520"
         WindowStartupLocation="CenterScreen"
         Background="#090B10">
 
     <Window.Styles>
+
+        <!-- ================= Typography ================= -->
         <Style Selector="TextBlock">
             <Setter Property="FontFamily" Value="Inter, Arial, sans-serif" />
             <Setter Property="Foreground" Value="#EEF2FA" />
         </Style>
+
+        <Style Selector="TextBlock.eyebrow">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="LetterSpacing" Value="1.8" />
+            <Setter Property="Foreground" Value="#5CE1B7" />
+        </Style>
+
         <Style Selector="TextBlock.section-label">
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="LetterSpacing" Value="1.8" />
             <Setter Property="Foreground" Value="#8490A8" />
         </Style>
-        <Style Selector="TextBlock.game-title">
-            <Setter Property="FontSize" Value="35" />
+
+        <Style Selector="TextBlock.page-title">
+            <Setter Property="FontSize" Value="28" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="Foreground" Value="#FFFFFF" />
         </Style>
-        <Style Selector="TextBlock.game-description">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="LineHeight" Value="23" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="Foreground" Value="#A9B3C6" />
+
+        <Style Selector="TextBlock.subtitle">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="#8490A8" />
         </Style>
-        <Style Selector="TextBlock.version">
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="#5E6A7E" />
+
+        <Style Selector="TextBlock.card-title">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
         </Style>
+
+        <Style Selector="TextBlock.hint">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="#6E7A90" />
+        </Style>
+
+        <Style Selector="TextBlock.value">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="#C3CCDC" />
+        </Style>
+
+        <Style Selector="TextBlock.path">
+            <Setter Property="FontFamily" Value="JetBrains Mono, DejaVu Sans Mono, Consolas, monospace" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="#C3CCDC" />
+        </Style>
+
+        <!-- ================= Surfaces ================= -->
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="#111723" />
+            <Setter Property="BorderBrush" Value="#29354A" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="20" />
+        </Style>
+
         <Style Selector="Border.chip">
             <Setter Property="Background" Value="#182031" />
             <Setter Property="BorderBrush" Value="#2A354B" />
@@ -41,39 +78,231 @@
             <Setter Property="CornerRadius" Value="5" />
             <Setter Property="Padding" Value="10,5" />
         </Style>
-        <Style Selector="Border.status-chip">
-            <Setter Property="Background" Value="#123C35" />
-            <Setter Property="BorderBrush" Value="#286A5C" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="20" />
-            <Setter Property="Padding" Value="10,5" />
-        </Style>
-        <Style Selector="Border.warning-chip">
-            <Setter Property="Background" Value="#3C2A12" />
-            <Setter Property="BorderBrush" Value="#6A5028" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="20" />
-            <Setter Property="Padding" Value="10,5" />
-        </Style>
-        <Style Selector="Border.mode-card">
-            <Setter Property="Background" Value="#182031" />
+
+        <!-- ================= Banners ================= -->
+        <Style Selector="Border.banner">
+            <Setter Property="Background" Value="#121A28" />
             <Setter Property="BorderBrush" Value="#2A354B" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="20" />
-            <Setter Property="Width" Value="260" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="16,14" />
         </Style>
+
+        <Style Selector="Border.banner.ok">
+            <Setter Property="Background" Value="#0F2A26" />
+            <Setter Property="BorderBrush" Value="#286A5C" />
+        </Style>
+
+        <Style Selector="Border.banner.warning">
+            <Setter Property="Background" Value="#2C2011" />
+            <Setter Property="BorderBrush" Value="#6A5028" />
+        </Style>
+
+        <Style Selector="Border.banner.error">
+            <Setter Property="Background" Value="#2E1719" />
+            <Setter Property="BorderBrush" Value="#7A3A3E" />
+        </Style>
+
+        <!-- Status LED inside a banner -->
+        <Style Selector="Border.banner Ellipse.led">
+            <Setter Property="Width" Value="8" />
+            <Setter Property="Height" Value="8" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Fill" Value="#5E6A7E" />
+        </Style>
+
+        <Style Selector="Border.banner.ok Ellipse.led">
+            <Setter Property="Fill" Value="#5CE1B7" />
+        </Style>
+
+        <Style Selector="Border.banner.warning Ellipse.led">
+            <Setter Property="Fill" Value="#F2BF5E" />
+        </Style>
+
+        <Style Selector="Border.banner.error Ellipse.led">
+            <Setter Property="Fill" Value="#F2777A" />
+        </Style>
+
+        <!-- ================= Buttons ================= -->
+        <Style Selector="Button">
+            <Setter Property="Background" Value="#1A2435" />
+            <Setter Property="BorderBrush" Value="#34425B" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="Foreground" Value="#EAF0FA" />
+            <Setter Property="FontFamily" Value="Inter, Arial, sans-serif" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="#22304A" />
+            <Setter Property="BorderBrush" Value="#455674" />
+        </Style>
+
+        <Style Selector="Button:pressed">
+            <Setter Property="Background" Value="#151D2B" />
+        </Style>
+
+        <Style Selector="Button:disabled">
+            <Setter Property="Opacity" Value="0.45" />
+        </Style>
+
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#277E68" />
+            <Setter Property="BorderBrush" Value="#48B89B" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="#2F9679" />
+            <Setter Property="BorderBrush" Value="#5CE1B7" />
+        </Style>
+
+        <Style Selector="Button.primary:pressed">
+            <Setter Property="Background" Value="#206554" />
+        </Style>
+
+        <!-- Source selection cards: real buttons, no inner border chrome -->
+        <Style Selector="Button.source-card">
+            <Setter Property="Background" Value="#111723" />
+            <Setter Property="BorderBrush" Value="#29354A" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+        </Style>
+
+        <Style Selector="Button.source-card:pointerover">
+            <Setter Property="Background" Value="#162032" />
+            <Setter Property="BorderBrush" Value="#3C4C69" />
+        </Style>
+
+        <Style Selector="Button.source-card.selected">
+            <Setter Property="Background" Value="#132A26" />
+            <Setter Property="BorderBrush" Value="#48B89B" />
+        </Style>
+
+        <Style Selector="Button.source-card:pointerover.selected">
+            <Setter Property="Background" Value="#16332E" />
+            <Setter Property="BorderBrush" Value="#5CE1B7" />
+        </Style>
+
+        <Style Selector="Button.source-card TextBlock.source-name">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+
+        <Style Selector="Button.source-card TextBlock.source-desc">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="#A9B3C6" />
+        </Style>
+
+        <!-- ================= Step indicator ================= -->
+        <Style Selector="Border.step">
+            <Setter Property="Background" Value="#141C2A" />
+            <Setter Property="BorderBrush" Value="#2A354B" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Padding" Value="9,4" />
+        </Style>
+
+        <Style Selector="Border.step TextBlock.step-text">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="LetterSpacing" Value="1.2" />
+            <Setter Property="Foreground" Value="#5E6A7E" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Border.step.active">
+            <Setter Property="Background" Value="#17302B" />
+            <Setter Property="BorderBrush" Value="#48B89B" />
+        </Style>
+
+        <Style Selector="Border.step.active TextBlock.step-text">
+            <Setter Property="Foreground" Value="#8AF0CC" />
+        </Style>
+
+        <Style Selector="Border.step.done">
+            <Setter Property="Background" Value="#12261F" />
+            <Setter Property="BorderBrush" Value="#286A5C" />
+        </Style>
+
+        <Style Selector="Border.step.done TextBlock.step-text">
+            <Setter Property="Foreground" Value="#5CE1B7" />
+        </Style>
+
+        <Style Selector="Border.step.error">
+            <Setter Property="Background" Value="#2E1719" />
+            <Setter Property="BorderBrush" Value="#7A3A3E" />
+        </Style>
+
+        <Style Selector="Border.step.error TextBlock.step-text">
+            <Setter Property="Foreground" Value="#F2777A" />
+        </Style>
+
+        <Style Selector="Rectangle.step-line">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Fill" Value="#2A354B" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Rectangle.step-line.done">
+            <Setter Property="Fill" Value="#286A5C" />
+        </Style>
+
+        <!-- ================= Progress ================= -->
+        <Style Selector="ProgressBar">
+            <Setter Property="Height" Value="8" />
+            <Setter Property="Foreground" Value="#5CE1B7" />
+            <Setter Property="Background" Value="#1C2638" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <Style Selector="ProgressBar.extract">
+            <Setter Property="Foreground" Value="#7FB2FF" />
+        </Style>
+
     </Window.Styles>
 
-    <DockPanel Margin="20">
+    <DockPanel Margin="28,24">
 
-        <!-- Header (docked top) -->
-        <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,16">
-            <TextBlock Classes="game-title" Text="RetroGC Data Installation" />
+        <!-- ================= Header ================= -->
+        <StackPanel DockPanel.Dock="Top" Spacing="16" Margin="0,0,0,22">
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="RETROGC DATA INSTALLER" Classes="eyebrow" />
+                <TextBlock Text="Data Installation" Classes="page-title" />
+                <TextBlock Classes="subtitle"
+                           Text="Install the RetroGC data package required to run games." />
+            </StackPanel>
+
+            <!-- Step indicator -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Border x:Name="StepSource" Classes="step">
+                    <TextBlock x:Name="StepSourceText" Classes="step-text" Text="1 · SOURCE" />
+                </Border>
+                <Rectangle x:Name="StepLine1" Classes="step-line" />
+                <Border x:Name="StepPrepare" Classes="step">
+                    <TextBlock x:Name="StepPrepareText" Classes="step-text" Text="2 · PREPARE" />
+                </Border>
+                <Rectangle x:Name="StepLine2" Classes="step-line" />
+                <Border x:Name="StepInstall" Classes="step">
+                    <TextBlock x:Name="StepInstallText" Classes="step-text" Text="3 · INSTALL" />
+                </Border>
+            </StackPanel>
         </StackPanel>
 
-        <!-- Footer (docked bottom, always reserved so buttons never get clipped) -->
-        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" Margin="0,16,0,0">
+        <!-- ================= Footer ================= -->
+        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" Margin="0,20,0,0">
             <Button x:Name="BackButton"
                     Grid.Column="0"
                     Content="‹ Back"
@@ -83,8 +312,9 @@
             <StackPanel Grid.Column="2"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
-                        Spacing="8">
+                        Spacing="10">
                 <Button x:Name="StartButton"
+                        Classes="primary"
                         Content="Start"
                         IsVisible="False"
                         IsEnabled="False"
@@ -93,117 +323,203 @@
             </StackPanel>
         </Grid>
 
-        <!-- Content (fills remaining space, scrolls if needed) -->
-        <ScrollViewer>
+        <!-- ================= Body ================= -->
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
             <Grid>
 
-                <!-- Mode selection root -->
-                <StackPanel x:Name="ModeSelectionRoot" Spacing="20" HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
+                <!-- ============= Stage 1 — choose a source ============= -->
+                <StackPanel x:Name="ModeSelectionRoot" Spacing="20">
 
-                    <Border x:Name="ExistingDataInfoBorder" Classes="status-chip" IsVisible="False"
-                            HorizontalAlignment="Center">
-                        <TextBlock x:Name="ExistingDataInfoTextBlock" FontSize="12" Text="" />
+                    <!-- Existing data status -->
+                    <Border x:Name="ExistingDataInfoBorder" Classes="banner" IsVisible="False">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Ellipse Classes="led" />
+                            <TextBlock x:Name="ExistingDataInfoTextBlock"
+                                       Classes="value"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center"
+                                       Text="" />
+                        </StackPanel>
                     </Border>
 
-                    <TextBlock Classes="section-label" Text="CHOOSE INSTALLATION SOURCE" HorizontalAlignment="Center" />
+                    <!-- Source cards -->
+                    <StackPanel Spacing="10">
+                        <TextBlock Classes="section-label" Text="CHOOSE INSTALLATION SOURCE" />
 
-                    <StackPanel x:Name="ModeButtonsPanel" Orientation="Horizontal" Spacing="16">
-                        <Button x:Name="OnlineModeButton" Click="OnOnlineModeClick">
-                            <Border Classes="mode-card">
-                                <StackPanel Spacing="8">
-                                    <TextBlock Text="Online" FontWeight="Bold" FontSize="18" />
-                                    <TextBlock Classes="game-description"
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                            <Button x:Name="OnlineModeButton"
+                                    Classes="source-card"
+                                    Click="OnOnlineModeClick">
+                                <StackPanel Spacing="7">
+                                    <TextBlock Classes="source-name" Text="Online" />
+                                    <TextBlock Classes="source-desc"
                                                Text="Download the latest data package from the internet." />
+                                    <TextBlock Classes="hint" Text="Recommended" />
                                 </StackPanel>
-                            </Border>
-                        </Button>
+                            </Button>
 
-                        <Button x:Name="LocalModeButton" Click="OnLocalModeClick">
-                            <Border Classes="mode-card">
-                                <StackPanel Spacing="8">
-                                    <TextBlock Text="Local File" FontWeight="Bold" FontSize="18" />
-                                    <TextBlock Classes="game-description"
+                            <Button x:Name="LocalModeButton"
+                                    Grid.Column="1"
+                                    Classes="source-card"
+                                    Click="OnLocalModeClick">
+                                <StackPanel Spacing="7">
+                                    <TextBlock Classes="source-name" Text="Local File" />
+                                    <TextBlock Classes="source-desc"
                                                Text="Install from a retrogc-data.rgc file already on disk." />
+                                    <TextBlock Classes="hint" Text="Works offline" />
                                 </StackPanel>
-                            </Border>
-                        </Button>
+                            </Button>
+                        </Grid>
                     </StackPanel>
 
-                    <StackPanel x:Name="LocalBrowsePanel" IsVisible="False" Spacing="10" HorizontalAlignment="Center">
-                        <Button x:Name="BrowseButton"
-                                Content="Browse for retrogc-data.rgc…"
-                                Click="OnBrowseClick"
-                                HorizontalAlignment="Center" />
+                    <!-- Local file picker, inline under the cards -->
+                    <Border x:Name="LocalBrowsePanel"
+                            Classes="card"
+                            IsVisible="False"
+                            Padding="18">
+                        <StackPanel Spacing="12">
+                            <TextBlock Classes="section-label" Text="SELECT MANIFEST FILE" />
 
-                        <Border Classes="chip">
-                            <TextBlock x:Name="SelectedManifestPathTextBlock" Classes="version" Text="No file selected"
-                                       TextWrapping="Wrap" />
-                        </Border>
-                    </StackPanel>
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                                <Button x:Name="BrowseButton"
+                                        Grid.Column="0"
+                                        Content="Choose file…"
+                                        VerticalAlignment="Center"
+                                        Click="OnBrowseClick" />
+
+                                <Border Grid.Column="1" Classes="chip" VerticalAlignment="Center">
+                                    <TextBlock x:Name="SelectedManifestPathTextBlock"
+                                               Classes="path"
+                                               Text="No file selected"
+                                               TextTrimming="CharacterEllipsis" />
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
 
-                <!-- Install panel -->
-                <Grid x:Name="InstallPanel" IsVisible="False" RowDefinitions="Auto,Auto,Auto">
+                <!-- ============= Stage 3 — install ============= -->
+                <StackPanel x:Name="InstallPanel" IsVisible="False" Spacing="16">
 
-                    <StackPanel Grid.Row="0" Spacing="4">
-                        <TextBlock x:Name="PhaseTextBlock" Text="Idle" FontSize="16" FontWeight="Bold"
-                                   Foreground="#4FD1C5" />
-                        <TextBlock x:Name="StatusTextBlock" Text="Ready." Classes="game-description"
-                                   TextWrapping="Wrap" Margin="0,4,0,0" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="1" Margin="0,16,0,12" Spacing="6">
-                        <TextBlock Classes="section-label" Text="DETAILS" />
-
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <Border Classes="chip">
-                                <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <TextBlock Text="File:" Classes="version" />
-                                    <TextBlock x:Name="DownloadFileInfoTextBlock" Classes="version" Text="(loading…)" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border x:Name="DestinationStatusBorder" Classes="status-chip" IsVisible="False">
-                                <TextBlock x:Name="DestinationStatusTextBlock" FontSize="11" Text="Destination status" />
-                            </Border>
-                        </StackPanel>
-
-                        <StackPanel Margin="0,6,0,0" Spacing="4">
-                            <TextBlock Classes="section-label" Text="DATA SOURCE" />
-                            <Border Classes="chip">
-                                <TextBlock x:Name="DownloadLocationTextBlock" Classes="game-description"
-                                           Text="(pending initialization)" TextWrapping="Wrap" />
-                            </Border>
-
-                            <TextBlock Classes="section-label" Margin="0,8,0,0" Text="EXTRACTION DESTINATION" />
-                            <Border Classes="chip">
-                                <TextBlock x:Name="ExtractionLocationTextBlock" Classes="game-description"
-                                           Text="(pending initialization)" TextWrapping="Wrap" />
-                            </Border>
-                        </StackPanel>
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="2" Spacing="12">
-                        <GroupBox Header="Download / Read" Padding="8">
-                            <StackPanel Spacing="6">
-                                <ProgressBar x:Name="DownloadProgressBar" Minimum="0" Maximum="100" Value="0"
-                                             ShowProgressText="True" ProgressTextFormat="{}{1:0}%" />
-                                <TextBlock x:Name="DownloadBytesTextBlock" FontSize="12" Foreground="#A9B3C6"
-                                           Text="0 B" />
+                    <!-- Phase + status -->
+                    <Border Classes="card" Padding="18">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Ellipse x:Name="PhaseLight"
+                                     Width="10" Height="10"
+                                     Fill="#5E6A7E"
+                                     VerticalAlignment="Top"
+                                     Margin="0,5,0,0" />
+                            <StackPanel Spacing="4">
+                                <TextBlock x:Name="PhaseTextBlock"
+                                           Classes="card-title"
+                                           Text="Idle" />
+                                <TextBlock x:Name="StatusTextBlock"
+                                           Classes="value"
+                                           TextWrapping="Wrap"
+                                           Text="Ready." />
                             </StackPanel>
-                        </GroupBox>
+                        </StackPanel>
+                    </Border>
 
-                        <GroupBox Header="Extraction" Padding="8">
-                            <StackPanel Spacing="6">
-                                <ProgressBar x:Name="ExtractProgressBar" Minimum="0" Maximum="100" Value="0"
-                                             ShowProgressText="True" ProgressTextFormat="{}{1:0}%" />
-                                <TextBlock x:Name="ExtractFilesTextBlock" FontSize="12" Foreground="#A9B3C6"
-                                           Text="Extracted 0 files" />
+                    <!-- Installation details -->
+                    <Border Classes="card">
+                        <StackPanel Spacing="16">
+
+                            <StackPanel Spacing="3">
+                                <TextBlock Classes="section-label" Text="INSTALLATION DETAILS" />
+                                <TextBlock Classes="hint" Text="What will be installed, and where." />
                             </StackPanel>
-                        </GroupBox>
-                    </StackPanel>
-                </Grid>
+
+                            <StackPanel Spacing="12">
+                                <Grid ColumnDefinitions="130,*" ColumnSpacing="16">
+                                    <TextBlock Classes="section-label" Text="FILE" VerticalAlignment="Top" />
+                                    <TextBlock x:Name="DownloadFileInfoTextBlock"
+                                               Grid.Column="1"
+                                               Classes="value"
+                                               TextWrapping="Wrap"
+                                               Text="(loading…)" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="130,*" ColumnSpacing="16">
+                                    <TextBlock Classes="section-label" Text="ORIGIN" VerticalAlignment="Top" />
+                                    <TextBlock x:Name="DownloadLocationTextBlock"
+                                               Grid.Column="1"
+                                               Classes="path"
+                                               TextWrapping="Wrap"
+                                               Text="(pending initialization)" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="130,*" ColumnSpacing="16">
+                                    <TextBlock Classes="section-label" Text="DESTINATION" VerticalAlignment="Top" />
+                                    <TextBlock x:Name="ExtractionLocationTextBlock"
+                                               Grid.Column="1"
+                                               Classes="path"
+                                               TextWrapping="Wrap"
+                                               Text="(pending initialization)" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Destination status -->
+                    <Border x:Name="DestinationStatusBorder" Classes="banner" IsVisible="False">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Ellipse Classes="led" />
+                            <TextBlock x:Name="DestinationStatusTextBlock"
+                                       Classes="value"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center"
+                                       Text="Destination status" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Download / read -->
+                    <Border Classes="card">
+                        <StackPanel Spacing="12">
+
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock x:Name="DownloadStepTitleTextBlock"
+                                           Classes="section-label"
+                                           Text="DOWNLOAD" />
+                                <TextBlock x:Name="DownloadPercentTextBlock"
+                                           Grid.Column="1"
+                                           Classes="section-label"
+                                           Foreground="#8AF0CC"
+                                           Text="0%" />
+                            </Grid>
+
+                            <ProgressBar x:Name="DownloadProgressBar"
+                                         Minimum="0" Maximum="100" Value="0" />
+
+                            <TextBlock x:Name="DownloadBytesTextBlock"
+                                       Classes="hint"
+                                       Text="0 B" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Extraction -->
+                    <Border Classes="card">
+                        <StackPanel Spacing="12">
+
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Classes="section-label" Text="EXTRACTION" />
+                                <TextBlock x:Name="ExtractPercentTextBlock"
+                                           Grid.Column="1"
+                                           Classes="section-label"
+                                           Foreground="#8AB8FF"
+                                           Text="0%" />
+                            </Grid>
+
+                            <ProgressBar x:Name="ExtractProgressBar"
+                                         Classes="extract"
+                                         Minimum="0" Maximum="100" Value="0" />
+
+                            <TextBlock x:Name="ExtractFilesTextBlock"
+                                       Classes="hint"
+                                       Text="Extracted 0 files" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
 
             </Grid>
         </ScrollViewer>

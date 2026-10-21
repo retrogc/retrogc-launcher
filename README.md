@@ -52,24 +52,27 @@ Plug one in, and your computer behaves like an old gaming console.
 1. **Download** the launcher from [releases](https://github.com/retrogc/retrogc-launcher/releases).
 2. **Run** `retrogc-launcher`. On first launch it offers to download the RetroArch data package
    it needs (RetroArch itself, plus the cores; ≈700 MB per platform).
-3. **Insert** a Retro Game Card (SD card, USB stick, …) and enjoy.
+3. **Create** a Retro Game Card:
+   - Linux: use the [retrogc-image.sh](Platforms/Linux/retrogc-image.sh) script to restore a compressed card image to an SD card, USB stick, ...
+   - Windows: use [balena Etcher](https://etcher.balena.io/) app to restore a compressed card image to an SD card, USB stick, ...
+4. **Insert** a Retro Game Card (SD card, USB stick, …) and enjoy.
 
 The launcher keeps running in the background and in the system tray, so cards keep working
 after you close the window.
 
 > 💡 The data package can also be installed manually: download
-> [`retrogc-data-1.22.2-linux.zip`](https://github.com/retrogc/retrogc-data/releases)
+> [retrogc-data-1.22.2-linux.zip](https://github.com/retrogc/retrogc-data/releases)
 > (or the Windows equivalent), extract it over your data folder, and the launcher will use it
 > instead of downloading.
 
 ### MiSTer FPGA
 
-1. **Download** [`retrogc.sh`](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/MisterFPGA/retrogc.sh).
+1. **Download** [retrogc.sh](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/MisterFPGA/retrogc.sh).
 2. **Copy** it to the MiSTer scripts directory: `/media/fat/Scripts/retrogc.sh`
 3. **Make it executable:** `chmod a+x /media/fat/Scripts/retrogc.sh`
 4. **Run it** from *Main menu → Scripts → retrogc.sh*. This toggles the background watcher, which
    also installs itself into `user-startup.sh` so it survives reboots.
-5. **Read more:** [`readme-misterfpga.txt`](Platforms/MisterFPGA/readme-misterfpga.txt)
+5. **Read more:** [readme-misterfpga.txt](Platforms/MisterFPGA/readme-misterfpga.txt)
 
 ---
 
@@ -168,7 +171,7 @@ RETROGC/                     ← volume label
 }
 ```
 
-Ready-made examples live in the [`Cards/`](Cards) folder. Treat them as the authoritative
+Ready-made examples live in the [Cards](Cards) folder. Treat them as the authoritative
 reference. Complete, prebuilt cards are available in the
 [retrogc-gamecards](https://github.com/retrogc/retrogc-gamecards) repository.
 
@@ -176,14 +179,14 @@ reference. Complete, prebuilt cards are available in the
 
 ## 🧩 Creating a card
 
-1. **Copy** one of the `.rgc` files from the [`Cards/`](Cards) folder and adapt it to your game.
+1. **Copy** one of the `.rgc` files from the [Cards](Cards) folder and adapt it to your game.
 2. **Add** the game files it references, keeping the folder layout intact.
 3. **Write** it to a FAT32 volume labelled **`RETROGC`**. That label is what the launcher looks for.
 4. **Plug it in.** The launcher detects the card and auto-launches.
 
 ### Building a card image (Linux)
 
-The [`retrogc-image.sh`](Platforms/Linux/retrogc-image.sh) script builds a compressed card image
+The [retrogc-image.sh](Platforms/Linux/retrogc-image.sh) script builds a compressed card image
 from a folder, or restores one onto a device:
 
 ```bash

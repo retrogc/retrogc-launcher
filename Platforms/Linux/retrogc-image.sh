@@ -16,14 +16,16 @@ title()   { echo -e "\n${MAGENTA}═══════════════�
 
 usage() {
     echo
-    echo -e "${WHITE}RETROGC FAT32 Image Builder / Restorer${RESET}"
+    echo -e "${WHITE}RETROGC FAT32 Image Builder / Restorer / Extractor${RESET}"
     echo
     echo "Build:   $0 --build <folder> <output.img.xz>"
     echo "Restore: $0 --restore <image.img.xz> <device>"
+    echo "Extract: $0 --extract <image.img.xz> <output-folder>"
     echo
     echo "Examples:"
     echo "  $0 --build ~/roms cps1.img.xz"
     echo "  $0 --restore cps1.img.xz /dev/sdb"
+    echo "  $0 --extract cps1.img.xz ./extracted/cps1"
     echo
 }
 
@@ -44,6 +46,15 @@ case "$MODE" in
         DEVICE="$3"
         [[ -f "$IMAGE" ]] || error "Image file does not exist: $IMAGE"
         [[ -b "$DEVICE" ]] || error "Not a block device: $DEVICE"
+        ;;
+    --extract)
+        [[ $# -eq 3 ]] || error "Usage: $0 --extract <image.img.xz> <output-folder>"
+
+        IMAGE="$(realpath "$2")"
+        EXTRACT_DIR="$3"
+
+        [[ -f "$IMAGE" ]] || error "Image file does not exist: $IMAGE"
+        [[ -n "$EXTRACT_DIR" ]] || error "Output folder must not be empty"
         ;;
     -h|--help)
         usage
@@ -185,3 +196,58 @@ if [[ "$MODE" == "--restore" ]]; then
     echo -e "${GREEN}Device:${RESET} $DEVICE"
     exit 0
 fi
+
+# ============================================================
+# EXTRACT
+# ============================================================
+
+if [[ "$MODE" == "--extract" ]]; then
+    title "📂 RETROGC Image Extractor v$VERSION"
+
+    for cmd in xz mcopy find mktemp realpath; do
+        command -v "$cmd" >/dev/null || error "Missing dependency: $cmd"
+    done
+    success "Dependencies OK"
+
+    # Require an empty destination to avoid overwriting existing files.
+    if [[ -e "$EXTRACT_DIR" && ! -d "$EXTRACT_DIR" ]]; then
+        error "Output path exists and is not a directory: $EXTRACT_DIR"
+    fi
+
+    mkdir -p -- "$EXTRACT_DIR"
+    EXTRACT_DIR="$(realpath "$EXTRACT_DIR")"
+
+    if [[ -n "$(find "$EXTRACT_DIR" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
+        error "Output folder must be empty: $EXTRACT_DIR"
+    fi
+
+    WORKDIR="$(mktemp -d)"
+    RAW_IMAGE="$WORKDIR/retrogc.img"
+
+    cleanup() {
+        rm -rf -- "$WORKDIR"
+    }
+    trap cleanup EXIT
+
+    info "Decompressing image..."
+    xz --decompress --stdout -- "$IMAGE" > "$RAW_IMAGE"
+    success "Image decompressed"
+
+    # Images produced by --build have their FAT32 partition at 1 MiB.
+    OFFSET_BYTES=$((2048 * 512))
+
+    info "Extracting files to ${CYAN}${EXTRACT_DIR}${RESET}..."
+
+    # Keep the wildcard quoted so mcopy expands it inside the image.
+    mcopy -s \
+        -i "${RAW_IMAGE}@@${OFFSET_BYTES}" \
+        '::/*' \
+        "$EXTRACT_DIR/"
+
+    title "🎉 EXTRACTION COMPLETE!"
+    echo -e "${GREEN}Image:${RESET}  $IMAGE"
+    echo -e "${GREEN}Output:${RESET} $EXTRACT_DIR"
+
+    exit 0
+fi
+

@@ -17,6 +17,7 @@ and a launcher that turns any computer into a plug-and-play retro console.
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Avalonia](https://img.shields.io/badge/UI-Avalonia%2012-8B44AC?style=flat-square)](https://avaloniaui.net/)
 [![RetroArch](https://img.shields.io/badge/Powered%20by-RetroArch-5CE1B7?style=flat-square)](https://www.retroarch.com/)
+[![License](https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square)](LICENSE)
 
 **[🚀 Quick start](#-quick-start)** ·
 **[🎴 Card format](#-the-rgc-card-format)** ·
@@ -519,7 +520,9 @@ open an [issue](https://github.com/retrogc/retrogc-launcher/issues) or a pull re
 
 ## 📄 License
 
-See the project's `LICENSE` file for details.
+Retro Game Card is free software, released under the
+[**GNU General Public License v3.0**](LICENSE). You can use, study, share and modify it;
+derived works must stay under the same license.
 
 <div align="center">
 

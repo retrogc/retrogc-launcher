@@ -1,0 +1,309 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <!-- ================= Palette ================= -->
+            <Color x:Key="BgColor">#0A0C12</Color>
+            <Color x:Key="AccentColor">#5CE1B7</Color>
+
+            <SolidColorBrush x:Key="BgBrush" Color="#0A0C12" />
+            <SolidColorBrush x:Key="SurfaceBrush" Color="#111723" />
+            <SolidColorBrush x:Key="SurfaceAltBrush" Color="#182031" />
+            <SolidColorBrush x:Key="SurfaceSunkenBrush" Color="#0C111B" />
+            <SolidColorBrush x:Key="BorderSubtleBrush" Color="#222C3F" />
+            <SolidColorBrush x:Key="BorderBrush" Color="#2B3750" />
+            <SolidColorBrush x:Key="BorderStrongBrush" Color="#3C4C69" />
+
+            <SolidColorBrush x:Key="TextBrush" Color="#EEF2FA" />
+            <SolidColorBrush x:Key="TextStrongBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="TextMutedBrush" Color="#A9B3C6" />
+            <SolidColorBrush x:Key="TextDimBrush" Color="#8490A8" />
+            <SolidColorBrush x:Key="TextFaintBrush" Color="#5E6A7E" />
+
+            <SolidColorBrush x:Key="AccentBrush" Color="#5CE1B7" />
+            <SolidColorBrush x:Key="AccentStrongBrush" Color="#8AF0CC" />
+            <SolidColorBrush x:Key="AccentDeepBrush" Color="#277E68" />
+            <SolidColorBrush x:Key="AccentSoftBrush" Color="#123C35" />
+            <SolidColorBrush x:Key="AccentBorderBrush" Color="#286A5C" />
+            <SolidColorBrush x:Key="InfoBrush" Color="#7FB2FF" />
+            <SolidColorBrush x:Key="WarnBrush" Color="#F2BF5E" />
+            <SolidColorBrush x:Key="ErrorBrush" Color="#F2777A" />
+
+            <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0%,0%" EndPoint="100%,0%">
+                <GradientStop Offset="0" Color="#5CE1B7" />
+                <GradientStop Offset="1" Color="#7FB2FF" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="PrimaryButtonBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Offset="0" Color="#2F9C80" />
+                <GradientStop Offset="1" Color="#23735F" />
+            </LinearGradientBrush>
+
+            <FontFamily x:Key="MonoFont">JetBrains Mono, DejaVu Sans Mono, Consolas, monospace</FontFamily>
+
+            <!-- ================= Icons (Material Design, Apache 2.0) ================= -->
+            <StreamGeometry x:Key="IconCloudDownload">M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z</StreamGeometry>
+            <StreamGeometry x:Key="IconFolderOpen">M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z</StreamGeometry>
+            <StreamGeometry x:Key="IconCheck">M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z</StreamGeometry>
+            <StreamGeometry x:Key="IconWarning">M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z</StreamGeometry>
+            <StreamGeometry x:Key="IconInfo">M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z</StreamGeometry>
+            <StreamGeometry x:Key="IconSdCard">M18 2h-8L4.02 8 4 20c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-6 6h-2V4h2v4zm3 0h-2V4h2v4zm3 0h-2V4h2v4z</StreamGeometry>
+            <StreamGeometry x:Key="IconGamepad">M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z</StreamGeometry>
+            <StreamGeometry x:Key="IconFolder">M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z</StreamGeometry>
+            <StreamGeometry x:Key="IconArchive">M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z</StreamGeometry>
+            <StreamGeometry x:Key="IconPlay">M8 5v14l11-7z</StreamGeometry>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <!-- ================= Window ================= -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{StaticResource BgBrush}" />
+        <Setter Property="FontFamily" Value="Inter, Arial, sans-serif" />
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    </Style>
+
+    <!-- ================= Typography ================= -->
+    <Style Selector="TextBlock.label">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LetterSpacing" Value="1.8" />
+        <Setter Property="Foreground" Value="{StaticResource TextDimBrush}" />
+    </Style>
+    <Style Selector="TextBlock.eyebrow">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="LetterSpacing" Value="2.2" />
+        <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+    </Style>
+    <Style Selector="TextBlock.h1">
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="TextBlock.h2">
+        <Setter Property="FontSize" Value="17" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}" />
+    </Style>
+    <Style Selector="TextBlock.body">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="21" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+    </Style>
+    <Style Selector="TextBlock.hint">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{StaticResource TextDimBrush}" />
+    </Style>
+    <Style Selector="TextBlock.mono">
+        <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+    </Style>
+
+    <!-- ================= Surfaces ================= -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="20" />
+    </Style>
+    <Style Selector="Border.chip">
+        <Setter Property="Background" Value="{StaticResource SurfaceAltBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Padding" Value="10,5" />
+    </Style>
+    <Style Selector="Border.chip > TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LetterSpacing" Value="1.6" />
+        <Setter Property="Foreground" Value="#B4BED0" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+    <Style Selector="Border.chip.accent">
+        <Setter Property="Background" Value="{StaticResource AccentSoftBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBorderBrush}" />
+    </Style>
+    <Style Selector="Border.chip.accent > TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource AccentStrongBrush}" />
+    </Style>
+
+    <!-- Banners: info / ok / warning / error -->
+    <Style Selector="Border.banner">
+        <Setter Property="Background" Value="#121A28" />
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="14,12" />
+    </Style>
+    <Style Selector="Border.banner PathIcon">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Foreground" Value="{StaticResource InfoBrush}" />
+    </Style>
+    <Style Selector="Border.banner TextBlock">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="#C3CCDC" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.banner.ok">
+        <Setter Property="Background" Value="#0F2A26" />
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBorderBrush}" />
+    </Style>
+    <Style Selector="Border.banner.ok PathIcon">
+        <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+    </Style>
+    <Style Selector="Border.banner.warning">
+        <Setter Property="Background" Value="#2C2011" />
+        <Setter Property="BorderBrush" Value="#6A5028" />
+    </Style>
+    <Style Selector="Border.banner.warning PathIcon">
+        <Setter Property="Foreground" Value="{StaticResource WarnBrush}" />
+    </Style>
+    <Style Selector="Border.banner.error">
+        <Setter Property="Background" Value="#2E1719" />
+        <Setter Property="BorderBrush" Value="#7A3A3E" />
+    </Style>
+    <Style Selector="Border.banner.error PathIcon">
+        <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+    </Style>
+
+    <!-- ================= Buttons ================= -->
+    <!-- Fluent styles the template's presenter on hover/press, so those states target it too. -->
+    <Style Selector="Button">
+        <Setter Property="Background" Value="#1A2435" />
+        <Setter Property="BorderBrush" Value="#34425B" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="16,9" />
+        <Setter Property="Foreground" Value="#EAF0FA" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#22304A" />
+        <Setter Property="BorderBrush" Value="#4A5C7C" />
+        <Setter Property="Foreground" Value="#FFFFFF" />
+    </Style>
+    <Style Selector="Button:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.98)" />
+    </Style>
+    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#151D2B" />
+    </Style>
+    <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#141B28" />
+        <Setter Property="BorderBrush" Value="#232D40" />
+        <Setter Property="Foreground" Value="#5E6A7E" />
+    </Style>
+
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{StaticResource PrimaryButtonBrush}" />
+        <Setter Property="BorderBrush" Value="#48B89B" />
+        <Setter Property="Foreground" Value="#FFFFFF" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Padding" Value="22,9" />
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#34AE8E" />
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+    </Style>
+    <Style Selector="Button.primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#206554" />
+    </Style>
+
+    <Style Selector="Button.ghost">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+    </Style>
+    <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#151D2B" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+
+    <!-- ================= Inputs ================= -->
+    <Style Selector="TextBox">
+        <Setter Property="Background" Value="{StaticResource SurfaceSunkenBrush}" />
+        <Setter Property="BorderBrush" Value="#34425B" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="10,8" />
+    </Style>
+    <Style Selector="ComboBox">
+        <Setter Property="Background" Value="{StaticResource SurfaceSunkenBrush}" />
+        <Setter Property="BorderBrush" Value="#34425B" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="MinWidth" Value="200" />
+    </Style>
+
+    <!-- ================= Progress ================= -->
+    <Style Selector="ProgressBar">
+        <Setter Property="Height" Value="6" />
+        <Setter Property="MinHeight" Value="6" />
+        <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+        <Setter Property="Background" Value="#1C2638" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="3" />
+    </Style>
+    <Style Selector="ProgressBar.large">
+        <Setter Property="Height" Value="12" />
+        <Setter Property="MinHeight" Value="12" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Foreground" Value="{StaticResource AccentGradientBrush}" />
+    </Style>
+    <Style Selector="ProgressBar.info">
+        <Setter Property="Foreground" Value="{StaticResource InfoBrush}" />
+    </Style>
+
+    <!-- ================= Status LED ================= -->
+    <Style Selector="Ellipse.led">
+        <Setter Property="Width" Value="8" />
+        <Setter Property="Height" Value="8" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Fill" Value="{StaticResource AccentBrush}" />
+    </Style>
+    <Style Selector="Ellipse.led.pulse">
+        <Style.Animations>
+            <Animation Duration="0:0:1.6" IterationCount="Infinite" PlaybackDirection="Alternate">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="1" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="0.25" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- Rotating arc used as a busy indicator (needs a RotateTransform as RenderTransform) -->
+    <Style Selector="Arc.spinner">
+        <Setter Property="Stroke" Value="{StaticResource AccentBrush}" />
+        <Setter Property="StrokeThickness" Value="4" />
+        <Setter Property="StrokeLineCap" Value="Round" />
+        <Setter Property="StartAngle" Value="0" />
+        <Setter Property="SweepAngle" Value="90" />
+        <Style.Animations>
+            <Animation Duration="0:0:1" IterationCount="Infinite">
+                <KeyFrame Cue="0%">
+                    <Setter Property="RotateTransform.Angle" Value="0" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="RotateTransform.Angle" Value="360" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+</Styles>

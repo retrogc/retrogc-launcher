@@ -1,229 +1,82 @@
 using System;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using RetroGameCard.Models;
+using RetroGameCard.Services;
+using RetroGameCard.ViewModels;
+using RetroGameCard.Views;
 
 namespace RetroGameCard;
 
-public class App : Application, IDisposable
+public class App : Application
 {
     public static AppSettings Settings { get; private set; } = new();
 
-    private readonly CardMonitor _monitor = new("RETROGC");
-    private readonly RetroArchLauncher _retroArch = new();
     private MainWindow? _mainWindow;
+    private MainViewModel? _mainViewModel;
+    private GameSession? _session;
 
-    public override void Initialize()
-    {
-        Console.WriteLine("App::Initialize");
-        AvaloniaXamlLoader.Load(this);
-    }
+    public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override async void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // load settings
-            Console.WriteLine("App::OnFrameworkInitializationCompleted: loading settings...");
             Settings = await AppSettings.LoadAsync();
 
-            // create main window
-            desktop.MainWindow = _mainWindow = new MainWindow();
+            _mainViewModel = new MainViewModel();
+            _session = new GameSession(_mainViewModel, () => Settings);
+            _mainWindow = new MainWindow(_mainViewModel, _session);
+
+            desktop.MainWindow = _mainWindow;
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            desktop.ShutdownRequested += DesktopOnShutdownRequested;
             desktop.Exit += OnExit;
 
-            // wait for main window before starting monitoring
-            _mainWindow.Loaded += async (_, _) =>
-            {
-                await Task.Delay(2000);
-                _retroArch.Exited += OnRetroArchExited;
-                _monitor.Inserted += OnCardInserted;
-                _monitor.Removed += OnCardRemoved;
-                _monitor.Start();
-            };
+            // Without RetroArch data the window must show up so the installer can be offered.
+            var state = Settings.Main.StartupWindowState;
+            if (state == StartupWindowState.Minimized && AppPaths.GetLatestDataVersion() is null)
+                state = StartupWindowState.Normal;
+
+            _mainWindow.ApplyWindowState(state);
+
+            // A hidden window never raises Opened, which is where monitoring normally starts.
+            if (state == StartupWindowState.Minimized)
+                _session.Start();
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private async void OnCardInserted(object? sender, VolumeEventArgs e)
+    private void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
     {
+        // Stop the monitor and close RetroArch before the process ends.
         try
         {
-            Console.WriteLine($"OnCardInserted: {e.Volume.MountPoint}");
-
-            var configFile = Directory
-                .EnumerateFiles(e.Volume.MountPoint, "*.rgc", SearchOption.TopDirectoryOnly)
-                .FirstOrDefault();
-            if (configFile is null)
-            {
-                Console.WriteLine($" No config file (.rgc) found in: {e.Volume.MountPoint}");
-                return;
-            }
-
-            // load config file
-            var card = await Card.LoadAsync(configFile);
-            if (card.RetroArchConfig is null)
-                throw new NullReferenceException(" card.RetroArchConfig is null");
-
-            var retroArchVersion = card.RetroArchConfig.Version;
-            if (retroArchVersion != Settings.RetroArch.Version)
-            {
-                Console.WriteLine(
-                    $" RetroArch version mismatch, card: {retroArchVersion}, app: {Settings.RetroArch.Version}");
-                retroArchVersion = Settings.RetroArch.Version;
-            }
-
-            // setup paths
-            // TODO: handle "AppSettings.UseCustomExecutable"
-            var dataPath = Path.Combine(AppSettings.SettingsDirectory, "data", retroArchVersion);
-            var exePath = Path.Combine(dataPath,
-                OperatingSystem.IsWindows() ? "retroarch.exe" : "RetroArch-Linux-x86_64.AppImage");
-            var homePath = OperatingSystem.IsWindows()
-                ? dataPath
-                : Path.Combine(dataPath, "RetroArch-Linux-x86_64.AppImage.home");
-            var retroPath = OperatingSystem.IsWindows() ? dataPath : Path.Combine(homePath, ".config", "retroarch");
-            var coreExt = OperatingSystem.IsWindows() ? "_libretro.dll" : "_libretro.so";
-            var corePath = Path.Combine(retroPath, "cores", card.RetroArchConfig.Core + coreExt);
-
-            // check mandatory files
-            if (!File.Exists(exePath))
-                throw new FileNotFoundException(" RetroArch executable not found: ", exePath);
-            if (!File.Exists(card.RomPath))
-                throw new FileNotFoundException(" RetroArch rom not found: ", card.RomPath);
-
-            // copy required card system files, if any
-            if (card.RetroArchConfig.Runtimes != null)
-            {
-                foreach (var file in card.RetroArchConfig.Runtimes)
-                {
-                    var src = Path.Combine(card.BaseDirectory, file);
-                    var dst = Path.Combine(retroPath, "system", Path.GetFileName(file));
-                    Console.WriteLine($" Copying required system file `{src}` to `{dst}`");
-                    await Utility.CopyFileAsync(src, dst);
-                }
-            }
-
-            Utility.Notify(" Loading " + card.Name);
-            Console.WriteLine($"  game: {card.Name}");
-            Console.WriteLine($"  rom:  {card.RomPath}");
-            Console.WriteLine($"  retroarch: {exePath}");
-            Console.WriteLine($"  retroarch core: {corePath}");
-            Console.WriteLine($"  retroarch version: {card.RetroArchConfig.Version}");
-
-            // set ui waiting/loading state (TODO: show loading stuff in ui)
-            _mainWindow?.ShowGame(
-                card.Name, card.Description, card.Platform,
-                card.Year, Path.GetFileName(card.Core),
-                card.ImagePath, card.RetroArchConfig!.Version, retroArchVersion);
-
-            // start retroarch
-            _retroArch.Start(
-                exePath: exePath,
-                homePath: homePath,
-                retroPath: retroPath,
-                romPath: card.RomPath,
-                corePath: corePath,
-                fullscreen: Settings.RetroArch.StartFullscreen,
-                integerScaling: Settings.RetroArch.IntegerScaling,
-                shader: AppSettings.GetShaderPath(Settings.RetroArch.Shader));
+            if (_session is not null)
+                Task.Run(async () => await _session.DisposeAsync()).Wait(TimeSpan.FromSeconds(3));
         }
         catch (Exception exception)
         {
-            _mainWindow?.ShowError(exception.Message);
-            await Console.Error.WriteLineAsync(
-                $"Unable to launch RetroArch: {exception.Message}");
-        }
-    }
-
-    private async void OnCardRemoved(object? sender, VolumeEventArgs e)
-    {
-        try
-        {
-            Console.WriteLine($"card removed: {e.Volume.MountPoint}");
-            _mainWindow?.ShowWaitingForGame();
-            if (!_retroArch.RequestClose()) await _retroArch.KillAsync();
-        }
-        catch (Exception exception)
-        {
-            await Console.Error.WriteLineAsync(
-                $"Unable to launch RetroArch: {exception.Message}");
-        }
-    }
-
-    private void OnRetroArchExited(object? sender, RetroArchExitedEventArgs e)
-    {
-        Console.WriteLine($"RetroArch exited (PID {e.ProcessId}).");
-    }
-
-    private void DesktopOnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
-    {
-        Console.WriteLine("App.DesktopOnShutdownRequested");
-
-        // save app context
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            //((AppContext)desktop.MainWindow?.DataContext!).Save();
+            Log.Error("Shutdown", exception);
         }
 
-        //ToastNotificationManagerCompat.Uninstall();
+        _mainViewModel?.Dispose();
     }
 
-    private void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs _)
-    {
-        // save app context
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            //((AppContext)desktop.MainWindow?.DataContext!).Save();
-        }
+    private void OnTrayIconClicked(object? sender, EventArgs e) =>
+        _mainWindow?.ApplyWindowState(StartupWindowState.Normal);
 
-        //ToastNotificationManagerCompat.Uninstall();
-    }
+    private void OnOpenClicked(object? sender, EventArgs e) =>
+        _mainWindow?.ApplyWindowState(StartupWindowState.Normal);
 
-    private void OnTrayIconClicked(object? sender, EventArgs _)
-    {
-        //AppContext.OpenCommand();
-    }
-
-    private void OnOpenClicked(object? sender, EventArgs e)
-    {
-        _mainWindow?.SetWindowState(StartupWindowState.Normal);
-    }
-
-    private void OnSettingsClicked(object? sender, EventArgs e)
-    {
-        _mainWindow?.ShowSettings();
-    }
+    private void OnSettingsClicked(object? sender, EventArgs e) => _mainWindow?.ShowSettings();
 
     private void OnExitClicked(object? sender, EventArgs e)
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
             desktop.Shutdown();
-        }
-    }
-
-    public async void Dispose()
-    {
-        try
-        {
-            _monitor.Inserted -= OnCardInserted;
-            _monitor.Removed -= OnCardRemoved;
-            _retroArch.Exited -= OnRetroArchExited;
-            await _retroArch.DisposeAsync();
-            await _monitor.StopAsync();
-            _monitor.Dispose();
-        }
-        catch (Exception ex)
-        {
-            await Console.Error.WriteLineAsync(ex.ToString());
-        }
-
-        GC.SuppressFinalize(this);
     }
 }

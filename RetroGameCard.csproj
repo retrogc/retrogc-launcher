@@ -5,6 +5,9 @@
         <Nullable>enable</Nullable>
         <ApplicationManifest>Src\app.manifest</ApplicationManifest>
         <AssemblyName>retrogc-launcher</AssemblyName>
+        <RootNamespace>RetroGameCard</RootNamespace>
+        <!-- Compiled bindings are trim-safe (release builds are trimmed) and are checked at build time -->
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,7 +19,7 @@
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     </ItemGroup>
 
     <ItemGroup>

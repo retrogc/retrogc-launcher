@@ -4,16 +4,26 @@
              RequestedThemeVariant="Dark">
 
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <!-- Fluent controls (toggles, combos, focus rings) follow the launcher accent -->
+                <ColorPaletteResources x:Key="Dark"
+                                       Accent="#2FA383"
+                                       RegionColor="#0A0C12"
+                                       AltHigh="#0A0C12" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
+        <StyleInclude Source="/Src/Styles/Theme.axaml" />
     </Application.Styles>
 
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="/Assets/Icons/tray.png" ToolTipText="RetroGameCard" Clicked="OnTrayIconClicked">
+            <TrayIcon Icon="/Assets/Icons/tray.png" ToolTipText="Retro Game Card" Clicked="OnTrayIconClicked">
                 <TrayIcon.Menu>
                     <NativeMenu>
                         <NativeMenuItem Header="Open" Icon="/Assets/Icons/open.png" Click="OnOpenClicked" />
                         <NativeMenuItem Header="Settings" Icon="/Assets/Icons/settings.png" Click="OnSettingsClicked" />
+                        <NativeMenuItemSeparator />
                         <NativeMenuItem Header="Exit" Icon="/Assets/Icons/exit.png" Click="OnExitClicked" />
                     </NativeMenu>
                 </TrayIcon.Menu>

@@ -1,0 +1,250 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:RetroGameCard.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
+        x:Class="RetroGameCard.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="Retro Game Card"
+        Icon="/Assets/Icons/launcher.ico"
+        Width="960" Height="540"
+        MinWidth="800" MinHeight="480"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <Style Selector="TextBlock.game-title">
+            <Setter Property="FontSize" Value="36" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="MaxLines" Value="3" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}" />
+        </Style>
+        <Style Selector="TextBlock.clock">
+            <Setter Property="FontSize" Value="26" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="Foreground" Value="#F6F8FC" />
+        </Style>
+
+        <!-- Status pill: colour follows the session state -->
+        <Style Selector="Border.status">
+            <Setter Property="Background" Value="#2C2411" />
+            <Setter Property="BorderBrush" Value="#6A5028" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Padding" Value="11,5" />
+        </Style>
+        <Style Selector="Border.status Ellipse">
+            <Setter Property="Fill" Value="{StaticResource WarnBrush}" />
+        </Style>
+        <Style Selector="Border.status TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource WarnBrush}" />
+        </Style>
+        <Style Selector="Border.status.running, Border.status.stopped">
+            <Setter Property="Background" Value="{StaticResource AccentSoftBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBorderBrush}" />
+        </Style>
+        <Style Selector="Border.status.running Ellipse, Border.status.stopped Ellipse">
+            <Setter Property="Fill" Value="{StaticResource AccentBrush}" />
+        </Style>
+        <Style Selector="Border.status.running TextBlock, Border.status.stopped TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource AccentStrongBrush}" />
+        </Style>
+        <Style Selector="Border.status.error">
+            <Setter Property="Background" Value="#2E1719" />
+            <Setter Property="BorderBrush" Value="#7A3A3E" />
+        </Style>
+        <Style Selector="Border.status.error Ellipse">
+            <Setter Property="Fill" Value="{StaticResource ErrorBrush}" />
+        </Style>
+        <Style Selector="Border.status.error TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+        </Style>
+
+        <Style Selector="Ellipse.monitor">
+            <Setter Property="Fill" Value="{StaticResource WarnBrush}" />
+        </Style>
+        <Style Selector="Ellipse.monitor.card">
+            <Setter Property="Fill" Value="{StaticResource AccentBrush}" />
+        </Style>
+
+        <!-- Cross-fade the cover when it changes -->
+        <Style Selector="Image.cover">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.35" />
+                </Transitions>
+            </Setter>
+        </Style>
+    </Window.Styles>
+
+    <Grid ClipToBounds="True">
+        <!-- ===== Ambient background: blurred cover art + glows ===== -->
+        <Image Classes="cover"
+               Source="{Binding Cover}"
+               Stretch="UniformToFill"
+               Opacity="{Binding HasCover, Converter={x:Static vm:Converters.BoolToOpacity}, ConverterParameter=0.22}"
+               Effect="blur(70)"
+               IsHitTestVisible="False" />
+        <Ellipse Width="560" Height="560" Fill="#162B3A" Opacity="0.35"
+                 HorizontalAlignment="Left" VerticalAlignment="Top"
+                 Margin="-280,-300,0,0" IsHitTestVisible="False" />
+        <Ellipse Width="460" Height="460" Fill="#201738" Opacity="0.3"
+                 HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                 Margin="0,0,-230,-270" IsHitTestVisible="False" />
+        <Border IsHitTestVisible="False">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Offset="0" Color="#000A0C12" />
+                    <GradientStop Offset="1" Color="#CC0A0C12" />
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+
+        <Grid RowDefinitions="Auto,*,Auto" Margin="40,30">
+
+            <!-- ===== Header ===== -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,22">
+                <StackPanel Spacing="7" VerticalAlignment="Center">
+                    <TextBlock Text="RETRO GAME CARD" FontSize="20" Classes="label" Foreground="#C3CCDC" />
+                    <StackPanel Orientation="Horizontal" Spacing="9">
+                        <Ellipse Classes="led monitor"
+                                 Classes.card="{Binding HasCard}"
+                                 Classes.pulse="{Binding IsWaiting}" />
+                        <TextBlock Text="{Binding MonitorText}" Classes="label" Opacity="0.7" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="2" HorizontalAlignment="Right">
+                    <TextBlock Text="{Binding ClockText}" Classes="clock" HorizontalAlignment="Right" />
+                    <TextBlock Text="{Binding DateText}" Classes="label" FontWeight="Normal"
+                               LetterSpacing="1.2" Foreground="#77839A" HorizontalAlignment="Right" />
+                </StackPanel>
+            </Grid>
+
+            <!-- ===== Main ===== -->
+            <Grid Grid.Row="1" ColumnDefinitions="1.05*,*" ColumnSpacing="40">
+
+                <!-- Cover frame -->
+                <Border MinHeight="220" MaxHeight="720"
+                        Background="#111723"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        BoxShadow="0 20 60 0 #A0000000"
+                        ClipToBounds="True">
+                    <Grid>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"
+                                    IsVisible="{Binding !HasCover}">
+                            <PathIcon Data="{StaticResource IconSdCard}" Width="54" Height="54"
+                                      Foreground="#2B3750" />
+                            <TextBlock Text="{Binding IsWaiting, Converter={x:Static vm:Converters.BoolToText}, ConverterParameter='INSERT CARD|NO PREVIEW AVAILABLE'}"
+                                       Classes="label" HorizontalAlignment="Center" Opacity="0.6" />
+                        </StackPanel>
+
+                        <Image Classes="cover" Source="{Binding Cover}" Stretch="Uniform"
+                               Opacity="{Binding HasCover, Converter={x:Static vm:Converters.BoolToOpacity}}" />
+
+                        <Border VerticalAlignment="Bottom" Padding="16,11" IsVisible="{Binding HasCard}">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                    <GradientStop Offset="0" Color="#80090B10" />
+                                    <GradientStop Offset="1" Color="#E0090B10" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                <TextBlock Text="{Binding Title}" Classes="label" Foreground="#D8DFEA"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Grid.Column="1" Text="{Binding Platform}" Classes="label"
+                                           Foreground="{StaticResource AccentBrush}" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Game details -->
+                <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+                    <!-- Title block: hidden items take no space (unlike grid rows) -->
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{Binding Platform}" Classes="eyebrow"
+                                       IsVisible="{Binding Platform, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <TextBlock Text="{Binding Title}" Classes="game-title" />
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding Byline}" Classes="label" Foreground="#B4BED0"
+                                   IsVisible="{Binding Byline, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                        <ItemsControl ItemsSource="{Binding Tags}"
+                                      IsVisible="{Binding HasTags}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel ItemSpacing="8" LineSpacing="8" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Border Classes="chip" MaxWidth="220">
+                                        <TextBlock Text="{Binding}" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto" Margin="0,6,0,0">
+                        <TextBlock Text="{Binding Description}" Classes="body" FontSize="15" LineHeight="23"
+                                   Margin="0,0,14,0" />
+                    </ScrollViewer>
+
+                    <!-- Status -->
+                    <StackPanel Grid.Row="2" Spacing="12">
+                        <Border Classes="banner error" IsVisible="{Binding HasError}" MaxHeight="120">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <PathIcon Data="{StaticResource IconWarning}" />
+                                <SelectableTextBlock Grid.Column="1" Text="{Binding ErrorMessage}"
+                                                     TextWrapping="Wrap" FontSize="13" Foreground="#F3C6C8" />
+                            </Grid>
+                        </Border>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Border Classes="status"
+                                    Classes.running="{Binding IsRunning}"
+                                    Classes.stopped="{Binding IsStopped}"
+                                    Classes.error="{Binding IsError}">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <Ellipse Classes="led" Width="7" Height="7"
+                                             Classes.pulse="{Binding IsBusy}" />
+                                    <TextBlock Text="{Binding StateLabel}" Classes="label" />
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Grid.Column="1" Text="{Binding StateDetail}"
+                                       Classes="hint" FontSize="13" VerticalAlignment="Center"
+                                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                        <ProgressBar IsIndeterminate="{Binding IsBusy}"
+                                     Value="{Binding ProgressValue}"
+                                     Maximum="100" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <!-- ===== Footer ===== -->
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,22,0,0">
+                <TextBlock Text="{Binding HintText}" Classes="label" Opacity="0.5"
+                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Ellipse Classes="led" Width="6" Height="6"
+                             Fill="{Binding HasData, Converter={x:Static vm:Converters.BoolToBrush}}" />
+                    <TextBlock Text="{Binding DataVersionText}" Classes="label" FontSize="10" Opacity="0.7"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

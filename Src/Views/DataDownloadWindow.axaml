@@ -1,0 +1,551 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:RetroGameCard.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+        x:Class="RetroGameCard.Views.DataDownloadWindow"
+        x:DataType="vm:DataInstallerViewModel"
+        Title="Retro Game Card — Data Installer"
+        Icon="/Assets/Icons/launcher.ico"
+        Width="900" Height="600"
+        MinWidth="780" MinHeight="560"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:DataInstallerViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <!-- ================= Pages: fade in whenever they become visible ================= -->
+        <Style Selector="Panel.page[IsVisible=True]">
+            <Style.Animations>
+                <Animation Duration="0:0:0.3" Easing="CubicEaseOut" FillMode="Forward">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- ================= Step rail ================= -->
+        <Style Selector="Border.dot">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Background" Value="#141C2A" />
+            <Setter Property="BorderBrush" Value="#2A354B" />
+            <Setter Property="BorderThickness" Value="1.5" />
+        </Style>
+        <Style Selector="Border.dot TextBlock">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{StaticResource TextFaintBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Border.dot PathIcon">
+            <Setter Property="Width" Value="14" />
+            <Setter Property="Height" Value="14" />
+            <Setter Property="Foreground" Value="#0A0C12" />
+        </Style>
+        <Style Selector="TextBlock.step-title">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource TextFaintBrush}" />
+        </Style>
+        <Style Selector="TextBlock.step-caption">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="#4C5669" />
+        </Style>
+        <Style Selector="Rectangle.rail">
+            <Setter Property="Fill" Value="#222C3F" />
+        </Style>
+
+        <Style Selector="Grid.step.active Border.dot">
+            <Setter Property="Background" Value="{StaticResource AccentSoftBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+            <Setter Property="BoxShadow" Value="0 0 18 0 #705CE1B7" />
+        </Style>
+        <Style Selector="Grid.step.active Border.dot TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource AccentStrongBrush}" />
+        </Style>
+        <Style Selector="Grid.step.active TextBlock.step-title">
+            <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}" />
+        </Style>
+        <Style Selector="Grid.step.active TextBlock.step-caption">
+            <Setter Property="Foreground" Value="{StaticResource TextDimBrush}" />
+        </Style>
+
+        <Style Selector="Grid.step.done Border.dot">
+            <Setter Property="Background" Value="{StaticResource AccentGradientBrush}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Grid.step.done TextBlock.step-title">
+            <Setter Property="Foreground" Value="#C3CCDC" />
+        </Style>
+        <Style Selector="Grid.step.done Rectangle.rail">
+            <Setter Property="Fill" Value="{StaticResource AccentBorderBrush}" />
+        </Style>
+
+        <Style Selector="Grid.step.error Border.dot">
+            <Setter Property="Background" Value="#2E1719" />
+            <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}" />
+            <Setter Property="BoxShadow" Value="0 0 18 0 #60F2777A" />
+        </Style>
+        <Style Selector="Grid.step.error Border.dot TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+        </Style>
+
+        <!-- ================= Source tiles (radio buttons) ================= -->
+        <Style Selector="RadioButton.tile">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1.5" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="14"
+                            Padding="{TemplateBinding Padding}">
+                        <Border.Transitions>
+                            <Transitions>
+                                <BrushTransition Property="Background" Duration="0:0:0.15" />
+                                <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+                                <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.2" />
+                            </Transitions>
+                        </Border.Transitions>
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="RadioButton.tile:pointerover">
+            <Setter Property="Background" Value="#151E2E" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+        </Style>
+        <Style Selector="RadioButton.tile:checked">
+            <Setter Property="Background" Value="#0F221E" />
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+        </Style>
+        <Style Selector="RadioButton.tile:checked /template/ Border#PART_Border">
+            <Setter Property="BoxShadow" Value="0 8 30 0 #285CE1B7" />
+        </Style>
+
+        <Style Selector="RadioButton.tile Border.tile-icon">
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Background" Value="{StaticResource SurfaceAltBrush}" />
+        </Style>
+        <Style Selector="RadioButton.tile Border.tile-icon PathIcon">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Foreground" Value="{StaticResource TextDimBrush}" />
+        </Style>
+        <Style Selector="RadioButton.tile:checked Border.tile-icon">
+            <Setter Property="Background" Value="{StaticResource AccentGradientBrush}" />
+        </Style>
+        <Style Selector="RadioButton.tile:checked Border.tile-icon PathIcon">
+            <Setter Property="Foreground" Value="#0A0C12" />
+        </Style>
+
+        <Style Selector="RadioButton.tile Border.tick">
+            <Setter Property="Width" Value="22" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="CornerRadius" Value="11" />
+            <Setter Property="BorderThickness" Value="1.5" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+        <Style Selector="RadioButton.tile Border.tick PathIcon">
+            <Setter Property="Width" Value="12" />
+            <Setter Property="Height" Value="12" />
+            <Setter Property="Foreground" Value="#0A0C12" />
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        <Style Selector="RadioButton.tile:checked Border.tick">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+        </Style>
+        <Style Selector="RadioButton.tile:checked Border.tick PathIcon">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <Style Selector="RadioButton.tile TextBlock.tile-title">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}" />
+        </Style>
+
+        <!-- ================= Install stat cards ================= -->
+        <Style Selector="Border.stat">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="18,16" />
+            <Setter Property="Opacity" Value="0.6" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.25" />
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.25" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.stat.active">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+        </Style>
+        <Style Selector="TextBlock.big-percent">
+            <Setter Property="FontSize" Value="54" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}" />
+        </Style>
+
+        <!-- Key / value rows of the review card -->
+        <Style Selector="TextBlock.key">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="LetterSpacing" Value="1.6" />
+            <Setter Property="Foreground" Value="{StaticResource TextFaintBrush}" />
+            <Setter Property="Margin" Value="0,2,0,0" />
+        </Style>
+    </Window.Styles>
+
+    <Grid ColumnDefinitions="270,*">
+
+        <!-- ===================================================== Sidebar -->
+        <Border BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="0,0,1,0" ClipToBounds="True">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#111A29" />
+                    <GradientStop Offset="1" Color="#0B0F18" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid RowDefinitions="Auto,*,Auto">
+                <Ellipse Grid.RowSpan="3" Width="320" Height="320" Fill="#1B3B3A" Opacity="0.35"
+                         HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-170,-170,0,0"
+                         Effect="blur(60)" IsHitTestVisible="False" />
+
+                <!-- Brand -->
+                <StackPanel Margin="28,34,24,0" Spacing="4">
+                    <TextBlock Text="RETRO GAME CARD" Classes="eyebrow" />
+                    <TextBlock Text="Data Installer" Classes="h2" FontSize="20" />
+                </StackPanel>
+
+                <!-- Steps -->
+                <ItemsControl Grid.Row="1" Margin="28,34,20,0" ItemsSource="{Binding Steps}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:InstallerStep">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"
+                                  Classes="step"
+                                  Classes.active="{Binding IsActive}"
+                                  Classes.done="{Binding IsDone}"
+                                  Classes.error="{Binding IsError}">
+                                <Grid RowDefinitions="Auto,Auto">
+                                    <Border Classes="dot">
+                                        <Panel>
+                                            <TextBlock Text="{Binding Number}" IsVisible="{Binding !IsDone}" />
+                                            <PathIcon Data="{StaticResource IconCheck}" IsVisible="{Binding IsDone}" />
+                                        </Panel>
+                                    </Border>
+                                    <Rectangle Grid.Row="1" Classes="rail" Width="2" Height="30"
+                                               Margin="0,5" HorizontalAlignment="Center"
+                                               IsVisible="{Binding !IsLast}" />
+                                </Grid>
+                                <StackPanel Grid.Column="1" Spacing="2" Margin="0,6,0,0">
+                                    <TextBlock Text="{Binding Title}" Classes="step-title" />
+                                    <TextBlock Text="{Binding Caption}" Classes="step-caption" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Currently installed -->
+                <Border Grid.Row="2" Margin="20,0,20,22" Padding="14,12" CornerRadius="10"
+                        Background="#0D131E" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Ellipse Classes="led" Margin="0,4,0,0" VerticalAlignment="Top"
+                                 Fill="{Binding HasInstalledData, Converter={x:Static vm:Converters.BoolToBrush}}" />
+                        <TextBlock Grid.Column="1" Text="{Binding InstalledText}" Classes="hint" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ===================================================== Content -->
+        <Grid Grid.Column="1" RowDefinitions="*,Auto" Margin="40,34,40,28">
+
+            <!-- ================= Source ================= -->
+            <Panel Classes="page" IsVisible="{Binding IsSourceStage}">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="0,0,14,0" Spacing="22">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="STEP 1 OF 3" Classes="eyebrow" />
+                            <TextBlock Text="Where should the data come from?" Classes="h1" />
+                            <TextBlock Classes="body"
+                                       Text="Games run through RetroArch. The data package bundles RetroArch and all the emulator cores the cards use (about 700 MB)." />
+                        </StackPanel>
+    
+                        <Border Classes="banner error" IsVisible="{Binding HasError}">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <PathIcon Data="{StaticResource IconWarning}" />
+                                <SelectableTextBlock Grid.Column="1" Text="{Binding ErrorMessage}" TextWrapping="Wrap"
+                                                     FontSize="13" Foreground="#F3C6C8" />
+                            </Grid>
+                        </Border>
+    
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                            <RadioButton Classes="tile" IsChecked="{Binding IsOnlineSource}">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+                                    <Border Classes="tile-icon" HorizontalAlignment="Left">
+                                        <PathIcon Data="{StaticResource IconCloudDownload}" />
+                                    </Border>
+                                    <Border Classes="tick">
+                                        <PathIcon Data="{StaticResource IconCheck}" />
+                                    </Border>
+                                    <TextBlock Grid.Row="1" Text="Download" Classes="tile-title" Margin="0,18,0,6" />
+                                    <TextBlock Grid.Row="2" Classes="hint" FontSize="13"
+                                               Text="Get the latest package for this computer from GitHub." />
+                                    <Border Grid.Row="3" Classes="chip accent" HorizontalAlignment="Left" Margin="0,16,0,0">
+                                        <TextBlock Text="RECOMMENDED" />
+                                    </Border>
+                                </Grid>
+                            </RadioButton>
+    
+                            <RadioButton Grid.Column="1" Classes="tile" IsChecked="{Binding IsLocalSource}">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+                                    <Border Classes="tile-icon" HorizontalAlignment="Left">
+                                        <PathIcon Data="{StaticResource IconFolderOpen}" />
+                                    </Border>
+                                    <Border Classes="tick">
+                                        <PathIcon Data="{StaticResource IconCheck}" />
+                                    </Border>
+                                    <TextBlock Grid.Row="1" Text="Local file" Classes="tile-title" Margin="0,18,0,6" />
+                                    <TextBlock Grid.Row="2" Classes="hint" FontSize="13"
+                                               Text="Install from a retrogc-data.rgc manifest and its archive on disk." />
+                                    <Border Grid.Row="3" Classes="chip" HorizontalAlignment="Left" Margin="0,16,0,0">
+                                        <TextBlock Text="WORKS OFFLINE" />
+                                    </Border>
+                                </Grid>
+                            </RadioButton>
+                        </Grid>
+    
+                        <!-- Local manifest picker -->
+                        <Border Classes="card" Padding="14" IsVisible="{Binding IsLocalSource}">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <PathIcon Data="{StaticResource IconFolder}" Width="18" Height="18"
+                                          Foreground="{StaticResource TextDimBrush}" />
+                                <TextBlock Grid.Column="1" Classes="mono" VerticalAlignment="Center"
+                                           TextTrimming="LeadingCharacterEllipsis"
+                                           Text="{Binding LocalManifestPath, TargetNullValue='', FallbackValue=''}"
+                                           IsVisible="{Binding HasLocalManifest}" />
+                                <TextBlock Grid.Column="1" Classes="hint" VerticalAlignment="Center"
+                                           Text="No manifest selected"
+                                           IsVisible="{Binding !HasLocalManifest}" />
+                                <Button Grid.Column="2" Content="Choose file…" Command="{Binding BrowseCommand}" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Panel>
+
+            <!-- ================= Preparing ================= -->
+            <Panel Classes="page" IsVisible="{Binding IsPreparingStage}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="18">
+                    <Arc Classes="spinner" Width="56" Height="56" HorizontalAlignment="Center">
+                        <Arc.RenderTransform>
+                            <RotateTransform />
+                        </Arc.RenderTransform>
+                    </Arc>
+                    <TextBlock Text="{Binding PhaseTitle}" Classes="h2" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding PhaseDetail}" Classes="mono" HorizontalAlignment="Center"
+                               MaxWidth="460" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+            </Panel>
+
+            <!-- ================= Review ================= -->
+            <Panel Classes="page" IsVisible="{Binding IsReviewStage}">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="0,0,14,0" Spacing="20">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="STEP 2 OF 3" Classes="eyebrow" />
+                            <TextBlock Text="Ready to install" Classes="h1" />
+                            <TextBlock Classes="body" Text="Here is what will be installed. Nothing has been changed yet." />
+                        </StackPanel>
+    
+                        <Border Classes="banner error" IsVisible="{Binding HasError}">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <PathIcon Data="{StaticResource IconWarning}" />
+                                <SelectableTextBlock Grid.Column="1" Text="{Binding ErrorMessage}" TextWrapping="Wrap"
+                                                     FontSize="13" Foreground="#F3C6C8" />
+                            </Grid>
+                        </Border>
+    
+                        <Border Classes="card" Padding="22">
+                            <StackPanel Spacing="20">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                                    <Border Width="52" Height="52" CornerRadius="13"
+                                            Background="{StaticResource AccentGradientBrush}">
+                                        <PathIcon Data="{StaticResource IconArchive}" Width="26" Height="26"
+                                                  Foreground="#0A0C12" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding PlanTitle}" Classes="h2"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Classes="chip accent">
+                                                <TextBlock Text="{Binding PlanVersion, StringFormat='VERSION {0}'}" />
+                                            </Border>
+                                            <Border Classes="chip">
+                                                <TextBlock Text="{Binding PlanPlatform}" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+    
+                                <Rectangle Height="1" Fill="{StaticResource BorderSubtleBrush}" />
+    
+                                <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto" RowSpacing="14">
+                                    <TextBlock Text="{Binding PlanSourceKind}" Classes="key" />
+                                    <SelectableTextBlock Grid.Column="1" Text="{Binding PlanSource}"
+                                                         FontFamily="{StaticResource MonoFont}" FontSize="12"
+                                                         Foreground="{StaticResource TextMutedBrush}"
+                                                         TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="1" Text="INSTALL TO" Classes="key" />
+                                    <SelectableTextBlock Grid.Row="1" Grid.Column="1" Text="{Binding PlanDestination}"
+                                                         FontFamily="{StaticResource MonoFont}" FontSize="12"
+                                                         Foreground="{StaticResource TextMutedBrush}"
+                                                         TextWrapping="Wrap" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+    
+                        <Border Classes="banner warning" IsVisible="{Binding PlanOverwrites}">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <PathIcon Data="{StaticResource IconInfo}" />
+                                <TextBlock Grid.Column="1"
+                                           Text="This version is already installed. Files from the package will be replaced; anything else in that folder (such as saves) is kept." />
+                            </Grid>
+                        </Border>
+                        <Border Classes="banner ok" IsVisible="{Binding !PlanOverwrites}">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <PathIcon Data="{StaticResource IconCheck}" />
+                                <TextBlock Grid.Column="1" Text="Fresh install: the destination folder will be created." />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Panel>
+
+            <!-- ================= Installing ================= -->
+            <Panel Classes="page" IsVisible="{Binding IsInstallingStage}">
+                <StackPanel Spacing="22">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="STEP 3 OF 3" Classes="eyebrow" />
+                        <TextBlock Text="{Binding PhaseTitle}" Classes="h1" />
+                        <TextBlock Text="{Binding PhaseDetail}" Classes="mono" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="{Binding OverallPercent, StringFormat='{}{0:0}%'}"
+                                       Classes="big-percent" />
+                            <TextBlock Grid.Column="1" Text="{Binding EtaText}" Classes="label"
+                                       VerticalAlignment="Bottom" Margin="0,0,0,12" />
+                        </Grid>
+                        <ProgressBar Classes="large" Minimum="0" Maximum="100" Value="{Binding OverallPercent}" />
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                        <Border Classes="stat" Classes.active="{Binding IsTransferActive}">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <PathIcon Data="{StaticResource IconCloudDownload}" Width="16" Height="16"
+                                                  Foreground="{StaticResource AccentBrush}" />
+                                        <TextBlock Text="{Binding TransferLabel}" Classes="label" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Classes="label" Foreground="{StaticResource AccentStrongBrush}"
+                                               Text="{Binding TransferPercent, StringFormat='{}{0:0}%'}" />
+                                </Grid>
+                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding TransferPercent}" />
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{Binding TransferText}" Classes="hint" />
+                                    <TextBlock Grid.Column="1" Text="{Binding SpeedText}" Classes="hint" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1" Classes="stat" Classes.active="{Binding IsExtractActive}">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <PathIcon Data="{StaticResource IconArchive}" Width="16" Height="16"
+                                                  Foreground="{StaticResource InfoBrush}" />
+                                        <TextBlock Text="EXTRACT" Classes="label" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Classes="label" Foreground="{StaticResource InfoBrush}"
+                                               Text="{Binding ExtractPercent, StringFormat='{}{0:0}%'}" />
+                                </Grid>
+                                <ProgressBar Classes="info" Minimum="0" Maximum="100" Value="{Binding ExtractPercent}" />
+                                <TextBlock Text="{Binding ExtractText}" Classes="hint" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Panel>
+
+            <!-- ================= Done ================= -->
+            <Panel Classes="page" IsVisible="{Binding IsDoneStage}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16" MaxWidth="460">
+                    <Border Width="88" Height="88" CornerRadius="44" HorizontalAlignment="Center"
+                            Background="{StaticResource AccentGradientBrush}"
+                            BoxShadow="0 0 50 0 #605CE1B7" Margin="0,0,0,10">
+                        <PathIcon Data="{StaticResource IconCheck}" Width="40" Height="40" Foreground="#0A0C12" />
+                    </Border>
+                    <TextBlock Text="You're all set!" Classes="h1" HorizontalAlignment="Center" />
+                    <TextBlock Classes="body" TextAlignment="Center"
+                               Text="{Binding PlanVersion, StringFormat='RetroArch data {0} is installed. Insert a Retro Game Card and the game starts automatically.'}" />
+                    <TextBlock Text="{Binding PlanDestination}" Classes="mono" HorizontalAlignment="Center"
+                               TextTrimming="LeadingCharacterEllipsis" Opacity="0.7" />
+                </StackPanel>
+            </Panel>
+
+            <!-- ================= Footer ================= -->
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="0,20,0,0">
+                <Button Classes="ghost" Content="‹  Back" Command="{Binding BackCommand}"
+                        IsVisible="{Binding IsReviewStage}" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
+                    <Button Classes="ghost" Content="Close" Command="{Binding CloseCommand}"
+                            IsVisible="{Binding !IsBusy}" />
+                    <Button Content="Cancel" Command="{Binding CancelCommand}" IsVisible="{Binding IsBusy}" />
+                    <Button Classes="primary" Content="Continue  ›" Command="{Binding ContinueCommand}"
+                            IsVisible="{Binding IsSourceStage}" IsDefault="{Binding IsSourceStage}" />
+                    <Button Classes="primary" Content="{Binding InstallLabel}" Command="{Binding InstallCommand}"
+                            IsVisible="{Binding IsReviewStage}" IsDefault="{Binding IsReviewStage}" />
+                    <Button Classes="primary" Command="{Binding CloseCommand}" IsVisible="{Binding IsDoneStage}"
+                            IsDefault="{Binding IsDoneStage}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Data="{StaticResource IconPlay}" Width="12" Height="12" />
+                            <TextBlock Text="Start playing" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

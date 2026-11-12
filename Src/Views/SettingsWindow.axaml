@@ -1,0 +1,155 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:RetroGameCard.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="680"
+        x:Class="RetroGameCard.Views.SettingsWindow"
+        x:DataType="vm:SettingsViewModel"
+        Title="Retro Game Card — Settings"
+        Icon="/Assets/Icons/launcher.ico"
+        Width="640" Height="680"
+        MinWidth="560" MinHeight="520"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:SettingsViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <!-- One setting = title + description on the left, control on the right -->
+        <Style Selector="Grid.row > StackPanel">
+            <Setter Property="Spacing" Value="3" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.setting">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        </Style>
+        <Style Selector="Separator">
+            <Setter Property="Background" Value="{StaticResource BorderSubtleBrush}" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="28,26">
+
+        <!-- Header -->
+        <StackPanel Spacing="4">
+            <TextBlock Text="SETTINGS" Classes="eyebrow" />
+            <TextBlock Text="Retro Game Card" Classes="h1" FontSize="22" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" Margin="0,22" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="16" Margin="0,0,14,0">
+
+                <!-- Launcher -->
+                <Border Classes="card">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="LAUNCHER" Classes="label" />
+                            <TextBlock Text="Application startup" Classes="h2" FontSize="16" />
+                        </StackPanel>
+                        <Grid Classes="row" ColumnDefinitions="*,Auto" ColumnSpacing="22">
+                            <StackPanel>
+                                <TextBlock Text="Window at startup" Classes="setting" />
+                                <TextBlock Text="How the launcher opens when it starts." Classes="hint" />
+                            </StackPanel>
+                            <ComboBox Grid.Column="1" VerticalAlignment="Center"
+                                      ItemsSource="{Binding StartupStates}"
+                                      SelectedItem="{Binding SelectedStartupState}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- RetroArch -->
+                <Border Classes="card">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="RETROARCH" Classes="label" />
+                            <TextBlock Text="Emulator launch settings" Classes="h2" FontSize="16" />
+                        </StackPanel>
+
+                        <Grid Classes="row" ColumnDefinitions="*,Auto" ColumnSpacing="22">
+                            <StackPanel>
+                                <TextBlock Text="Fullscreen" Classes="setting" />
+                                <TextBlock Text="Start games in fullscreen." Classes="hint" />
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="1" IsChecked="{Binding StartFullscreen}"
+                                          OnContent="" OffContent="" MinWidth="0" />
+                        </Grid>
+                        <Separator />
+
+                        <Grid Classes="row" ColumnDefinitions="*,Auto" ColumnSpacing="22">
+                            <StackPanel>
+                                <TextBlock Text="Integer scaling" Classes="setting" />
+                                <TextBlock Text="Scale by whole numbers for perfectly even pixels." Classes="hint" />
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="1" IsChecked="{Binding IntegerScaling}"
+                                          OnContent="" OffContent="" MinWidth="0" />
+                        </Grid>
+                        <Separator />
+
+                        <Grid Classes="row" ColumnDefinitions="*,Auto" ColumnSpacing="22">
+                            <StackPanel>
+                                <TextBlock Text="Shader" Classes="setting" />
+                                <TextBlock Text="Video filter applied to every game." Classes="hint" />
+                            </StackPanel>
+                            <ComboBox Grid.Column="1" VerticalAlignment="Center"
+                                      ItemsSource="{Binding Shaders}"
+                                      SelectedItem="{Binding SelectedShader}" />
+                        </Grid>
+                        <Separator />
+
+                        <StackPanel Spacing="10">
+                            <Grid Classes="row" ColumnDefinitions="*,Auto" ColumnSpacing="22">
+                                <StackPanel>
+                                    <TextBlock Text="Custom RetroArch executable" Classes="setting" />
+                                    <TextBlock Text="Use your own RetroArch binary instead of the bundled one."
+                                               Classes="hint" />
+                                </StackPanel>
+                                <ToggleSwitch Grid.Column="1" IsChecked="{Binding UseCustomExecutable}"
+                                              OnContent="" OffContent="" MinWidth="0" />
+                            </Grid>
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10"
+                                  IsVisible="{Binding UseCustomExecutable}">
+                                <TextBox Text="{Binding ExecutablePath}"
+                                         PlaceholderText="Path to the RetroArch executable…" />
+                                <Button Grid.Column="1" Content="Browse…" Click="OnBrowseRetroArchClicked" />
+                            </Grid>
+                            <TextBlock Text="{Binding ExecutableError}" Classes="hint"
+                                       Foreground="{StaticResource ErrorBrush}"
+                                       IsVisible="{Binding ExecutableError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Data package -->
+                <Border Classes="card">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
+                        <Border Width="44" Height="44" CornerRadius="10" Background="{StaticResource SurfaceAltBrush}">
+                            <PathIcon Data="{StaticResource IconArchive}" Width="22" Height="22"
+                                      Foreground="{Binding HasData, Converter={x:Static vm:Converters.BoolToBrush}}" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                            <TextBlock Text="RetroArch data package" Classes="setting" />
+                            <TextBlock Text="{Binding DataInfo}" Classes="hint" />
+                        </StackPanel>
+                        <Button Grid.Column="2" VerticalAlignment="Center"
+                                Content="{Binding HasData, Converter={x:Static vm:Converters.BoolToText}, ConverterParameter='Manage…|Install…'}"
+                                Click="OnManageDataClicked" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+            <TextBlock Text="{Binding SettingsPath}" Classes="mono" FontSize="11"
+                       Foreground="{StaticResource TextFaintBrush}"
+                       VerticalAlignment="Center" TextTrimming="LeadingCharacterEllipsis" />
+            <Button Grid.Column="1" Content="Cancel" Classes="ghost" IsCancel="True" Click="OnCancelClicked" />
+            <Button Grid.Column="2" Content="Save" Classes="primary" IsDefault="True" Click="OnSaveClicked" />
+        </Grid>
+    </Grid>
+</Window>

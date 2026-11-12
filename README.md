@@ -1,149 +1,233 @@
 <div align="center">
-<img src="Data/retrogc-256.png" alt="Retro Game Card" width="180" />
 
-# 🎮 Retro Game Card
+<img src="Data/retrogc-256.png" alt="Retro Game Card logo" width="200" />
 
-**A portable, self-contained "game card" format for USB drives and SD cards.**
-Plug one in, and your computer behaves like an old gaming console.
+# Retro Game Card
 
-[![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20Linux%20%7C%20MiSTer%20FPGA-blueviolet)](https://github.com/retrogc/retrogc-launcher)
-[![Language](https://img.shields.io/badge/Language-C%23-blueviolet)](https://github.com/retrogc/retrogc-launcher)
-[![Framework](https://img.shields.io/badge/UI-Avalonia%2012-ff5ce1b7)](https://github.com/retrogc/retrogc-launcher)
-[![.NET](https://img.shields.io/badge/.NET-10.0-512bd4)](https://github.com/retrogc/retrogc-launcher)
+### 🕹️ Plug in a card. Play the game. That's it.
 
-[🚀 Quick start](#-quick-start) · [📄 The .rgc format](#-the-rgc-card-format) · [🛠️ Platforms](#-supported-platforms) · [🧩 Making cards](#-creating-a-card) · [⚙️ Launcher](#-launcher-options)
+A portable, self-contained **game card** format for USB sticks and SD cards,
+and a launcher that turns any computer into a plug-and-play retro console.
+
+[![Release](https://img.shields.io/github/v/release/retrogc/retrogc-launcher?style=for-the-badge&color=5CE1B7&labelColor=0A0C12)](https://github.com/retrogc/retrogc-launcher/releases)
+[![Windows](https://img.shields.io/badge/Windows-x64-0078D6?style=for-the-badge&logo=windows&logoColor=white&labelColor=0A0C12)](#%EF%B8%8F-supported-platforms)
+[![Linux](https://img.shields.io/badge/Linux-x64-FCC624?style=for-the-badge&logo=linux&logoColor=white&labelColor=0A0C12)](#%EF%B8%8F-supported-platforms)
+[![MiSTer](https://img.shields.io/badge/MiSTer-FPGA-E5426E?style=for-the-badge&labelColor=0A0C12)](#-mister-fpga)
+
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Avalonia](https://img.shields.io/badge/UI-Avalonia%2012-8B44AC?style=flat-square)](https://avaloniaui.net/)
+[![RetroArch](https://img.shields.io/badge/Powered%20by-RetroArch-5CE1B7?style=flat-square)](https://www.retroarch.com/)
+
+**[🚀 Quick start](#-quick-start)** ·
+**[🎴 Card format](#-the-rgc-card-format)** ·
+**[🧩 Make a card](#-creating-a-card)** ·
+**[⚙️ Settings](#%EF%B8%8F-settings)** ·
+**[❓ FAQ](#-faq--troubleshooting)** ·
+**[🧑‍💻 Build](#-building-from-source)**
+
+<br />
+
+<img src="docs/screenshots/launcher-playing.png" alt="The launcher showing a detected game card" width="820" />
 
 </div>
 
 ---
 
-## ✨ Key ideas
+## ✨ Why Retro Game Card?
 
-- **One game per card.** Each Retro Game Card is entirely self-contained: every file that game
-  needs lives on the card itself.
-- **Insert and play.** While the launcher is running, plugging in a card detects it and
-  auto-launches the game through RetroArch.
-- **Real shelf presence.** The launcher shows the cover art, title, platform, year and core, with
-  status indicators for card detection and autostart, a retro cartridge shelf with modern polish.
-- **Preservation-friendly.** A card is just files. Copy it, archive it, share it, and it keeps
-  working years later.
-- **Same card, many platforms.** A single `.rgc` describes both the RetroArch and the MiSTer
-  FPGA launch paths.
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 💾 One game, one card
+Everything a game needs lives **on the card**: ROMs, BIOS files, cover art and a
+small `.rgc` description file. Nothing to configure on the computer.
+
+</td>
+<td width="50%" valign="top">
+
+### ⚡ Insert and play
+The launcher watches your drives. Plug a card in and the game **starts automatically**.
+Pull it out and you're back to the waiting screen.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### 🖼️ Real shelf presence
+Cover art, title, platform, year, developer and genre on a polished,
+TV-friendly fullscreen screen. A modern take on the cartridge shelf.
+
+</td>
+<td valign="top">
+
+### 🔁 Same card, everywhere
+A single `.rgc` file describes both the **RetroArch** (Windows / Linux) and the
+**MiSTer FPGA** launch, so one card works on a PC *and* on a MiSTer.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### 🗃️ Preservation friendly
+A card is just files on a FAT32 volume. Copy it, back it up, share it as a
+compressed image: it keeps working years later.
+
+</td>
+<td valign="top">
+
+### 📦 Batteries included
+The launcher downloads and installs RetroArch and every emulator core for you,
+in a guided installer. No RetroArch knowledge needed.
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 🛠️ Supported platforms
+## 🖥️ Supported platforms
 
-| Platform | Runtime | Notes |
-|---|---|---|
-| **Windows** | x64 | Standalone launcher, self-contained build |
-| **Linux** | x64 | Standalone launcher, self-contained build |
-| **MiSTer FPGA** | - | Uses the `retrogc.sh` background script (no C# app) |
+| | Platform | What you run | Notes |
+|:-:|---|---|---|
+| 🪟 | **Windows** x64 | `retrogc-launcher.exe` | Standalone, self-contained build |
+| 🐧 | **Linux** x64 | `retrogc-launcher` | Standalone, self-contained build |
+| 🔲 | **MiSTer FPGA** | `retrogc.sh` | Background script, no desktop app needed |
 
-> The card format is identical across all three. The `.rgc` file carries both a `retroarch` and a
-> `misterfpga` section, so the same card works on a PC and on a MiSTer.
+> [!NOTE]
+> The card format is **identical** on all three. Each `.rgc` file carries a `retroarch` section
+> (Windows / Linux) and an optional `misterfpga` section.
 
 ---
 
 ## 🚀 Quick start
 
-### Windows / Linux
+### 🪟 🐧 Windows & Linux
 
-1. **Download** the launcher from [releases](https://github.com/retrogc/retrogc-launcher/releases).
-2. **Run** `retrogc-launcher`. On first launch it offers to download the RetroArch data package
-   it needs (RetroArch itself, plus the cores; ≈700 MB per platform).
-3. **Create** a Retro Game Card:
-   - Linux: use the [retrogc-image.sh](Platforms/Linux/retrogc-image.sh) script to restore a compressed card image to an SD card, USB stick, ...
-   - Windows: use [balena Etcher](https://etcher.balena.io/) app to restore a compressed card image to an SD card, USB stick, ...
-4. **Insert** a Retro Game Card (SD card, USB stick, …) and enjoy.
+| Step | |
+|:-:|---|
+| **1️⃣ Download** | Grab the launcher for your system from the [**releases page**](https://github.com/retrogc/retrogc-launcher/releases). |
+| **2️⃣ Run** | Start `retrogc-launcher`. On first launch, the **data installer** opens and sets up RetroArch and its cores (≈ 700 MB). |
+| **3️⃣ Get a card** | Write a card image to a USB stick or SD card (see [Writing a card image](#-writing-a-card-image)), or [make your own](#-creating-a-card). Ready-made cards live in [**retrogc-gamecards**](https://github.com/retrogc/retrogc-gamecards). |
+| **4️⃣ Play** | Insert the card. The game starts on its own. 🎉 |
 
-The launcher keeps running in the background and in the system tray, so cards keep working
-after you close the window.
+> [!TIP]
+> Closing the window doesn't quit: the launcher keeps running in the **system tray** so cards
+> keep working. Use the tray menu → **Exit** to really quit.
 
-> 💡 The data package can also be installed manually: download
-> [retrogc-data-1.22.2-linux.zip](https://github.com/retrogc/retrogc-data/releases)
-> (or the Windows equivalent), extract it over your data folder, and the launcher will use it
-> instead of downloading.
+<details>
+<summary><b>📥 Installing the data package by hand (offline machines)</b></summary>
 
-### MiSTer FPGA
+<br />
 
-1. **Download** [retrogc.sh](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/MisterFPGA/retrogc.sh).
-2. **Copy** it to the MiSTer scripts directory: `/media/fat/Scripts/retrogc.sh`
-3. **Make it executable:** `chmod a+x /media/fat/Scripts/retrogc.sh`
-4. **Run it** from *Main menu → Scripts → retrogc.sh*. This toggles the background watcher, which
-   also installs itself into `user-startup.sh` so it survives reboots.
-5. **Read more:** [readme-misterfpga.txt](Platforms/MisterFPGA/readme-misterfpga.txt)
+1. Download the archive for your system from
+   [**retrogc-data releases**](https://github.com/retrogc/retrogc-data/releases),
+   e.g. `retrogc-data-1.22.2-linux.zip`.
+2. Either:
+   - open the installer (<kbd>F12</kbd> → **RetroArch data package** → **Install…**), choose
+     **Local file** and pick the `retrogc-data.rgc` manifest sitting next to the archive, **or**
+   - extract the archive yourself into `<data folder>/1.22.2/`
+     (see [Where things are stored](#-where-things-are-stored)).
+
+</details>
+
+### 🔲 MiSTer FPGA
+
+1. **Download** [`retrogc.sh`](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/MisterFPGA/retrogc.sh).
+2. **Copy** it to `/media/fat/Scripts/retrogc.sh` and make it executable:
+   ```bash
+   chmod a+x /media/fat/Scripts/retrogc.sh
+   ```
+3. **Run** it from *Main menu → Scripts → retrogc.sh*.
+
+Running the script **toggles** the background watcher:
+
+| | When turned **ON** | When turned **OFF** |
+|:-:|---|---|
+| 🪝 | Installs a hook in `/media/fat/linux/user-startup.sh` | Removes the hook |
+| 👀 | Starts watching for cards right away | Stops the watcher |
+| 🔄 | Starts again automatically on every boot | Cleans up and returns to the menu core |
+
+📖 More details in [`readme-misterfpga.txt`](Platforms/MisterFPGA/readme-misterfpga.txt).
 
 ---
 
-## 📄 The `.rgc` card format
+## 🎴 The `.rgc` card format
 
-A card is a **FAT32 volume labelled `RETROGC`** containing a single `.rgc` JSON file at its root,
-plus the game files that file points to.
+A card is a **FAT32 volume labelled `RETROGC`** with one `.rgc` JSON file at its root, plus the
+files it points to.
 
+```text
+📀 RETROGC/                         ← volume label (required)
+├── 📄 mygame.rgc                   ← card definition (required, at the root)
+├── 🖼️ mygame.png                   ← cover art (optional)
+└── 📁 games/
+    └── 📁 nes/
+        └── 🎮 Super Mario Bros. (World).nes
 ```
-RETROGC/                     ← volume label
-├── mygame.rgc               ← the card definition (required, at the root)
-├── mario.png                ← cover art (optional)
-└── games/
-    └── nes/
-        └── Super Mario Bros. (World).nes
-```
 
-> ⚠️ The launcher only looks for a `.rgc` file **at the root** of the volume, and only the **first**
-> one it finds is used. Keep exactly one `.rgc` per card.
+> [!IMPORTANT]
+> Only a `.rgc` file **at the root** of the volume is read, and only the **first one** found.
+> Keep exactly one `.rgc` per card.
 
-### Root fields
+### 🏷️ Root fields
 
 | Field | Type | Required | Description |
-|---|:---:|:---:|---|
-| `name` | string | ✅ **yes** | Display name of the game, shown in the launcher UI. |
-| `description` | string | ➖ | Short blurb shown under the title. |
-| `platform` | string | ➖ | Platform tag shown as a badge, e.g. `NES`, `CPS-1`, `PSX`. |
-| `year` | string | ➖ | Release year shown as a badge, e.g. `1989`. |
-| `image` | string | ➖ | Path to the cover art (a PNG), relative to the `.rgc` file. |
-| `retroarch` | object | ✅ **yes** | How to launch the game with RetroArch. |
-| `misterfpga` | object | ➖ | How to launch the game on a MiSTer FPGA. |
+|---|:-:|:-:|---|
+| `name` | string | ✅ | Game title shown on screen. |
+| `description` | string | | Short blurb shown under the title. |
+| `platform` | string | | Platform tag, e.g. `NES`, `CPS-1`, `PSX`. |
+| `year` | string | | Release year, e.g. `1989`. |
+| `image` | string | | Cover art (PNG), relative to the `.rgc` file. |
+| `developer` | string | | 🆕 Developer / studio, e.g. `Capcom`. |
+| `genre` | string | | 🆕 Genre badge, e.g. `Beat 'em up`. |
+| `players` | string | | 🆕 Player count badge, e.g. `1-2`. |
+| `retroarch` | object | ✅ | How to launch the game with RetroArch ⬇️ |
+| `misterfpga` | object | | How to launch the game on a MiSTer ⬇️ |
 
-> ⚠️ `retroarch` is **mandatory**, a card without it is rejected by the launcher. The `misterfpga`
-> section is optional in the file format, but a card is only useful on a MiSTer if it is present.
+> [!NOTE]
+> 🆕 `developer`, `genre` and `players` are **display-only** and fully backward compatible: older
+> launchers and the MiSTer script just ignore them, and cards without them work as before.
 
-### `retroarch` object
-
-| Field | Type | Required | Description |
-|---|:---:|:---:|---|
-| `core` | string | ✅ **yes** | Libretro core name **without** the platform extension, e.g. `nestopia`, `fbneo`, `swanstation`. The launcher appends `_libretro.dll` (Windows) or `_libretro.so` (Linux). |
-| `roms` | string[] | ✅ **yes** | Paths to the ROM(s), relative to the `.rgc`. The **first** entry is the one RetroArch is launched with; extra entries are additional files that must be present on the card (e.g. a second PSX disc). |
-| `version` | string | ✅ **yes** | RetroArch version the card was built against, e.g. `1.22.2`. Shown in the UI; the launcher falls back to its own version when they differ. |
-| `runtimes` | string[] | ➖ | Extra *system* files (BIOSes) copied into RetroArch's `system` folder at launch, e.g. `games/neogeo/neogeo.zip`. |
-
-### `misterfpga` object
+### 🕹️ `retroarch` object
 
 | Field | Type | Required | Description |
-|---|:---:|:---:|---|
-| `core` | string | ✅ **yes** | Path to the MiSTer `.rbf` core, relative to the **SD card root**, e.g. `_Console/NES_20260603.rbf`. |
-| `roms` | string[] | ✅ **yes** | Paths to the ROM(s), relative to the **SD card root**. The **first** entry is the one loaded. For arcade games this is usually a `.mra` file. |
-| `runtimes` | string[] | ➖ | Additional system files needed by the core (Neo Geo BIOS, PSX boot ROMs, …). |
-| `delay` | string | ➖ | Load delay written into the generated `.mgl`. Defaults to `1` when missing. |
-| `index` | string | ➖ | ROM index written into the generated `.mgl`. Defaults to `1` when missing. |
-| `type` | string | ➖ | ROM type written into the generated `.mgl`. `f` for file, `s` for stream. Defaults to `f` when missing. |
+|---|:-:|:-:|---|
+| `core` | string | ✅ | Libretro core name **without** suffix, e.g. `nestopia`, `fbneo`, `swanstation`. The launcher adds `_libretro.dll` (Windows) or `_libretro.so` (Linux). |
+| `roms` | string[] | ✅ | ROM file(s), relative to the `.rgc`. The **first** one is launched; the others must exist (e.g. extra PSX discs). |
+| `version` | string | ✅ | RetroArch version the card was made for, e.g. `1.22.2`. If it isn't installed, the newest installed version is used. |
+| `runtimes` | string[] | | System / BIOS files copied into RetroArch's `system` folder before launch, e.g. `games/neogeo/neogeo.zip`. |
 
-> 💡 `delay`, `index` and `type` are **only** used by the MiSTer script, and only for non-`.mra`
-> ROMs. Arcade `.mra` games are loaded directly by their core and ignore them.
+### 🔲 `misterfpga` object
 
-> ⚠️ **Path bases differ between the two sections.** `retroarch` paths are relative to the `.rgc`
-> file, while `misterfpga` paths are relative to the **SD card root**, because the MiSTer core
-> and `.mra` files live in the MiSTer's own `_Console` / `_Arcade` folders. The example below shows
-> both.
+| Field | Type | Required | Description |
+|---|:-:|:-:|---|
+| `core` | string | ✅ | `.rbf` core, relative to the **SD card root**, e.g. `_Console/NES_20260603.rbf`. |
+| `roms` | string[] | ✅ | ROM file(s), relative to the **SD card root**. The first one is loaded; arcade games usually point to a `.mra`. |
+| `runtimes` | string[] | | Extra system files needed by the core (Neo Geo BIOS, PSX boot ROMs…). |
+| `delay` | string | | Load delay written to the generated `.mgl`. Default `1`. |
+| `index` | string | | ROM index written to the generated `.mgl`. Default `1`. |
+| `type` | string | | ROM type for the `.mgl`: `f` (file) or `s` (stream). Default `f`. |
 
-### Path rules
+> [!TIP]
+> `delay`, `index` and `type` only matter for non-`.mra` ROMs on MiSTer. Arcade `.mra` files are
+> loaded directly and ignore them.
 
-- Every path inside a `.rgc` is **relative**, never absolute.
-- `retroarch` paths may **not** escape the card directory (`../` is rejected).
-- The cover art file named in `image` is looked up relative to the `.rgc`, and is optional: if the
-  file is missing the launcher simply shows a "no preview" placeholder.
+### 🧭 Path rules
 
-### Example
+| | Rule |
+|:-:|---|
+| 📐 | Every path in a `.rgc` is **relative**, never absolute. |
+| 🔒 | `retroarch` paths are relative to the `.rgc` file and **can't escape** the card (`../` is rejected). |
+| 🔀 | `misterfpga` paths are relative to the **SD card root**, because MiSTer cores and `.mra` files live in its own `_Console` / `_Arcade` folders. |
+| 🖼️ | A missing `image` is fine: a placeholder is shown instead. |
+
+### 📝 Example
+
+<details open>
+<summary><b>Full card</b>, every field</summary>
 
 ```json
 {
@@ -152,6 +236,9 @@ RETROGC/                     ← volume label
   "platform": "NES",
   "year": "1989",
   "image": "mario.png",
+  "developer": "Nintendo",
+  "genre": "Platformer",
+  "players": "1-2",
   "retroarch": {
     "version": "1.22.2",
     "core": "nestopia",
@@ -171,115 +258,275 @@ RETROGC/                     ← volume label
 }
 ```
 
-Ready-made examples live in the [Cards](Cards) folder. Treat them as the authoritative
-reference. Complete, prebuilt cards are available in the
-[retrogc-gamecards](https://github.com/retrogc/retrogc-gamecards) repository.
+</details>
+
+<details>
+<summary><b>Minimal card</b>, RetroArch only</summary>
+
+```json
+{
+  "name": "Super Mario Bros",
+  "retroarch": {
+    "version": "1.22.2",
+    "core": "nestopia",
+    "roms": [ "games/nes/Super Mario Bros. (World).nes" ]
+  }
+}
+```
+
+</details>
+
+📚 More examples in the [**Cards**](Cards) folder (the reference), and complete prebuilt cards in
+[**retrogc-gamecards**](https://github.com/retrogc/retrogc-gamecards).
 
 ---
 
 ## 🧩 Creating a card
 
-1. **Copy** one of the `.rgc` files from the [Cards](Cards) folder and adapt it to your game.
-2. **Add** the game files it references, keeping the folder layout intact.
-3. **Write** it to a FAT32 volume labelled **`RETROGC`**. That label is what the launcher looks for.
-4. **Plug it in.** The launcher detects the card and auto-launches.
+1. 📋 **Copy** a `.rgc` from the [Cards](Cards) folder and adapt it to your game.
+2. 📁 **Add** the files it references, keeping the folder layout.
+3. 💾 **Format** a USB stick / SD card as **FAT32** with the label **`RETROGC`** and copy everything to it,
+   or build an image (below).
+4. 🔌 **Plug it in.** If something is wrong, the launcher shows the reason on screen.
 
-### Building a card image (Linux)
+### 💿 Card images (Linux)
 
-The [retrogc-image.sh](Platforms/Linux/retrogc-image.sh) script builds a compressed card image
-from a folder, or restores one onto a device:
+[`retrogc-image.sh`](Platforms/Linux/retrogc-image.sh) builds, writes and unpacks compressed card images:
 
 ```bash
-# folder → image
+# 📦 folder → compressed image (FAT32, labelled RETROGC, xz compressed)
 ./retrogc-image.sh --build ~/my-card my-card.img.xz
 
-# image → SD card / USB drive
+# 🔥 image → USB stick / SD card  (⚠️ erases the whole device, asks first)
 ./retrogc-image.sh --restore my-card.img.xz /dev/sdb
+
+# 📂 image → folder (inspect or edit an existing card)
+./retrogc-image.sh --extract my-card.img.xz ./my-card
 ```
 
-The build produces a FAT32 image with the `RETROGC` label, compressed with `xz`. The restore step
-**overwrites the target device completely**, it asks for confirmation first.
+<details>
+<summary><b>🔧 Dependencies</b></summary>
 
-> 🔧 **Dependencies:** `parted`, `mkfs.fat`, `mount`, `umount`, `rsync`, `xz`, `truncate` and
-> `mcopy` (from `mtools`) for building; `xzcat`, `dd` and `lsblk` for restoring.
+| Mode | Tools |
+|---|---|
+| `--build` | `parted` `mkfs.fat` `mount` `umount` `rsync` `xz` `truncate` `mcopy` |
+| `--restore` | `xzcat` `dd` `lsblk` |
+| `--extract` | `xz` `mcopy` `find` `mktemp` `realpath` |
+
+`mcopy` comes from the **mtools** package.
+
+</details>
+
+### 🔥 Writing a card image
+
+| | How |
+|:-:|---|
+| 🐧 **Linux** | `./retrogc-image.sh --restore game.img.xz /dev/sdX` |
+| 🪟 **Windows** | Open the `.img.xz` with [**balenaEtcher**](https://etcher.balena.io/) and flash it |
 
 ---
 
 ## 🔍 How auto-launch works
 
-1. The launcher **polls removable volumes** for one labelled `RETROGC`.
-2. It finds the `.rgc` at the volume root and **parses** it.
-3. It resolves the cover art, the ROM and the RetroArch core, and copies any `runtimes` (BIOS
-   files) into RetroArch's `system` folder.
-4. It **launches RetroArch** with that core and ROM, applying your fullscreen, integer-scaling
-   and shader settings.
-5. When the card is removed, RetroArch is closed and the launcher returns to its waiting state.
+```mermaid
+flowchart LR
+    A([🔌 Card inserted]) --> B{Volume labelled<br/>RETROGC?}
+    B -- no --> A
+    B -- yes --> C[📄 Read the .rgc<br/>at the root]
+    C --> D[✅ Check ROMs<br/>& core]
+    D --> E[📋 Copy BIOS files<br/>to system/]
+    E --> F[🎮 Start RetroArch<br/>core + ROM + settings]
+    F --> G([🕹️ Playing])
+    G -. card removed .-> H[⏹️ Close RetroArch]
+    H --> I([⏳ Waiting screen])
+```
 
-<details>
-<summary>Keyboard shortcuts</summary>
+1. The launcher checks the removable drives twice a second for a volume labelled `RETROGC`.
+2. It reads the `.rgc` at the root and shows the game on screen.
+3. It checks every ROM and the core, then copies the `runtimes` (BIOS) files into RetroArch's
+   `system` folder, but only when they changed.
+4. It starts RetroArch with the core and the ROM, using your fullscreen, scaling and shader settings.
+5. When the card is pulled out, RetroArch is asked to close (and is stopped after 3 seconds if
+   needed), then the launcher goes back to waiting.
+
+> [!TIP]
+> Quit RetroArch while the card is still in? Press <kbd>Enter</kbd> on the launcher to play again.
+
+---
+
+## ⌨️ Controls
 
 | Key | Action |
-|---|---|
-| <kbd>F11</kbd> | Toggle fullscreen / windowed |
-| <kbd>Esc</kbd> | Toggle fullscreen / windowed |
-| <kbd>F12</kbd> | Open the settings window |
+|:-:|---|
+| <kbd>F11</kbd> / <kbd>Esc</kbd> | Toggle fullscreen / windowed |
+| <kbd>F12</kbd> | Open the settings |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Relaunch the inserted card (after RetroArch was closed or failed) |
+
+From the **tray icon**: click to show the launcher, or right-click for **Open**, **Settings** and **Exit**.
+
+---
+
+## ⚙️ Settings
+
+Press <kbd>F12</kbd> (or tray icon → **Settings**).
+
+<div align="center">
+<img src="docs/screenshots/settings.png" alt="Settings window" width="420" />
+</div>
+
+| Setting | Default | What it does |
+|---|:-:|---|
+| 🪟 **Window at startup** | Fullscreen | Open the launcher fullscreen, windowed, or minimized to the tray. |
+| 🖥️ **Fullscreen** | On | Start games in fullscreen. |
+| 📐 **Integer scaling** | Off | Scale by whole numbers for perfectly even pixels. |
+| ✨ **Shader** | Bilinear | `None` (sharp pixels), `Bilinear` (smooth), `CRT`, `Retro LCD` or `Scanlines`. |
+| 🛠️ **Custom RetroArch executable** | Off | Use your own RetroArch binary instead of the bundled one. |
+| 📦 **RetroArch data package** | n/a | Install, repair or update RetroArch and its cores. |
+
+### 📦 The data installer
+
+A guided installer downloads RetroArch and every emulator core the cards use, either **from
+GitHub** or **from a local file** for offline machines. It shows speed and time left, can be
+cancelled at any time, and never deletes files that aren't part of the package (your saves
+are safe when reinstalling).
+
+<div align="center">
+<img src="docs/screenshots/installer-source.png" alt="Data installer: choose a source" width="49%" />
+<img src="docs/screenshots/installer-progress.png" alt="Data installer: download progress" width="49%" />
+</div>
+
+### 📂 Where things are stored
+
+| What | 🐧 Linux | 🪟 Windows |
+|---|---|---|
+| Settings | `~/.local/share/retrogc/settings.json` | `%LOCALAPPDATA%\retrogc\settings.json` |
+| RetroArch data | `~/.local/share/retrogc/data/<version>/` | `%LOCALAPPDATA%\retrogc\data\<version>\` |
+| Temporary downloads | `~/.local/share/retrogc/downloads/` | `%LOCALAPPDATA%\retrogc\downloads\` |
+
+---
+
+## ❓ FAQ & troubleshooting
+
+<details>
+<summary><b>The card isn't detected</b></summary>
+
+<br />
+
+- Check the volume label is exactly **`RETROGC`**.
+- 🐧 On Linux, the card must be **mounted** with a folder named after its label (desktop auto-mounters
+  do this, e.g. `/run/media/<user>/RETROGC`).
+- 🪟 On Windows, the drive's **volume label** is used.
+
+</details>
+
+<details>
+<summary><b>The game doesn't start</b></summary>
+
+<br />
+
+The reason is shown in red on the launcher screen. The most common ones:
+
+- **Core not installed**: the `retroarch.core` name is wrong, or the data package is missing
+  (<kbd>F12</kbd> → **RetroArch data package**).
+- **Missing game file**: a path in `roms` or `runtimes` doesn't match the card's content
+  (paths are case-sensitive on Linux).
+- **No .rgc found**: the `.rgc` file must be at the **root** of the card.
+
+</details>
+
+<details>
+<summary><b>Multi-disc PSX games</b></summary>
+
+<br />
+
+List every disc file in `roms`. Only the first is launched; the others just need to be there.
+See [`psx-metal_gear_solid.rgc`](Cards/psx-metal_gear_solid.rgc).
+
+</details>
+
+<details>
+<summary><b>Neo Geo and other BIOS-based systems</b></summary>
+
+<br />
+
+Put the BIOS (e.g. `neogeo.zip`) on the card and list it in `retroarch.runtimes`. It's copied to
+RetroArch's `system` folder before every launch. See [`neogeo-metal_slug.rgc`](Cards/neogeo-metal_slug.rgc).
+
+</details>
+
+<details>
+<summary><b>Where are the logs?</b></summary>
+
+<br />
+
+Start `retrogc-launcher` from a terminal: every step (card detection, files copied, the exact
+RetroArch command line) is printed there.
 
 </details>
 
 ---
 
-## ⚙️ Launcher options
-
-Press <kbd>F12</kbd> (or the tray icon → *Settings*) to configure:
-
-- **Startup window state**: fullscreen, windowed, or minimized.
-- **Start RetroArch fullscreen.**
-- **Integer scaling**: for crisp pixels on modern displays.
-- **Shader**: `None`, `Bilinear`, `Crt`, `Retro` or `Scanline`.
-- **Custom RetroArch executable**: use your own RetroArch instead of the bundled one.
-
-### Where things are stored
-
-| What | Where |
-|---|---|
-| Settings | `~/.local/share/retrogc/settings.json` (Linux) · `%LOCALAPPDATA%\retrogc\settings.json` (Windows) |
-| RetroArch data | `<settings folder>/data/<retroarch version>/` |
-
----
-
-## 💡 Tips
-
-- **Multi-disc PSX games**: list every disc file in `roms`; only the first is launched, the rest
-  are just required to be present.
-- **Neo Geo / arcade systems**: put the BIOS `neogeo.zip` in `retroarch.runtimes` so the launcher
-  copies it into RetroArch's `system` folder on every launch.
-- **Core availability**: the bundled data package ships with the cores used by the example
-  cards. A card naming a core that isn't installed simply fails to launch.
-
----
-
 ## 🧑‍💻 Building from source
+
+> Requires the [**.NET 10 SDK**](https://dotnet.microsoft.com/download).
 
 ```bash
 git clone https://github.com/retrogc/retrogc-launcher.git
 cd retrogc-launcher
-dotnet build
 dotnet run
 ```
 
-Requires the **.NET 10 SDK**. The project targets `net10.0` and uses
-[Avalonia](https://avaloniaui.net/) 12 for the cross-platform UI.
+<details>
+<summary><b>🗂️ Project layout</b></summary>
+
+```text
+Src/
+├── 📁 Models/        Card (.rgc), AppSettings, data manifest
+├── 📁 Services/      CardMonitor, GameSession, RetroArchLauncher, DataInstaller, paths
+├── 📁 ViewModels/    MVVM view models (CommunityToolkit.Mvvm)
+├── 📁 Views/         Avalonia windows (compiled bindings)
+├── 📁 Styles/        Theme.axaml: shared palette, controls, icons
+└── 📁 Assets/        Icons
+Cards/                Reference .rgc files
+Platforms/
+├── 📁 Linux/         retrogc-image.sh
+└── 📁 MisterFPGA/    retrogc.sh
+```
+
+</details>
+
+<details>
+<summary><b>📦 Release builds</b></summary>
+
+<br />
+
+Release builds are self-contained, trimmed, single-file executables, built by the
+[**release workflow**](.github/workflows/release.yml):
+
+```bash
+dotnet publish -c Release -r linux-x64 --self-contained -p:PublishTrimmed=true -p:PublishSingleFile=true
+dotnet publish -c Release -r win-x64   --self-contained -p:PublishTrimmed=true -p:PublishSingleFile=true
+```
+
+</details>
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Whether it's adding more example cards, improving the build scripts, or
-polishing the launcher UX (more icons, extra colour themes, screenshots), please open an issue or
-a pull request.
-
----
+Contributions are welcome! 💜 New example cards, script improvements, UI polish, translations…
+open an [issue](https://github.com/retrogc/retrogc-launcher/issues) or a pull request.
 
 ## 📄 License
 
 See the project's `LICENSE` file for details.
+
+<div align="center">
+
+<br />
+
+**Made with ❤️ for retro gaming.**
+
+<sub>Retro Game Card ships no games. Only use ROMs you legally own.</sub>
+
+</div>

@@ -456,25 +456,66 @@ find_mountpoint() {
     return 1
 }
 
+# Prints "<mount point> <options>" for every mount of <device>, mount points unescaped.
+list_mounts() {
+    local dev="$1" source target _ options _
+
+    while read -r source target _ options _; do
+        [[ "$source" == /* && -e "$source" ]] || continue
+        [[ "$(readlink -f "$source")" == "$dev" ]] || continue
+        # /proc/mounts escapes spaces as \040: keep them escaped here, unescape when used
+        printf '%s %s\n' "$target" "$options"
+    done < "$MOUNTS"
+}
+
 # The automount is read-write: while it is, FAT marks the volume dirty, and pulling the card
 # then makes Windows offer to "scan and fix" it. The card is never written, so make it read-only.
+# remount_read_only <device> <reason>: remounts every read-write mount of <device>; silent when
+# they are all read-only already, so it can be called in a loop.
 remount_read_only() {
-    if mount -o remount,ro "$1" 2>/dev/null; then
-        log "Remounted read-only: $1"
-    else
-        err "Could not remount $1 read-only"
-    fi
+    local dev="$1" reason="$2" target escaped options output
+
+    while read -r escaped options; do
+        [[ -n "$escaped" ]] || continue
+        [[ ",$options," == *,ro,* ]] && continue
+        target="$(printf '%b' "$escaped")"
+
+        if ! output="$(mount -o remount,ro "$target" 2>&1)"; then
+            warn_once "$target" "Could not remount $target read-only ($reason): $output"
+            continue
+        fi
+
+        local mounted now
+        options=""
+        while read -r mounted now; do
+            [[ "$mounted" == "$escaped" ]] && { options="$now"; break; }
+        done < <(list_mounts "$dev")
+        if [[ ",$options," == *,ro,* ]]; then
+            log "Remounted read-only ($reason): $target"
+        else
+            warn_once "$target" "Still read-write after remount ($reason): $target ($options)"
+        fi
+    done < <(list_mounts "$dev")
+}
+
+# warn_once <key> <message>: one error per mount point per insert (the removal loop retries).
+WARNED=" "
+warn_once() {
+    [[ "$WARNED" == *" $1 "* ]] && return 0
+    WARNED+="$1 "
+    err "$2"
 }
 
 wait_for_mount() {
     local dev="$1" waited=0
     MOUNTPOINT=""
+    WARNED=" "
 
     log "Waiting for automount of $dev..."
     while [[ -e "$dev" ]]; do
         if MOUNTPOINT="$(find_mountpoint "$dev")"; then
             log "Mounted at: $MOUNTPOINT"
-            remount_read_only "$MOUNTPOINT"
+            remount_read_only "$dev" "after automount"
             return 0
         fi
 
@@ -512,6 +553,8 @@ wait_for_removal() {
             GAME_RUNNING=0
             es_ctl start
         fi
+        # Something (automounter, Recalbox) may mount it read-write again.
+        remount_read_only "$dev" "mounted read-write again"
         sleep 0.5
     done
 }

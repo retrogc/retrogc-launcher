@@ -2,6 +2,8 @@
 
 # RetroGC Launcher
 
+VERSION="1.1"
+
 LABEL="RETROGC"
 DEVICE="/dev/disk/by-label/$LABEL"
 MISTER_CMD="/dev/MiSTer_cmd"
@@ -301,24 +303,51 @@ wait_for_device() {
 
 # The automount is read-write: while it is, FAT marks the volume dirty, and pulling the card
 # then makes Windows offer to "scan and fix" it. The card is never written, so make it read-only.
+# remount_read_only <device> <reason>: remounts every read-write mount of <device>; silent when
+# they are all read-only already, so it can be called in a loop.
 remount_read_only() {
-    if mount -o remount,ro "$1" 2>/dev/null; then
-        echo "Remounted read-only: $1" >&2
-    else
-        echo "WARNING: could not remount $1 read-only" >&2
-    fi
+    local dev="$1" reason="$2" target options output
+
+    while read -r target options; do
+        [[ -n "$target" ]] || continue
+        target="$(printf '%b' "$target")" # findmnt -r escapes spaces as \x20
+        [[ ",$options," == *,ro,* ]] && continue
+
+        if ! output="$(mount -o remount,ro "$target" 2>&1)"; then
+            warn_once "$target" "could not remount $target read-only ($reason): $output"
+            continue
+        fi
+
+        options="$(findmnt -n -r -o OPTIONS --mountpoint "$target" 2>/dev/null)"
+        if [[ ",$options," == *,ro,* ]]; then
+            echo "Remounted read-only ($reason): $target" >&2
+        else
+            warn_once "$target" "still read-write after remount ($reason): $target ($options)"
+        fi
+    done < <(findmnt -n -r -o TARGET,OPTIONS --source "$dev" 2>/dev/null)
+}
+
+# warn_once <key> <message>: one warning per mount point per insert (the removal loop retries).
+WARNED=" "
+warn_once() {
+    [[ "$WARNED" == *" $1 "* ]] && return 0
+    WARNED+="$1 "
+    echo "WARNING: $2" >&2
 }
 
 wait_for_mount() {
     local dev="$1"
     MOUNTPOINT=""
+    WARNED=" "
 
     echo "Waiting for automount..." >&2
 
     while [[ -e "$DEVICE" ]]; do
-        if MOUNTPOINT="$(findmnt -n -o TARGET --source "$dev" 2>/dev/null)"; then
+        # The card may be mounted more than once: use the first mount point.
+        MOUNTPOINT="$(findmnt -n -o TARGET --source "$dev" 2>/dev/null | head -n 1)"
+        if [[ -n "$MOUNTPOINT" ]]; then
             echo "Mounted at: $MOUNTPOINT" >&2
-            remount_read_only "$MOUNTPOINT"
+            remount_read_only "$dev" "after automount"
             return 0
         fi
         sleep 0.25
@@ -328,9 +357,12 @@ wait_for_mount() {
 }
 
 wait_for_removal() {
+    local dev="$1"
     echo "Waiting for removal..." >&2
 
     while [[ -e "$DEVICE" ]]; do
+        # Something (automounter, Main_MiSTer loading a core) may mount it read-write again.
+        remount_read_only "$dev" "mounted read-write again"
         sleep 0.5
     done
 }
@@ -346,13 +378,14 @@ daemon_main() {
     trap 'exit 143' TERM INT
 
     echo "$$" > "$PIDFILE"
+    echo "RetroGC Launcher daemon v$VERSION started ($SCRIPT, PID $$)"
 
     while true; do
         wait_for_device
 
         if wait_for_mount "$DEVICE_PATH"; then
             on_insert "$DEVICE_PATH" "$MOUNTPOINT"
-            wait_for_removal
+            wait_for_removal "$DEVICE_PATH"
             on_remove "$DEVICE_PATH" "$MOUNTPOINT"
         else
             echo "RETROGC was removed before automount completed" >&2

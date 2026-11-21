@@ -26,3 +26,12 @@ OFF:
 
 The watcher uses /tmp for its lock, PID and generated MGL, so those do
 not persist across reboot.
+
+The card is kept mounted read-only while it is inserted (pulling it out
+then never leaves it "dirty" for Windows). Every step is logged to:
+
+  /tmp/retrogc-launcher.log
+
+Updating retrogc.sh: a running watcher keeps the old code. After copying
+the new file, select retrogc.sh twice (OFF, then ON) or reboot. The first
+log line shows the running version.

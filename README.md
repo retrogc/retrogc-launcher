@@ -117,7 +117,7 @@ emulator cores), **with no internet connection needed**.
 
 | Step | |
 |:-:|---|
-| **1️⃣ Download** | Get `retrogc-installer-<version>.img.xz` from the [**retrogc-installer releases**](https://github.com/retrogc/retrogc-installer/releases/latest) (≈ 1.5 GB). |
+| **1️⃣ Download** | Get `retrogc-installer-<launcher version>.img.xz` from the [**latest retrogc-installer release**](https://github.com/retrogc/retrogc-installer/releases/latest) (≈ 1.5 GB). |
 | **2️⃣ Flash** | Write it to a USB stick of **2 GB or more** with [**balenaEtcher**](https://etcher.balena.io/) (Windows, Linux, macOS), or `./retrogc-image.sh --restore` on Linux (see [Writing a card image](#-writing-a-card-image)). ⚠️ This erases the stick. |
 | **3️⃣ Install** | Open the stick and run `retrogc-launcher.exe` (Windows) or `retrogc-launcher` (Linux), then click **Install**. The launcher installs itself with a menu shortcut, installs RetroArch and its cores, then restarts from the installed copy. |
 | **4️⃣ Play** | Remove the stick, insert a [game card](#-the-rgc-card-format) and the game starts on its own. 🎉 |
@@ -148,7 +148,7 @@ Prefer a plain download? The launcher fetches RetroArch and its cores itself on 
 <br />
 
 1. Download the archive for your system from
-   [**retrogc-installer releases**](https://github.com/retrogc/retrogc-installer/releases),
+   the **RetroArch data** release of [**retrogc-installer**](https://github.com/retrogc/retrogc-installer/releases),
    e.g. `retrogc-data-1.22.2-linux.zip`.
 2. Either:
    - open the installer (<kbd>F12</kbd> → **RetroArch data package** → **Install…**), choose
@@ -445,8 +445,8 @@ An installer card carries the **launcher itself** (Windows and Linux on the same
 **RetroArch data package**, to set up a computer offline in one go, or to update one.
 
 > [!TIP]
-> You don't need to make one: a ready-to-flash image, `retrogc-installer-<version>.img.xz`, is
-> published with every [**retrogc-installer release**](https://github.com/retrogc/retrogc-installer/releases/latest).
+> You don't need to make one: a ready-to-flash image, `retrogc-installer-<launcher version>.img.xz`, is
+> published for every launcher release in [**retrogc-installer**](https://github.com/retrogc/retrogc-installer/releases/latest).
 > See the [Quick start](#-recommended-the-installer-card). The rest of this section explains how it works.
 
 **Content** (exFAT volume labelled `RETROGC`):
@@ -517,7 +517,7 @@ reinstall anyway. After a launcher update, the launcher restarts on the new vers
 ### 🛠️ Building your own installer card (optional)
 
 Only needed for a custom card (your own launcher build, another data version…): the official one
-is built by the [retrogc-installer release workflow](https://github.com/retrogc/retrogc-installer/actions).
+is built by the [retrogc-installer *Build Installer* workflow](https://github.com/retrogc/retrogc-installer/actions), started by every launcher release.
 [`retrogc-image.sh`](Platforms/Linux/retrogc-image.sh) builds a ready-to-flash installer card image.
 By default it downloads the latest launcher release and the data archives listed in the
 [online manifest](https://github.com/retrogc/retrogc-installer), writes the card's `retrogc-data.rgc`

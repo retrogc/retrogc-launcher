@@ -5,7 +5,7 @@ VERSION="1.1"
 
 LABEL="RETROGC"
 LAUNCHER_REPO="https://github.com/retrogc/retrogc-launcher"
-DATA_MANIFEST_URL="https://raw.githubusercontent.com/retrogc/retrogc-data/refs/heads/main/retrogc-data.rgc"
+DATA_MANIFEST_URL="https://raw.githubusercontent.com/retrogc/retrogc-installer/refs/heads/main/retrogc-data.rgc"
 
 # Partition starts at 1 MiB = sector 2048.
 OFFSET_SECTORS=2048

@@ -125,7 +125,7 @@ in a guided installer. No RetroArch knowledge needed.
 <br />
 
 1. Download the archive for your system from
-   [**retrogc-data releases**](https://github.com/retrogc/retrogc-data/releases),
+   [**retrogc-installer releases**](https://github.com/retrogc/retrogc-installer/releases),
    e.g. `retrogc-data-1.22.2-linux.zip`.
 2. Either:
    - open the installer (<kbd>F12</kbd> → **RetroArch data package** → **Install…**), choose
@@ -366,7 +366,7 @@ An installer card carries the **launcher itself** (Windows and Linux on the same
 └── 🐧 retrogc-launcher
 ```
 
-`retrogc-data.rgc` is the same manifest as the [online one](https://github.com/retrogc/retrogc-data),
+`retrogc-data.rgc` is the same manifest as the [online one](https://github.com/retrogc/retrogc-installer),
 except that `url` points to the archive **on the card** (a relative path):
 
 ```json
@@ -423,7 +423,7 @@ reinstall anyway. After a launcher update, the launcher restarts on the new vers
 
 [`retrogc-image.sh`](Platforms/Linux/retrogc-image.sh) builds a ready-to-flash installer card image.
 By default it downloads the latest launcher release and the data archives listed in the
-[online manifest](https://github.com/retrogc/retrogc-data), writes the card's `retrogc-data.rgc`
+[online manifest](https://github.com/retrogc/retrogc-installer), writes the card's `retrogc-data.rgc`
 and formats the card as **exFAT** (asks for `sudo` to loop-mount the image):
 
 ```bash

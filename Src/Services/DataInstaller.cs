@@ -44,7 +44,7 @@ public readonly record struct ExtractProgress(int EntriesDone, int TotalEntries,
 public static class DataInstaller
 {
     public const string ManifestUrl =
-        "https://raw.githubusercontent.com/retrogc/retrogc-data/refs/heads/main/retrogc-data.rgc";
+        "https://raw.githubusercontent.com/retrogc/retrogc-installer/refs/heads/main/retrogc-data.rgc";
 
     public const string DataPackageName = "retrogc-data";
     private static readonly TimeSpan ReportInterval = TimeSpan.FromMilliseconds(100);

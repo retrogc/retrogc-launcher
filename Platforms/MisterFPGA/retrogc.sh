@@ -27,6 +27,22 @@ is_running() {
     kill -0 "$pid" 2>/dev/null
 }
 
+# Remove every hook block and trailing blank lines from the startup script,
+# so repeated enable/disable cycles never make the file grow.
+strip_startup_hook() {
+    local content
+
+    sed -i "/$START_MARK/,/$END_MARK/d" "$STARTUP"
+
+    # $(...) drops trailing newlines, which trims trailing blank lines
+    content="$(cat "$STARTUP")"
+    if [[ -n "$content" ]]; then
+        printf '%s\n' "$content" > "$STARTUP"
+    else
+        : > "$STARTUP"
+    fi
+}
+
 install_startup_hook() {
     mkdir -p "$(dirname "$STARTUP")"
     touch "$STARTUP"
@@ -36,8 +52,15 @@ install_startup_hook() {
         return 0
     fi
 
-    cat >> "$STARTUP" <<EOF_HOOK
+    # Never add the hook twice (e.g. hook present but daemon not running)
+    strip_startup_hook
 
+    # Separate the hook from existing content with a single blank line
+    if [[ -s "$STARTUP" ]]; then
+        echo >> "$STARTUP"
+    fi
+
+    cat >> "$STARTUP" <<EOF_HOOK
 $START_MARK
 if [ -x "$SCRIPT" ]; then
     "$SCRIPT" --daemon >"$LOGFILE" 2>&1 &
@@ -52,7 +75,7 @@ EOF_HOOK
 remove_startup_hook() {
     [[ ! -f "$STARTUP" ]] && return 0
 
-    sed -i "/$START_MARK/,/$END_MARK/d" "$STARTUP"
+    strip_startup_hook
     sync
     echo "RetroGC Launcher disabled."
 }

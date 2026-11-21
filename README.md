@@ -323,10 +323,11 @@ files it points to.
 
 | Mode | Tools |
 |---|---|
-| `--build` | `parted` `mkfs.fat` `mount` `umount` `rsync` `xz` `truncate` `mcopy` |
+| `--build` | `parted` `mkfs.fat` `xz` `truncate` `mcopy` |
+| `--build-installer` | `curl` `jq` `unzip` `xz` `parted` `truncate`, plus `mkfs.exfat` (exfatprogs) `losetup` `mount` `sudo`, or `mkfs.fat` `mcopy` with `--fat32` |
 | `--restore` | `xzcat` `dd` `lsblk` |
 | `--list` | `lsblk` `awk` |
-| `--extract` | `xz` `mcopy` `find` `mktemp` `realpath` |
+| `--extract` | `xz` `mcopy` `find` `mktemp` `realpath` (FAT32 images only) |
 
 `mcopy` comes from the **mtools** package.
 
@@ -417,6 +418,32 @@ reinstall anyway. After a launcher update, the launcher restarts on the new vers
 > 🐧 Ubuntu mounts **FAT32** volumes without the executable bit (only `.exe` / `.bat` files are
 > executable), so `retrogc-launcher` can't be started straight from a FAT32 card. Format the
 > installer card as **exFAT** (it isn't used by MiSTer), or copy the file to your home folder first.
+
+### 🛠️ Building an installer card
+
+[`retrogc-image.sh`](Platforms/Linux/retrogc-image.sh) builds a ready-to-flash installer card image.
+By default it downloads the latest launcher release and the data archives listed in the
+[online manifest](https://github.com/retrogc/retrogc-data), writes the card's `retrogc-data.rgc`
+and formats the card as **exFAT** (asks for `sudo` to loop-mount the image):
+
+```bash
+# 💳 latest launcher + latest data (≈ 1.4 GB download), exFAT
+./retrogc-image.sh --build-installer retrogc-installer.img.xz
+
+# 📎 FAT32 instead (no sudo, but see the warning above)
+./retrogc-image.sh --build-installer retrogc-installer.img.xz --fat32
+
+# 🧪 your own launcher builds and an offline data manifest (archives next to it)
+./retrogc-image.sh --build-installer retrogc-installer.img.xz \
+    --launcher-linux publish/linux/retrogc-launcher \
+    --launcher-windows publish/windows/retrogc-launcher.exe \
+    --launcher-version 1.0.4 \
+    --data ~/retrogc-data/retrogc-data.rgc
+```
+
+Without `--launcher-version`, local launchers are written without a version, so already installed
+launchers aren't offered them as an update. Flash the image like any other card (`--restore`, or
+balenaEtcher on Windows).
 
 ---
 

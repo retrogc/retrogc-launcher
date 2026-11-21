@@ -81,8 +81,8 @@ compressed image: it keeps working years later.
 <td valign="top">
 
 ### 📦 Batteries included
-The launcher downloads and installs RetroArch and every emulator core for you,
-in a guided installer. No RetroArch knowledge needed.
+One installer card (or a guided download) sets up RetroArch and every emulator core for you,
+even offline. No RetroArch knowledge needed.
 
 </td>
 </tr>
@@ -108,16 +108,37 @@ in a guided installer. No RetroArch knowledge needed.
 
 ### 🪟 🐧 Windows & Linux
 
+#### 💳 Recommended: the installer card
+
+The easiest way: one USB stick that installs **everything** (launcher, RetroArch and all the
+emulator cores), **with no internet connection needed**.
+
 | Step | |
 |:-:|---|
-| **1️⃣ Download** | Grab the launcher for your system from the [**releases page**](https://github.com/retrogc/retrogc-launcher/releases), or use an [**installer card**](#-installer-cards). |
-| **2️⃣ Run** | Start `retrogc-launcher`. On first launch, the **data installer** opens and sets up RetroArch and its cores (≈ 700 MB). |
-| **3️⃣ Get a card** | Write a card image to a USB stick or SD card (see [Writing a card image](#-writing-a-card-image)), or [make your own](#-creating-a-card). Ready-made cards live in [**retrogc-gamecards**](https://github.com/retrogc/retrogc-gamecards). |
-| **4️⃣ Play** | Insert the card. The game starts on its own. 🎉 |
+| **1️⃣ Download** | Get `retrogc-installer-<version>.img.xz` from the [**retrogc-installer releases**](https://github.com/retrogc/retrogc-installer/releases/latest) (≈ 1.5 GB). |
+| **2️⃣ Flash** | Write it to a USB stick of **2 GB or more** with [**balenaEtcher**](https://etcher.balena.io/) (Windows, Linux, macOS), or `./retrogc-image.sh --restore` on Linux (see [Writing a card image](#-writing-a-card-image)). ⚠️ This erases the stick. |
+| **3️⃣ Install** | Open the stick and run `retrogc-launcher.exe` (Windows) or `retrogc-launcher` (Linux), then click **Install**. The launcher installs itself with a menu shortcut, installs RetroArch and its cores, then restarts from the installed copy. |
+| **4️⃣ Play** | Remove the stick, insert a [game card](#-the-rgc-card-format) and the game starts on its own. 🎉 Ready-made cards live in [**retrogc-gamecards**](https://github.com/retrogc/retrogc-gamecards). |
 
 > [!TIP]
-> Closing the window doesn't quit: the launcher keeps running in the **system tray** so cards
-> keep working. Use the tray menu → **Exit** to really quit.
+> Keep the stick: it sets up any other computer the same way, and inserting it where the launcher
+> is already installed offers to **update** the launcher and the data.
+
+> [!NOTE]
+> 🐧 On Linux the stick is mounted at `/media/<user>/RETROGC` (Ubuntu) or `/run/media/<user>/RETROGC`.
+> If double-clicking `retrogc-launcher` doesn't start it, right-click it → **Run as a Program**, or
+> run it from a terminal: `/media/$USER/RETROGC/retrogc-launcher`.
+
+#### 📥 Manual install
+
+Prefer a plain download? The launcher fetches RetroArch and its cores itself on first launch.
+
+| Step | |
+|:-:|---|
+| **1️⃣ Download** | Grab the launcher for your system from the [**releases page**](https://github.com/retrogc/retrogc-launcher/releases). |
+| **2️⃣ Run** | Start `retrogc-launcher`. On first launch the **data installer** opens and downloads RetroArch and its cores (≈ 700 MB). |
+| **3️⃣ Get a card** | Write a card image to a USB stick or SD card (see [Writing a card image](#-writing-a-card-image)), or [make your own](#-creating-a-card). Ready-made cards live in [**retrogc-gamecards**](https://github.com/retrogc/retrogc-gamecards). |
+| **4️⃣ Play** | Insert the card. The game starts on its own. 🎉 |
 
 <details>
 <summary><b>📥 Installing the data package by hand (offline machines)</b></summary>
@@ -133,19 +154,13 @@ in a guided installer. No RetroArch knowledge needed.
    - extract the archive yourself into `<data folder>/1.22.2/`
      (see [Where things are stored](#-where-things-are-stored)).
 
-</details>
-
-<details>
-<summary><b>💳 Installing everything from an installer card</b></summary>
-
-<br />
-
-Insert an [installer card](#-installer-cards) and run `retrogc-launcher` from it. The installer
-opens with the card's data package already selected; it installs the launcher on the computer,
-adds an application menu shortcut, installs RetroArch and its cores, then restarts from the
-installed copy. No internet connection needed.
+Or simply use the [installer card](#-recommended-the-installer-card), which works offline.
 
 </details>
+
+> [!TIP]
+> Closing the window doesn't quit: the launcher keeps running in the **system tray** so cards
+> keep working. Use the tray menu → **Exit** to really quit.
 
 ### 🔲 MiSTer FPGA
 
@@ -170,8 +185,8 @@ Running the script **toggles** the background watcher:
 
 ## 🎴 The `.rgc` card format
 
-A card is a **FAT32 volume labelled `RETROGC`** with one `.rgc` JSON file at its root, plus the
-files it points to.
+A **game card** is a **FAT32 volume labelled `RETROGC`** with one `.rgc` JSON file at its root,
+plus the files it points to. FAT32 keeps it readable everywhere, MiSTer included.
 
 ```text
 📀 RETROGC/                         ← volume label (required)
@@ -185,6 +200,10 @@ files it points to.
 > [!IMPORTANT]
 > Only a `.rgc` file **at the root** of the volume is read, and only the **first one** found.
 > Keep exactly one `.rgc` per card.
+
+> [!NOTE]
+> A card with a `retrogc-data.rgc` file at its root is an [**installer card**](#-installer-cards)
+> instead: it installs the launcher and RetroArch, it doesn't start a game.
 
 ### 🏷️ Root fields
 
@@ -345,10 +364,12 @@ can pick the right `/dev/sdX` for `--restore`.
 
 ### 🔥 Writing a card image
 
+Game cards and installer cards are flashed the same way. ⚠️ Flashing erases the whole stick / SD card.
+
 | | How |
 |:-:|---|
-| 🐧 **Linux** | `./retrogc-image.sh --restore game.img.xz /dev/sdX` |
-| 🪟 **Windows** | Open the `.img.xz` with [**balenaEtcher**](https://etcher.balena.io/) and flash it |
+| 🖱️ **Any system** | Open the `.img.xz` with [**balenaEtcher**](https://etcher.balena.io/) (Windows, Linux, macOS), pick the stick and flash it |
+| 🐧 **Linux (terminal)** | `./retrogc-image.sh --list` to find the stick, then `./retrogc-image.sh --restore game.img.xz /dev/sdX` |
 
 ---
 
@@ -356,6 +377,13 @@ can pick the right `/dev/sdX` for `--restore`.
 
 An installer card carries the **launcher itself** (Windows and Linux on the same card) and the
 **RetroArch data package**, to set up a computer offline in one go, or to update one.
+
+> [!TIP]
+> You don't need to make one: a ready-to-flash image, `retrogc-installer-<version>.img.xz`, is
+> published with every [**retrogc-installer release**](https://github.com/retrogc/retrogc-installer/releases/latest).
+> See the [Quick start](#-recommended-the-installer-card). The rest of this section explains how it works.
+
+**Content** (exFAT volume labelled `RETROGC`):
 
 ```text
 📀 RETROGC/
@@ -415,12 +443,15 @@ launcher), the installer opens and asks what to update. Otherwise press <kbd>Ent
 reinstall anyway. After a launcher update, the launcher restarts on the new version.
 
 > [!WARNING]
-> 🐧 Ubuntu mounts **FAT32** volumes without the executable bit (only `.exe` / `.bat` files are
-> executable), so `retrogc-launcher` can't be started straight from a FAT32 card. Format the
-> installer card as **exFAT** (it isn't used by MiSTer), or copy the file to your home folder first.
+> 🐧 Linux mounts **FAT32** volumes without the executable bit (only `.exe` / `.bat` files are
+> executable), so `retrogc-launcher` can't be started straight from a FAT32 card. That's why
+> installer cards are **exFAT** (they aren't used by MiSTer). On a FAT32 copy, copy the file to your
+> home folder first.
 
-### 🛠️ Building an installer card
+### 🛠️ Building your own installer card (optional)
 
+Only needed for a custom card (your own launcher build, another data version…): the official one
+is built by the [retrogc-installer release workflow](https://github.com/retrogc/retrogc-installer/actions).
 [`retrogc-image.sh`](Platforms/Linux/retrogc-image.sh) builds a ready-to-flash installer card image.
 By default it downloads the latest launcher release and the data archives listed in the
 [online manifest](https://github.com/retrogc/retrogc-installer), writes the card's `retrogc-data.rgc`
@@ -463,7 +494,8 @@ flowchart LR
 ```
 
 1. The launcher checks the removable drives twice a second for a volume labelled `RETROGC`.
-2. It reads the `.rgc` at the root and shows the game on screen.
+2. It reads the `.rgc` at the root and shows the game on screen. (A card with `retrogc-data.rgc`
+   at its root is shown as an [installer card](#-already-installed-just-insert-the-card) instead.)
 3. It checks every ROM and the core, then copies the `runtimes` (BIOS) files into RetroArch's
    `system` folder, but only when they changed.
 4. It starts RetroArch with the core and the ROM, using your fullscreen, scaling and shader settings.
@@ -539,6 +571,19 @@ are safe when reinstalling).
 - 🐧 On Linux, the card must be **mounted** with a folder named after its label (desktop auto-mounters
   do this, e.g. `/run/media/<user>/RETROGC`).
 - 🪟 On Windows, the drive's **volume label** is used.
+
+</details>
+
+<details>
+<summary><b>The launcher on the installer card doesn't start (Linux)</b></summary>
+
+<br />
+
+- Some file managers don't run programs on double-click: right-click `retrogc-launcher` →
+  **Run as a Program**, or start it from a terminal: `/media/$USER/RETROGC/retrogc-launcher`
+  (`/run/media/$USER/RETROGC/...` on some distributions).
+- "Permission denied": the card is FAT32 (e.g. a hand-made copy). Copy `retrogc-launcher` to your
+  home folder, `chmod +x` it and run it from there, or flash the official exFAT image.
 
 </details>
 

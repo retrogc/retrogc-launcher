@@ -658,7 +658,7 @@ Recalbox system name. `retrogc.sh --status` tells whether the watcher is running
 <br />
 
 List every disc file in `roms`. Only the first is launched; the others just need to be there.
-See [`psx-metal_gear_solid.rgc`](Cards/psx-metal_gear_solid.rgc).
+See [`psx-metal-gear-solid.rgc`](Cards/psx-metal-gear-solid.rgc).
 
 </details>
 

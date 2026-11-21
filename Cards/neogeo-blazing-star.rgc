@@ -1,0 +1,38 @@
+{
+  "name": "Blazing Star",
+  "description": "Blazing Star is a horizontally scrolling shooter and the follow-up to Pulstar, developed by Yumekobo, a studio founded by former Irem staff. Players choose from six fighter ships, each with its own weapons and pilot, and fight through stages filled with enemy fleets and huge, elaborate bosses. Shots can be charged by holding the fire button to unleash powerful special attacks, and the game rewards fast kills with bonus points. With beautiful pre-rendered graphics, an energetic soundtrack and two-player simultaneous play, it is one of the finest shooters on the Neo Geo.",
+  "platform": "NEOGEO",
+  "year": "1998",
+  "developer": "Yumekobo",
+  "genre": "Shoot 'em up",
+  "players": "1-2",
+  "image": "blazstar.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "system": "fbneo",
+    "core": "fbneo",
+    "roms": [
+      "games/neogeo/blazstar.zip"
+    ],
+    "runtimes": [
+      "games/neogeo/neogeo.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Console/NeoGeo_20260603.rbf",
+    "roms": [
+      "games/neogeo/blazstar.neo"
+    ],
+    "runtimes": [
+      "games/neogeo/000-lo.lo",
+      "games/neogeo/neo-epo.sp1",
+      "games/neogeo/sfix.sfix",
+      "games/neogeo/sp-s2.sp1",
+      "games/neogeo/uni-bios.rom",
+      "games/neogeo/romsets.xml"
+    ],
+    "delay": "1",
+    "index": "1",
+    "type": "f"
+  }
+}

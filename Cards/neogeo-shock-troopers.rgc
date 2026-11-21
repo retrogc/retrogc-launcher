@@ -1,0 +1,38 @@
+{
+  "name": "Shock Troopers",
+  "description": "When the terrorist organization Bloody Scorpion kidnaps a scientist and his daughter, a team of elite mercenaries known as the Shock Troopers is sent in to rescue them. Players pick one of eight soldiers, each with their own weapon and special bomb, and either play as a lone wolf or as a team of three they can switch between at any time. The action is a top-down, eight-way shooter with branching paths through jungles, mountains and enemy bases, packed with tanks, helicopters and huge bosses. Its fast pace, varied characters and two-player co-op make it one of the best run-and-gun games on the Neo Geo.",
+  "platform": "NEOGEO",
+  "year": "1997",
+  "developer": "Saurus",
+  "genre": "Run and gun",
+  "players": "1-2",
+  "image": "shocktro.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "system": "fbneo",
+    "core": "fbneo",
+    "roms": [
+      "games/neogeo/shocktro.zip"
+    ],
+    "runtimes": [
+      "games/neogeo/neogeo.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Console/NeoGeo_20260603.rbf",
+    "roms": [
+      "games/neogeo/shocktro.neo"
+    ],
+    "runtimes": [
+      "games/neogeo/000-lo.lo",
+      "games/neogeo/neo-epo.sp1",
+      "games/neogeo/sfix.sfix",
+      "games/neogeo/sp-s2.sp1",
+      "games/neogeo/uni-bios.rom",
+      "games/neogeo/romsets.xml"
+    ],
+    "delay": "1",
+    "index": "1",
+    "type": "f"
+  }
+}

@@ -1,8 +1,11 @@
 {
   "name": "Teenage Mutant Ninja Turtles - Turtles in Time",
-  "description": "When Krang steals the Statue of Liberty, the turtles pursue the Foot Clan to the Technodrome, where Shredder sends them through a time warp. The Turtles must fight Shredder's army in both the past and the future in order to get home.",
+  "description": "While the Turtles are watching TV, Krang appears on the news stealing the Statue of Liberty. Leonardo, Michelangelo, Donatello and Raphael chase the Foot Clan to the Technodrome, where Shredder sends them through a time warp. To get back home, they must fight their way through prehistoric jungles, pirate ships, a Wild West train and a futuristic space station, facing Foot soldiers and classic villains like Bebop, Rocksteady, Leatherhead and Krang. Up to four players can play together at once, throwing enemies right at the screen in Konami's colorful, cartoon-faithful sequel to the original TMNT arcade game.",
   "platform": "KONAMI",
   "year": "1991",
+  "developer": "Konami",
+  "genre": "Beat 'em up",
+  "players": "1-4",
   "image": "tmnt2.png",
   "retroarch": {
     "version": "1.22.2",

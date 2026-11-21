@@ -668,7 +668,7 @@ See [`psx-metal_gear_solid.rgc`](Cards/psx-metal_gear_solid.rgc).
 <br />
 
 Put the BIOS (e.g. `neogeo.zip`) on the card and list it in `retroarch.runtimes`. It's copied to
-RetroArch's `system` folder before every launch. See [`neogeo-metal_slug.rgc`](Cards/neogeo-metal_slug.rgc).
+RetroArch's `system` folder before every launch. See [`neogeo-metal_slug.rgc`](Cards/neogeo-metal-slug.rgc).
 
 </details>
 

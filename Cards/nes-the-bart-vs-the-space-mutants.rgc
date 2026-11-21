@@ -1,0 +1,27 @@
+{
+  "name": "Simpsons, The - Bart vs. the Space Mutants (USA) (Rev 1)",
+  "description": "Only Bart Simpson can see that Springfield is being invaded by Space Mutants, aliens who are taking over people's bodies and collecting everyday objects to build a doomsday weapon. Armed with his trusty spray can, slingshot and other gadgets, Bart sets out across Springfield to ruin their plans, painting purple objects red, collecting hats and balloons and exposing the aliens hiding among the townsfolk. Each level ends with a boss fight against a classic Simpsons villain, and members of Bart's family can help him if he collects enough letters to spell their names. It was the first Simpsons video game released on home consoles.",
+  "platform": "NES",
+  "year": "1991",
+  "developer": "Imagineering",
+  "genre": "Platform",
+  "players": "1",
+  "image": "Simpsons, The - Bart vs. the Space Mutants (USA) (Rev 1).jpg",
+  "retroarch": {
+    "version": "1.22.2",
+    "system": "nes",
+    "core": "nestopia",
+    "roms": [
+      "games/nes/Simpsons, The - Bart vs. the Space Mutants (USA) (Rev 1).nes"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Console/NES_20260823.rbf",
+    "roms": [
+      "games/nes/Simpsons, The - Bart vs. the Space Mutants (USA) (Rev 1).nes"
+    ],
+    "delay": "1",
+    "index": "1",
+    "type": "f"
+  }
+}

@@ -1,8 +1,11 @@
 {
   "name": "Ghouls'n Ghosts",
-  "description": "As the story goes, three years have passed since this game's prequel. Now the Knight Arthur must fight against the true king of the Demon World, Lucifer, who has taken many souls including that of Arthur's beloved Princess Prin Prin.",
+  "description": "Three years after the events of Ghosts'n Goblins, the brave knight Sir Arthur returns home to find that the demon Lucifer has stolen the souls of the kingdom's people, including his beloved Princess Prin Prin. To save them, Arthur must journey through haunted graveyards, burning villages, crystal caves and a demon fortress, battling zombies, vultures and gigantic bosses. He can now throw weapons up and down, collect a golden armor that unlocks powerful magic attacks, and switch between weapons such as lances, daggers, axes and discus. Like its predecessor, Ghouls'n Ghosts is notoriously difficult: a single hit strips Arthur down to his boxer shorts, and the game must be finished twice to see the true ending.",
   "platform": "CPS-1",
   "year": "1988",
+  "developer": "Capcom",
+  "genre": "Platform",
+  "players": "1",
   "image": "ghouls.png",
   "retroarch": {
     "version": "1.22.2",

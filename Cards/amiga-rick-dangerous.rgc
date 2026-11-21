@@ -1,0 +1,34 @@
+{
+  "name": "Rick Dangerous",
+  "description": "It is 1945, and fearless adventurer Rick Dangerous crash-lands his plane deep in the South American jungle, right in the territory of the hostile Goolu tribe. His perilous journey then takes him through the tombs of an Egyptian pyramid, a heavily guarded Nazi fortress and finally a futuristic enemy base, where he must stop a plot to attack London. Armed with a pistol with limited bullets, a handful of dynamite sticks and a trusty pole to stun enemies, Rick must make his way across dozens of screens packed with spikes, falling boulders, darts and other deadly traps. Famous for its punishing difficulty and tongue-in-cheek humor, Rick Dangerous rewards patience, memorization and careful use of every resource.",
+  "platform": "AMIGA",
+  "year": "1989",
+  "developer": "Core Design",
+  "genre": "Platform",
+  "players": "1",
+  "image": "rick.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "system": "amiga600",
+    "core": "puae",
+    "roms": [
+      "games/amiga/rick.adf"
+    ],
+    "runtimes": [
+      "games/amiga/kick34005.A500"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Computer/Minimig_20260907.rbf",
+    "roms": [
+      "games/amiga/rick.adf"
+    ],
+    "runtimes": [
+      "games/amiga/kick.rom"
+    ],
+    "delay": "1",
+    "index": "0",
+    "type": "f"
+  }
+}
+

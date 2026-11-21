@@ -1,8 +1,11 @@
 {
   "name": "Toki",
-  "description": "Toki is an action plaformer game originally released on December 8, 1989, for Arcades.",
+  "description": "The jungle warrior Toki is turned into an ape by the evil sorcerer Vookimedlo, who also kidnaps his beloved Miho. Toki must travel through jungles, underwater caves, ice caverns, lava pits and a dark castle to break the spell and rescue her. His main weapon is his mighty spit, which he can power up into triple shots, fireballs and spreading blasts, while items like football helmets and sneakers give him extra protection and higher jumps. Toki stands out for its detailed graphics, strange creatures and huge bosses, and it later received well-known ports to the Amiga, Atari Lynx and Mega Drive.",
   "platform": "TAD CORP",
   "year": "1989",
+  "developer": "TAD Corporation",
+  "genre": "Platform",
+  "players": "1",
   "image": "toki.png",
   "retroarch": {
     "version": "1.22.2",

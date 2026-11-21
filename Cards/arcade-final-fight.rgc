@@ -1,8 +1,11 @@
 {
   "name": "Final Fight",
-  "description": "The streets of Metro City are filled with criminals who are part of a gang called Mad Gear. Former wrestler and newly elected mayor Mike Haggar tries to do something about it, much to the displeasure of the Mad Gear Gang who kidnap his daughter Jessica. Only three people are brave enough to venture into the crime-infested streets and try to bring Jessica back.",
+  "description": "Metro City is ruled by the Mad Gear gang, and when newly elected mayor Mike Haggar, a former pro wrestler, refuses to cooperate, the gang kidnaps his daughter Jessica. Haggar teams up with Jessica's boyfriend Cody, a skilled street fighter, and Cody's ninja-trained friend Guy to take back the city. Players punch, kick, grab and throw their way through slums, subways and industrial districts, picking up weapons like pipes, katanas and knives, and eating food hidden in barrels to recover health. With huge, detailed sprites, two-player co-op and memorable bosses, Final Fight set the standard for the side-scrolling beat 'em up genre.",
   "platform": "CPS-1",
-  "year": "1993",
+  "year": "1989",
+  "developer": "Capcom",
+  "genre": "Beat 'em up",
+  "players": "1-2",
   "image": "ffight.png",
   "retroarch": {
     "version": "1.22.2",

@@ -1,0 +1,38 @@
+{
+  "name": "Metal Slug - Super Vehicle-001",
+  "description": "General Morden and his Rebel Army have launched a coup to take over the world, and they've stolen the Metal Slug, a powerful new mini-tank. Marco Rossi and Tarma Roving of the Peregrine Falcon Squad are sent behind enemy lines to rescue prisoners of war and get the Metal Slug back. Players run and gun across battlefields, jungles and cities, picking up weapons like the heavy machine gun, rocket launcher and flame shot, and climbing into the Metal Slug to blast through anything in their path. Famous for its richly detailed hand-drawn animation, humor and explosive destructive action, the game launched one of SNK's most popular series.",
+  "platform": "NEOGEO",
+  "year": "1996",
+  "developer": "Nazca Corporation",
+  "genre": "Run and gun",
+  "players": "1-2",
+  "image": "mslug.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "system": "fbneo",
+    "core": "fbneo",
+    "roms": [
+      "games/neogeo/mslug.zip"
+    ],
+    "runtimes": [
+      "games/neogeo/neogeo.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Console/NeoGeo_20260603.rbf",
+    "roms": [
+      "games/neogeo/mslug.neo"
+    ],
+    "runtimes": [
+      "games/neogeo/000-lo.lo",
+      "games/neogeo/neo-epo.sp1",
+      "games/neogeo/sfix.sfix",
+      "games/neogeo/sp-s2.sp1",
+      "games/neogeo/uni-bios.rom",
+      "games/neogeo/romsets.xml"
+    ],
+    "delay": "1",
+    "index": "1",
+    "type": "f"
+  }
+}

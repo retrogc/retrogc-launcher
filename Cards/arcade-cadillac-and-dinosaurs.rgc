@@ -1,0 +1,26 @@
+{
+  "name": "Cadillacs & Dinosaurs",
+  "description": "Based on Mark Schultz's comic book series Xenozoic Tales, Cadillacs and Dinosaurs takes place in a post-apocalyptic 26th century where dinosaurs once again roam the Earth. Mechanic and shaman Jack Tenrec, adventurer Hannah Dundee, Mustapha Cairo and Mess O'Bradovich join forces to stop a gang of poachers whose crimes are upsetting the balance between humans and dinosaurs. Up to three players can fight side by side using punches, throws and an arsenal of weapons such as rifles, Uzis, bazookas, knives and grenades, while trying not to anger the dinosaurs that poachers drive into a frenzy. Highlights include a ride in Jack's souped-up Cadillac, giant boss battles and some of the finest sprite work Capcom produced on the CP System.",
+  "platform": "CPS-1",
+  "year": "1993",
+  "developer": "Capcom",
+  "genre": "Beat 'em up",
+  "players": "1-3",
+  "image": "dino.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "system": "fbneo",
+    "core": "fbneo",
+    "roms": [
+      "games/mame/dino.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Arcade/cores/jtcps15.rbf",
+    "roms": [
+      "_Arcade/Cadillacs and Dinosaurs (World 930201).mra",
+      "games/mame/dino.zip",
+      "games/mame/qsound.zip"
+    ]
+  }
+}

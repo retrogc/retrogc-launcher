@@ -1,0 +1,25 @@
+{
+  "name": "Caveman Ninja",
+  "description": "Joe and Mac, two club-wielding cavemen, set out across a prehistoric world to rescue the women of their tribe, who have been kidnapped by a rival band of Neanderthals. Along the way they battle hungry dinosaurs, cavemen and huge bosses such as a Tyrannosaurus rex and a giant plant, using an arsenal of stone wheels, boomerangs, bones, fire and flint axes. Their health slowly drains over time and must be restored by eating food dropped by enemies, which keeps the action moving. With its colorful cartoon graphics, branching paths and two-player simultaneous co-op, Caveman Ninja is one of Data East's most beloved action platformers.",
+  "platform": "DECO16",
+  "year": "1991",
+  "developer": "Data East",
+  "genre": "Platform",
+  "players": "1-2",
+  "image": "cninja.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "system": "fbneo",
+    "core": "fbneo",
+    "roms": [
+      "games/mame/cninja.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Arcade/cores/Arcade-Deco16_20260826.rbf",
+    "roms": [
+      "_Arcade/Caveman Ninja (World ver 4).mra",
+      "games/mame/cninja.zip"
+    ]
+  }
+}

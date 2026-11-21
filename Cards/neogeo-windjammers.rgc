@@ -1,12 +1,15 @@
 {
   "name": "Windjammers",
-  "description": "Windjammers (also known as Flying Power Disc in Japan) is a fast pace, sport arcade game released by Data East on the Neo Geo arcade system in 1994.",
+  "description": "Windjammers, known as Flying Power Disc in Japan, is a fast-paced flying disc game that plays like a mix of Pong, air hockey and tennis. Players choose one of six international athletes, each with their own speed and power, and try to throw the disc past their opponent into goal zones worth three or five points. Curved throws, lobs, bounces off the walls and devastating special shots keep every rally intense, while bonus stages break up the matches. Thanks to its simple controls and deep competitive play, it has become a cult classic and a favorite for head-to-head matches.",
   "platform": "NEOGEO",
   "year": "1994",
+  "developer": "Data East",
+  "genre": "Sports",
+  "players": "1-2",
   "image": "windjammers.png",
   "retroarch": {
     "version": "1.22.2",
-    "system": "neogeo",
+    "system": "fbneo",
     "core": "fbneo",
     "roms": [
       "games/neogeo/wjammers.zip"

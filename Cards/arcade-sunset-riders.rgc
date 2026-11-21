@@ -1,0 +1,26 @@
+{
+  "name": "Sunset Riders",
+  "description": "Sunset Riders is a side-scrolling shoot 'em up for up to four players set in the American Wild West. Four bounty hunters, Steve, Billy, Bob and Cormano, ride out to collect the rewards on the West's most wanted outlaws, from gunslinging bandits to dynamite-throwing desperadoes, before a final showdown with the ruthless Sir Richard Rose. Players shoot in eight directions, slide under bullets, jump between rooftops, ride horses alongside a stampede and leap onto moving trains. Packed with humor, voice samples and memorable duels against each boss, it is one of Konami's best-loved arcade games.",
+  "platform": "KONAMI",
+  "year": "1991",
+  "developer": "Konami",
+  "genre": "Run and gun",
+  "players": "1-4",
+  "image": "ssriders.png",
+  "retroarch": {
+    "version": "1.22.2",
+    "system": "fbneo",
+    "core": "fbneo",
+    "roms": [
+      "games/mame/ssriders.zip"
+    ]
+  },
+  "misterfpga": {
+    "core": "_Arcade/cores/jtriders.rbf",
+    "roms": [
+      "_Arcade/Sunset Riders (4 Players ver EAC).mra",
+      "games/mame/ssriders.zip"
+    ]
+  }
+}
+

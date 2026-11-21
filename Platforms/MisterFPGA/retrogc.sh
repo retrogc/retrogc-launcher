@@ -233,10 +233,14 @@ on_insert() {
         mkdir -p /media/fat/_Console \
           && ln -sf "$corePath" "$FAKE_MGL_CORE"
         mgl="/tmp/game.mgl"
+        # The rom path is relative to the core home folder (<root>/games/<core>/).
+        # The leading "./" is required: since Main_MiSTer 7d88019, Minimig treats
+        # paths starting with ".." as relative to the storage root instead of the
+        # home folder. "./../../" stays home-relative on both old and new firmware.
         {
             printf '%s\n' '<mistergamedescription>'
             printf '  <rbf>%s</rbf>\n' "_Console/retrogc"
-            printf '  <file delay="%s" index="%s" type="%s" path="../../%s"/>\n' \
+            printf '  <file delay="%s" index="%s" type="%s" path="./../../%s"/>\n' \
                 "$delay" "$index" "$type" "$rom"
             printf '%s\n' '</mistergamedescription>'
         } > "$mgl"

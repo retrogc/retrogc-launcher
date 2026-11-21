@@ -22,6 +22,7 @@ and a launcher that turns any computer into a plug-and-play retro console.
 **[🚀 Quick start](#-quick-start)** ·
 **[🎴 Card format](#-the-rgc-card-format)** ·
 **[🧩 Make a card](#-creating-a-card)** ·
+**[💳 Installer card](#-installer-cards)** ·
 **[⚙️ Settings](#%EF%B8%8F-settings)** ·
 **[❓ FAQ](#-faq--troubleshooting)** ·
 **[🧑‍💻 Build](#-building-from-source)**
@@ -109,7 +110,7 @@ in a guided installer. No RetroArch knowledge needed.
 
 | Step | |
 |:-:|---|
-| **1️⃣ Download** | Grab the launcher for your system from the [**releases page**](https://github.com/retrogc/retrogc-launcher/releases). |
+| **1️⃣ Download** | Grab the launcher for your system from the [**releases page**](https://github.com/retrogc/retrogc-launcher/releases), or use an [**installer card**](#-installer-cards). |
 | **2️⃣ Run** | Start `retrogc-launcher`. On first launch, the **data installer** opens and sets up RetroArch and its cores (≈ 700 MB). |
 | **3️⃣ Get a card** | Write a card image to a USB stick or SD card (see [Writing a card image](#-writing-a-card-image)), or [make your own](#-creating-a-card). Ready-made cards live in [**retrogc-gamecards**](https://github.com/retrogc/retrogc-gamecards). |
 | **4️⃣ Play** | Insert the card. The game starts on its own. 🎉 |
@@ -131,6 +132,18 @@ in a guided installer. No RetroArch knowledge needed.
      **Local file** and pick the `retrogc-data.rgc` manifest sitting next to the archive, **or**
    - extract the archive yourself into `<data folder>/1.22.2/`
      (see [Where things are stored](#-where-things-are-stored)).
+
+</details>
+
+<details>
+<summary><b>💳 Installing everything from an installer card</b></summary>
+
+<br />
+
+Insert an [installer card](#-installer-cards) and run `retrogc-launcher` from it. The installer
+opens with the card's data package already selected; it installs the launcher on the computer,
+adds an application menu shortcut, installs RetroArch and its cores, then restarts from the
+installed copy. No internet connection needed.
 
 </details>
 
@@ -312,9 +325,20 @@ files it points to.
 |---|---|
 | `--build` | `parted` `mkfs.fat` `mount` `umount` `rsync` `xz` `truncate` `mcopy` |
 | `--restore` | `xzcat` `dd` `lsblk` |
+| `--list` | `lsblk` `awk` |
 | `--extract` | `xz` `mcopy` `find` `mktemp` `realpath` |
 
 `mcopy` comes from the **mtools** package.
+
+</details>
+
+<details>
+<summary><b>🔌 Which device is my card?</b></summary>
+
+<br />
+
+`./retrogc-image.sh --list` shows only the USB drives (size, model, label, mount point), so you
+can pick the right `/dev/sdX` for `--restore`.
 
 </details>
 
@@ -324,6 +348,75 @@ files it points to.
 |:-:|---|
 | 🐧 **Linux** | `./retrogc-image.sh --restore game.img.xz /dev/sdX` |
 | 🪟 **Windows** | Open the `.img.xz` with [**balenaEtcher**](https://etcher.balena.io/) and flash it |
+
+---
+
+## 💳 Installer cards
+
+An installer card carries the **launcher itself** (Windows and Linux on the same card) and the
+**RetroArch data package**, to set up a computer offline in one go, or to update one.
+
+```text
+📀 RETROGC/
+├── 📄 retrogc-data.rgc                  ← data manifest (marks the card as an installer card)
+├── 📦 retrogc-data-1.22.2-windows.zip
+├── 📦 retrogc-data-1.22.2-linux.zip
+├── 🪟 retrogc-launcher.exe
+└── 🐧 retrogc-launcher
+```
+
+`retrogc-data.rgc` is the same manifest as the [online one](https://github.com/retrogc/retrogc-data),
+except that `url` points to the archive **on the card** (a relative path):
+
+```json
+{
+  "default": "1.22.2",
+  "versions": [
+    {
+      "version": "1.22.2",
+      "platforms": {
+        "win-x64": {
+          "data": [
+            { "name": "retrogc-data", "file": "retrogc-data-1.22.2-windows.zip", "url": "retrogc-data-1.22.2-windows.zip" },
+            { "name": "retrogc-launcher", "version": "1.0.4", "file": "retrogc-launcher.exe", "url": "retrogc-launcher.exe" }
+          ]
+        },
+        "linux-x64": {
+          "data": [
+            { "name": "retrogc-data", "file": "retrogc-data-1.22.2-linux.zip", "url": "retrogc-data-1.22.2-linux.zip" },
+            { "name": "retrogc-launcher", "version": "1.0.4", "file": "retrogc-launcher", "url": "retrogc-launcher" }
+          ]
+        }
+      }
+    }
+  ]
+}
+```
+
+> [!NOTE]
+> The `retrogc-launcher` entries are optional: without them the launcher is still found by its file
+> name at the card root, but its version is unknown, so no launcher update is offered automatically.
+
+### 🆕 New computer: run the launcher from the card
+
+1. Insert the card and start `retrogc-launcher` (or `retrogc-launcher.exe`) **from the card**.
+2. The installer opens with the card's manifest selected. The review step lists the **launcher**
+   and the **data package**, each with its own switch.
+3. **Install** copies the launcher to the [install folder](#-where-things-are-stored), creates the
+   application menu shortcut (Start Menu on Windows, app grid on Linux) and installs the data.
+4. The installed launcher starts and the card copy exits: the card can be removed.
+
+### 🔄 Already installed: just insert the card
+
+When the running launcher sees an installer card, it shows it on screen instead of a game, with
+the versions it carries. If the card brings something new (data not installed yet, or a newer
+launcher), the installer opens and asks what to update. Otherwise press <kbd>Enter</kbd> to
+reinstall anyway. After a launcher update, the launcher restarts on the new version.
+
+> [!WARNING]
+> 🐧 Ubuntu mounts **FAT32** volumes without the executable bit (only `.exe` / `.bat` files are
+> executable), so `retrogc-launcher` can't be started straight from a FAT32 card. Format the
+> installer card as **exFAT** (it isn't used by MiSTer), or copy the file to your home folder first.
 
 ---
 
@@ -361,7 +454,7 @@ flowchart LR
 |:-:|---|
 | <kbd>F11</kbd> / <kbd>Esc</kbd> | Toggle fullscreen / windowed |
 | <kbd>F12</kbd> | Open the settings |
-| <kbd>Enter</kbd> / <kbd>Space</kbd> | Relaunch the inserted card (after RetroArch was closed or failed) |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Relaunch the inserted card (after RetroArch was closed or failed), or open the installer for an inserted installer card |
 
 From the **tray icon**: click to show the launcher, or right-click for **Open**, **Settings** and **Exit**.
 
@@ -403,6 +496,8 @@ are safe when reinstalling).
 | Settings | `~/.local/share/retrogc/settings.json` | `%LOCALAPPDATA%\retrogc\settings.json` |
 | RetroArch data | `~/.local/share/retrogc/data/<version>/` | `%LOCALAPPDATA%\retrogc\data\<version>\` |
 | Temporary downloads | `~/.local/share/retrogc/downloads/` | `%LOCALAPPDATA%\retrogc\downloads\` |
+| Launcher (from an installer card) | `~/.local/share/retrogc/app/` | `%LOCALAPPDATA%\retrogc\app\` |
+| Application shortcut | `~/.local/share/applications/retrogc-launcher.desktop` | Start Menu → **Retro Game Card** |
 
 ---
 
@@ -483,7 +578,8 @@ dotnet run
 ```text
 Src/
 ├── 📁 Models/        Card (.rgc), AppSettings, data manifest
-├── 📁 Services/      CardMonitor, GameSession, RetroArchLauncher, DataInstaller, paths
+├── 📁 Services/      CardMonitor, GameSession, RetroArchLauncher, DataInstaller,
+│                     InstallerCard, AppInstaller (self-install + shortcut), paths
 ├── 📁 ViewModels/    MVVM view models (CommunityToolkit.Mvvm)
 ├── 📁 Views/         Avalonia windows (compiled bindings)
 ├── 📁 Styles/        Theme.axaml: shared palette, controls, icons
@@ -505,9 +601,11 @@ Release builds are self-contained, trimmed, single-file executables, built by th
 [**release workflow**](.github/workflows/release.yml):
 
 ```bash
-dotnet publish -c Release -r linux-x64 --self-contained -p:PublishTrimmed=true -p:PublishSingleFile=true
-dotnet publish -c Release -r win-x64   --self-contained -p:PublishTrimmed=true -p:PublishSingleFile=true
+dotnet publish -c Release -r linux-x64 --self-contained -p:PublishTrimmed=true -p:PublishSingleFile=true -p:Version=1.0.4
+dotnet publish -c Release -r win-x64   --self-contained -p:PublishTrimmed=true -p:PublishSingleFile=true -p:Version=1.0.4
 ```
+
+Pass `-p:Version`: installer cards compare it with their launcher version (local builds report `0.0.0`).
 
 </details>
 

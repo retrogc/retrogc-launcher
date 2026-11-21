@@ -21,8 +21,10 @@ usage() {
     echo "Build:   $0 --build <folder> <output.img.xz>"
     echo "Restore: $0 --restore <image.img.xz> <device>"
     echo "Extract: $0 --extract <image.img.xz> <output-folder>"
+    echo "List:    $0 --list"
     echo
     echo "Examples:"
+    echo "  $0 --list"
     echo "  $0 --build ~/roms cps1.img.xz"
     echo "  $0 --restore cps1.img.xz /dev/sdb"
     echo "  $0 --extract cps1.img.xz ./extracted/cps1"
@@ -56,6 +58,9 @@ case "$MODE" in
         [[ -f "$IMAGE" ]] || error "Image file does not exist: $IMAGE"
         [[ -n "$EXTRACT_DIR" ]] || error "Output folder must not be empty"
         ;;
+    --list)
+        [[ $# -eq 1 ]] || error "Usage: $0 --list"
+        ;;
     -h|--help)
         usage
         exit 0
@@ -64,6 +69,31 @@ case "$MODE" in
         error "Unknown option: $MODE"
         ;;
 esac
+
+# ============================================================
+# LIST
+# ============================================================
+
+if [[ "$MODE" == "--list" ]]; then
+    title "🔌 RETROGC USB Drives v$VERSION"
+
+    for cmd in lsblk awk; do
+        command -v "$cmd" >/dev/null || error "Missing dependency: $cmd"
+    done
+
+    # Whole disks only (-d), full paths (-p), filtered on USB transport.
+    mapfile -t USB_DEVS < <(lsblk -dnpo NAME,TRAN | awk '$2=="usb"{print $1}')
+
+    if [[ ${#USB_DEVS[@]} -eq 0 ]]; then
+        warn "No USB drives found."
+        exit 0
+    fi
+
+    lsblk -po NAME,SIZE,TYPE,FSTYPE,LABEL,VENDOR,MODEL,MOUNTPOINTS "${USB_DEVS[@]}"
+    echo
+    info "Restore with: $0 --restore <image.img.xz> /dev/sdX"
+    exit 0
+fi
 
 # ============================================================
 # BUILD

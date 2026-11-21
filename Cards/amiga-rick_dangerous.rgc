@@ -6,6 +6,7 @@
   "image": "rick.png",
   "retroarch": {
     "version": "1.22.2",
+    "system": "amiga600",
     "core": "puae",
     "roms": [
       "games/amiga/rick.adf"

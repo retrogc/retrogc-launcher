@@ -149,6 +149,12 @@ public record SystemConfig
 public sealed record RetroArchConfig : SystemConfig
 {
     [JsonPropertyName("version")] public required string Version { get; init => field = value ?? string.Empty; } = string.Empty;
+
+    /// <summary>
+    /// Optional Recalbox system name (<c>nes</c>, <c>neogeo</c>, <c>psx</c>...). Only used by the
+    /// Recalbox script; declared so the launcher round-trips the full format.
+    /// </summary>
+    [JsonPropertyName("system")] public string System { get; init => field = value ?? string.Empty; } = string.Empty;
 }
 
 public sealed record MisterFpgaConfig : SystemConfig

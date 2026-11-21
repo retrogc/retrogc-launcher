@@ -6,6 +6,7 @@
   "image": "tmnt2.png",
   "retroarch": {
     "version": "1.22.2",
+    "system": "fbneo",
     "core": "fbneo",
     "roms": [
       "games/mame/tmnt2.zip"

@@ -6,6 +6,7 @@
   "image": "metalgear.png",
   "retroarch": {
     "version": "1.22.2",
+    "system": "psx",
     "core": "swanstation",
     "roms": [
       "games/psx/Metal Gear Solid (USA) (Disc 1).cue",

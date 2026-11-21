@@ -13,6 +13,7 @@ and a launcher that turns any computer into a plug-and-play retro console.
 [![Windows](https://img.shields.io/badge/Windows-x64-0078D6?style=for-the-badge&logo=windows&logoColor=white&labelColor=0A0C12)](#%EF%B8%8F-supported-platforms)
 [![Linux](https://img.shields.io/badge/Linux-x64-FCC624?style=for-the-badge&logo=linux&logoColor=white&labelColor=0A0C12)](#%EF%B8%8F-supported-platforms)
 [![MiSTer](https://img.shields.io/badge/MiSTer-FPGA-E5426E?style=for-the-badge&labelColor=0A0C12)](#-mister-fpga)
+[![Recalbox](https://img.shields.io/badge/Recalbox-10-3D9CE8?style=for-the-badge&labelColor=0A0C12)](#-recalbox)
 
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Avalonia](https://img.shields.io/badge/UI-Avalonia%2012-8B44AC?style=flat-square)](https://avaloniaui.net/)
@@ -65,8 +66,8 @@ TV-friendly fullscreen screen. A modern take on the cartridge shelf.
 <td valign="top">
 
 ### 🔁 Same card, everywhere
-A single `.rgc` file describes both the **RetroArch** (Windows / Linux) and the
-**MiSTer FPGA** launch, so one card works on a PC *and* on a MiSTer.
+A single `.rgc` file describes both the **RetroArch** (Windows / Linux / Recalbox)
+and the **MiSTer FPGA** launch, so one card works on a PC, a Recalbox *and* a MiSTer.
 
 </td>
 </tr>
@@ -97,10 +98,11 @@ even offline. No RetroArch knowledge needed.
 | 🪟 | **Windows** x64 | `retrogc-launcher.exe` | Standalone, self-contained build |
 | 🐧 | **Linux** x64 | `retrogc-launcher` | Standalone, self-contained build |
 | 🔲 | **MiSTer FPGA** | `retrogc.sh` | Background script, no desktop app needed |
+| 🟦 | **Recalbox** | `retrogc.sh` | Background script, games start through Recalbox (🧪 new) |
 
 > [!NOTE]
-> The card format is **identical** on all three. Each `.rgc` file carries a `retroarch` section
-> (Windows / Linux) and an optional `misterfpga` section.
+> The card format is **identical** everywhere. Each `.rgc` file carries a `retroarch` section
+> (Windows / Linux / Recalbox) and an optional `misterfpga` section.
 
 ---
 
@@ -181,6 +183,31 @@ Running the script **toggles** the background watcher:
 
 📖 More details in [`readme-misterfpga.txt`](Platforms/MisterFPGA/readme-misterfpga.txt).
 
+### 🟦 Recalbox
+
+> [!NOTE]
+> 🧪 Recalbox support is new: please report what works (and what doesn't) on your board.
+
+1. **Download** [`retrogc.sh`](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/Recalbox/retrogc.sh).
+2. **Copy** it to `/recalbox/share/system/retrogc/retrogc.sh`, over the network share
+   (`\\RECALBOX\share\system\retrogc\`) or SSH.
+3. **Enable** it over SSH (user `root`, password `recalboxroot`):
+   ```bash
+   chmod +x /recalbox/share/system/retrogc/retrogc.sh
+   /recalbox/share/system/retrogc/retrogc.sh --enable
+   ```
+
+The watcher starts now and at every boot (hook in `/recalbox/share/system/custom.sh`). Insert a card:
+EmulationStation closes and the game starts; remove it and EmulationStation comes back.
+`--disable` turns it off, `--status` shows its state.
+
+| | How the game is started |
+|:-:|---|
+| ✅ | With [`retroarch.system`](#%EF%B8%8F-retroarch-object) set, through **Recalbox's own launcher** (controllers and video set up like a game started from EmulationStation). |
+| ↩️ | Without it, **RetroArch directly** with the card's core and Recalbox's RetroArch config. |
+
+📖 More details in [`readme-recalbox.txt`](Platforms/Recalbox/readme-recalbox.txt).
+
 ---
 
 ## 🎴 The `.rgc` card format
@@ -221,8 +248,9 @@ plus the files it points to. FAT32 keeps it readable everywhere, MiSTer included
 | `misterfpga` | object | | How to launch the game on a MiSTer ⬇️ |
 
 > [!NOTE]
-> 🆕 `developer`, `genre` and `players` are **display-only** and fully backward compatible: older
-> launchers and the MiSTer script just ignore them, and cards without them work as before.
+> 🆕 `developer`, `genre` and `players` are **display-only**, and `retroarch.system` is only read on
+> Recalbox. They're fully backward compatible: older launchers and the MiSTer script just ignore them,
+> and cards without them work as before.
 
 ### 🕹️ `retroarch` object
 
@@ -230,8 +258,18 @@ plus the files it points to. FAT32 keeps it readable everywhere, MiSTer included
 |---|:-:|:-:|---|
 | `core` | string | ✅ | Libretro core name **without** suffix, e.g. `nestopia`, `fbneo`, `swanstation`. The launcher adds `_libretro.dll` (Windows) or `_libretro.so` (Linux). |
 | `roms` | string[] | ✅ | ROM file(s), relative to the `.rgc`. The **first** one is launched; the others must exist (e.g. extra PSX discs). |
-| `version` | string | ✅ | RetroArch version the card was made for, e.g. `1.22.2`. If it isn't installed, the newest installed version is used. |
-| `runtimes` | string[] | | System / BIOS files copied into RetroArch's `system` folder before launch, e.g. `games/neogeo/neogeo.zip`. |
+| `version` | string | ✅ | RetroArch version the card was made for, e.g. `1.22.2`. If it isn't installed, the newest installed version is used. Ignored on Recalbox. |
+| `system` | string | | 🆕 [Recalbox system name](https://wiki.recalbox.com/en/tutorials/themes/tree/systems-list), e.g. `nes`, `neogeo`, `psx`, `fbneo`. Lets Recalbox start the game with its own launcher. Ignored by the desktop launcher. |
+| `runtimes` | string[] | | System / BIOS files copied into RetroArch's `system` folder before launch (`/recalbox/share/bios` on Recalbox), e.g. `games/neogeo/neogeo.zip`. |
+
+> [!TIP]
+> 🟦 **Recalbox system names**: `system` is the Recalbox short name of the system, the same as its
+> ROM folder in `/recalbox/share/roms/` (e.g. `nes`, `snes`, `megadrive`, `neogeo`, `psx`, `fbneo`,
+> `amiga600`). The full list is in the official
+> [**Recalbox systems list**](https://wiki.recalbox.com/en/tutorials/themes/tree/systems-list).
+> Pick a system whose emulators include the card's libretro `core`: Recalbox uses that core for the
+> game. Without `system` (or with an unknown one), the Recalbox script starts RetroArch directly
+> with the core instead.
 
 ### 🔲 `misterfpga` object
 
@@ -274,6 +312,7 @@ plus the files it points to. FAT32 keeps it readable everywhere, MiSTer included
   "players": "1-2",
   "retroarch": {
     "version": "1.22.2",
+    "system": "nes",
     "core": "nestopia",
     "roms": [
       "games/nes/Super Mario Bros. (World).nes"
@@ -603,6 +642,17 @@ The reason is shown in red on the launcher screen. The most common ones:
 </details>
 
 <details>
+<summary><b>Recalbox: the game doesn't start</b></summary>
+
+<br />
+
+Every step is logged to `/tmp/retrogc-launcher.log` (read it over SSH). Check that the card's
+`retroarch.core` exists in `/usr/lib/libretro/` on your Recalbox, and that `retroarch.system` is a
+Recalbox system name. `retrogc.sh --status` tells whether the watcher is running.
+
+</details>
+
+<details>
 <summary><b>Multi-disc PSX games</b></summary>
 
 <br />
@@ -659,7 +709,8 @@ Src/
 Cards/                Reference .rgc files
 Platforms/
 ├── 📁 Linux/         retrogc-image.sh
-└── 📁 MisterFPGA/    retrogc.sh
+├── 📁 MisterFPGA/    retrogc.sh
+└── 📁 Recalbox/      retrogc.sh
 ```
 
 </details>

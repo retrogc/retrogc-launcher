@@ -6,6 +6,7 @@
   "image": "mario.png",
   "retroarch": {
     "version": "1.22.2",
+    "system": "nes",
     "core": "nestopia",
     "roms": [
       "games/nes/Super Mario Bros. (World).nes"

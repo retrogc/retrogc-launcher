@@ -6,6 +6,7 @@
   "image": "ssriders.png",
   "retroarch": {
     "version": "1.22.2",
+    "system": "fbneo",
     "core": "fbneo",
     "roms": [
       "games/mame/ssriders.zip"

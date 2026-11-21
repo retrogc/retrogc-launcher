@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="1.1"
+VERSION="1.2"
 
 LABEL="RETROGC"
 LAUNCHER_REPO="https://github.com/retrogc/retrogc-launcher"
 DATA_MANIFEST_URL="https://raw.githubusercontent.com/retrogc/retrogc-installer/refs/heads/main/retrogc-data.rgc"
 
-# Partition starts at 1 MiB = sector 2048.
+# Partition starts at 1 MiB = sector 2048 and ends 1 MiB before the end of the image
+# (the backup GPT lives in the last 33 sectors).
 OFFSET_SECTORS=2048
 OFFSET_BYTES=$((OFFSET_SECTORS * 512))
+END_GAP_SECTORS=2048
+
+# GPT partition type: Microsoft basic data (FAT32 / exFAT).
+BASIC_DATA_GUID="EBD0A0A2-B9E5-4433-87C0-68B6B72699C7"
 
 # Colors
 RED="\033[1;31m"; GREEN="\033[1;32m"; YELLOW="\033[1;33m"
@@ -98,14 +103,21 @@ image_size_mb() {
     echo $(( (size_mb + 7) / 8 * 8 ))
 }
 
-# create_partitioned_image <img> <size-mb> <parted-fs-type>
+# create_partitioned_image <img> <size-mb>
+# GPT, one Microsoft basic data partition from 1 MiB to 1 MiB before the end (room for the
+# backup GPT), with the read-only attribute (bit 60): Windows mounts the card read-only, so it
+# never writes to it and never flags it dirty ("Scan and fix" prompt).
 create_partitioned_image() {
+    local total_sectors=$(( $2 * 1024 * 1024 / 512 ))
+
     info "Creating image..."
     truncate -s "${2}M" "$1"
 
-    info "Creating partition table..."
-    parted -s "$1" mklabel msdos
-    parted -s "$1" mkpart primary "$3" 1MiB 100%
+    info "Creating partition table (GPT, read-only partition)..."
+    sfdisk --quiet "$1" > /dev/null <<EOF
+label: gpt
+start=$OFFSET_SECTORS, size=$((total_sectors - OFFSET_SECTORS - END_GAP_SECTORS)), type=$BASIC_DATA_GUID, name="$LABEL", attrs="GUID:60"
+EOF
     success "Partition created"
 }
 
@@ -114,16 +126,16 @@ create_fat32_image() {
     local src="$1" image="$2" size_mb="$3"
     local files
 
-    create_partitioned_image "$image" "$size_mb" fat32
+    create_partitioned_image "$image" "$size_mb"
 
     info "Formatting FAT32 partition..."
-    # Format the partition directly inside the image file.
+    # Format the partition directly inside the image file (size in KiB, partition only).
     mkfs.fat \
         --offset="$OFFSET_SECTORS" \
         -F 32 \
         -n "$LABEL" \
         "$image" \
-        $(( (size_mb * 1024 * 1024 - OFFSET_BYTES) / 1024 )) \
+        $(( (size_mb * 1024 * 1024 - (OFFSET_SECTORS + END_GAP_SECTORS) * 512) / 1024 )) \
         > /dev/null
     success "FAT32 filesystem created"
 
@@ -143,8 +155,7 @@ create_exfat_image() {
     local src="$1" image="$2" size_mb="$3"
     local part
 
-    # "ntfs" sets the MBR partition id 0x07, the one used by exFAT.
-    create_partitioned_image "$image" "$size_mb" ntfs
+    create_partitioned_image "$image" "$size_mb"
 
     info "Attaching the image (sudo)..."
     LOOP_DEV="$(sudo losetup --find --show --partscan "$image")"
@@ -312,7 +323,7 @@ fi
 if [[ "$MODE" == "--build" ]]; then
     title "🎮 RETROGC FAT32 Image Builder v$VERSION"
 
-    need parted mkfs.fat xz truncate mcopy du awk
+    need sfdisk mkfs.fat xz truncate mcopy du awk
     success "Dependencies OK"
 
     info "Calculating source size..."
@@ -340,7 +351,7 @@ fi
 if [[ "$MODE" == "--build-installer" ]]; then
     title "💳 RETROGC Installer Card Builder v$VERSION"
 
-    need curl jq unzip xz parted truncate du awk
+    need curl jq unzip xz sfdisk truncate du awk
     if [[ "$FS" == "fat32" ]]; then
         need mkfs.fat mcopy
     else
@@ -538,6 +549,11 @@ if [[ "$MODE" == "--extract" ]]; then
     info "Decompressing image..."
     xz --decompress --stdout -- "$IMAGE" > "$RAW_IMAGE"
     success "Image decompressed"
+
+    # Card images are GPT (header signature at sector 1); MBR images aren't supported.
+    if [[ "$(dd if="$RAW_IMAGE" bs=1 skip=512 count=8 2>/dev/null)" != "EFI PART" ]]; then
+        error "Not a GPT card image (MBR images made by older versions aren't supported): rebuild it with --build"
+    fi
 
     # mtools only reads FAT: exFAT installer cards must be loop-mounted instead.
     if [[ "$(dd if="$RAW_IMAGE" bs=1 skip=$((OFFSET_BYTES + 3)) count=5 2>/dev/null)" == "EXFAT" ]]; then

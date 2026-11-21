@@ -456,6 +456,16 @@ find_mountpoint() {
     return 1
 }
 
+# The automount is read-write: while it is, FAT marks the volume dirty, and pulling the card
+# then makes Windows offer to "scan and fix" it. The card is never written, so make it read-only.
+remount_read_only() {
+    if mount -o remount,ro "$1" 2>/dev/null; then
+        log "Remounted read-only: $1"
+    else
+        err "Could not remount $1 read-only"
+    fi
+}
+
 wait_for_mount() {
     local dev="$1" waited=0
     MOUNTPOINT=""
@@ -464,6 +474,7 @@ wait_for_mount() {
     while [[ -e "$dev" ]]; do
         if MOUNTPOINT="$(find_mountpoint "$dev")"; then
             log "Mounted at: $MOUNTPOINT"
+            remount_read_only "$MOUNTPOINT"
             return 0
         fi
 

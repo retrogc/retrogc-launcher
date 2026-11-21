@@ -299,6 +299,16 @@ wait_for_device() {
     echo "Device detected: $DEVICE_PATH" >&2
 }
 
+# The automount is read-write: while it is, FAT marks the volume dirty, and pulling the card
+# then makes Windows offer to "scan and fix" it. The card is never written, so make it read-only.
+remount_read_only() {
+    if mount -o remount,ro "$1" 2>/dev/null; then
+        echo "Remounted read-only: $1" >&2
+    else
+        echo "WARNING: could not remount $1 read-only" >&2
+    fi
+}
+
 wait_for_mount() {
     local dev="$1"
     MOUNTPOINT=""
@@ -308,6 +318,7 @@ wait_for_mount() {
     while [[ -e "$DEVICE" ]]; do
         if MOUNTPOINT="$(findmnt -n -o TARGET --source "$dev" 2>/dev/null)"; then
             echo "Mounted at: $MOUNTPOINT" >&2
+            remount_read_only "$MOUNTPOINT"
             return 0
         fi
         sleep 0.25

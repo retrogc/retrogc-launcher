@@ -232,6 +232,18 @@ plus the files it points to. FAT32 keeps it readable everywhere, MiSTer included
 > A card with a `retrogc-data.rgc` file at its root is an [**installer card**](#-installer-cards)
 > instead: it installs the launcher and RetroArch, it doesn't start a game.
 
+#### 🔒 Read-only cards
+
+Card images (from `retrogc-image.sh` and the creator) use a **GPT** partition table with one
+partition from 1 MiB to 1 MiB before the end, marked **read-only** (GPT attribute bit 60).
+Windows mounts it read-only, so it never writes to the card and never flags it as needing a
+"scan and fix" when the card is pulled out without ejecting. Linux ignores that attribute, so the
+MiSTer and Recalbox watchers remount the card read-only themselves.
+
+To edit a flashed card on Windows, clear the attribute first (administrator `diskpart`:
+`list volume`, `select volume <n>`, `attributes volume clear readonly`), or better, edit the card
+folder and flash a new image.
+
 ### 🏷️ Root fields
 
 | Field | Type | Required | Description |
@@ -396,13 +408,13 @@ Download it from the [**retrogc-creator releases**](https://github.com/retrogc/r
 
 | Mode | Tools |
 |---|---|
-| `--build` | `parted` `mkfs.fat` `xz` `truncate` `mcopy` |
-| `--build-installer` | `curl` `jq` `unzip` `xz` `parted` `truncate`, plus `mkfs.exfat` (exfatprogs) `losetup` `mount` `sudo`, or `mkfs.fat` `mcopy` with `--fat32` |
+| `--build` | `sfdisk` `mkfs.fat` `xz` `truncate` `mcopy` |
+| `--build-installer` | `curl` `jq` `unzip` `xz` `sfdisk` `truncate`, plus `mkfs.exfat` (exfatprogs) `losetup` `mount` `sudo`, or `mkfs.fat` `mcopy` with `--fat32` |
 | `--restore` | `xzcat` `dd` `lsblk` |
 | `--list` | `lsblk` `awk` |
 | `--extract` | `xz` `mcopy` `find` `mktemp` `realpath` (FAT32 images only) |
 
-`mcopy` comes from the **mtools** package.
+`mcopy` comes from the **mtools** package, `sfdisk` from **util-linux** (the **fdisk** package on Debian / Ubuntu).
 
 </details>
 
@@ -625,6 +637,22 @@ are safe when reinstalling).
 - 🐧 On Linux, the card must be **mounted** with a folder named after its label (desktop auto-mounters
   do this, e.g. `/run/media/<user>/RETROGC`).
 - 🪟 On Windows, the drive's **volume label** is used.
+
+</details>
+
+<details>
+<summary><b>Windows asks to "scan and fix" the card</b></summary>
+
+<br />
+
+The card's FAT volume was left marked dirty: it was pulled out while mounted read-write, either by
+Windows itself or by a Linux machine (desktop, MiSTer, Recalbox). Neither the launcher nor RetroArch
+writes to the card.
+
+- Reflash the card with a current image: it's [read-only](#-read-only-cards), Windows never marks it dirty.
+- On a Linux desktop the card is still mounted read-write by the auto-mounter: unmount / eject it
+  before pulling it out. MiSTer and Recalbox remount it read-only automatically.
+- A hand-formatted card (plain FAT32 stick) isn't protected: eject it before pulling it out.
 
 </details>
 

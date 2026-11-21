@@ -355,6 +355,21 @@ plus the files it points to. FAT32 keeps it readable everywhere, MiSTer included
 
 ## 🧩 Creating a card
 
+### 🛠️ The easy way: Retro Game Card Creator
+
+[**retrogc-creator**](https://github.com/retrogc/retrogc-creator) is a desktop app (Windows and Linux)
+that makes cards without writing JSON:
+
+- 📂 open a card folder (every field is filled from its `.rgc`) or start a new card;
+- ✏️ edit every field, RetroArch, Recalbox and MiSTer sections included;
+- 📥 pick the ROM, BIOS, core and cover files: they're copied into the card at the right place, and
+  missing files are listed;
+- 💿 build the `.img.xz` image and 🔌 write it to a USB stick, in one click each.
+
+Download it from the [**retrogc-creator releases**](https://github.com/retrogc/retrogc-creator/releases).
+
+### ✋ By hand
+
 1. 📋 **Copy** a `.rgc` from the [Cards](Cards) folder and adapt it to your game.
 2. 📁 **Add** the files it references, keeping the folder layout.
 3. 💾 **Format** a USB stick / SD card as **FAT32** with the label **`RETROGC`** and copy everything to it,
@@ -708,7 +723,7 @@ Src/
 └── 📁 Assets/        Icons
 Cards/                Reference .rgc files
 Platforms/
-├── 📁 Linux/         retrogc-image.sh
+├── 📁 Linux/         retrogc-image.sh (the app version: retrogc-creator)
 ├── 📁 MisterFPGA/    retrogc.sh
 └── 📁 Recalbox/      retrogc.sh
 ```

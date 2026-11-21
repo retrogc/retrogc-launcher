@@ -47,7 +47,6 @@ jobs:
           -p:PublishTrimmed=true
           -p:PublishSingleFile=true
           -p:IncludeNativeLibrariesForSelfExtract=true
-          -p:IncludeAllContentForSelfExtract=true
           -p:Version=${{ inputs.version }}
 
       - name: Publish Windows
@@ -61,7 +60,6 @@ jobs:
           -p:PublishTrimmed=true
           -p:PublishSingleFile=true
           -p:IncludeNativeLibrariesForSelfExtract=true
-          -p:IncludeAllContentForSelfExtract=true
           -p:Version=${{ inputs.version }}
 
       - name: Create Linux ZIP

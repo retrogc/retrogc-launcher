@@ -361,6 +361,7 @@ plus the files it points to. FAT32 keeps it readable everywhere, MiSTer included
 that makes cards without writing JSON:
 
 - 📂 open a card folder (every field is filled from its `.rgc`) or start a new card;
+- 💽 open a card image (`.img.xz`): just view it, or extract it to a folder to edit and rebuild it;
 - ✏️ edit every field, RetroArch, Recalbox and MiSTer sections included;
 - 📥 pick the ROM, BIOS, core and cover files: they're copied into the card at the right place, and
   missing files are listed;
@@ -387,7 +388,7 @@ Download it from the [**retrogc-creator releases**](https://github.com/retrogc/r
 # 🔥 image → USB stick / SD card  (⚠️ erases the whole device, asks first)
 ./retrogc-image.sh --restore my-card.img.xz /dev/sdb
 
-# 📂 image → folder (inspect or edit an existing card)
+# 📂 image → folder (inspect or edit an existing card; also: retrogc-creator → Open image)
 ./retrogc-image.sh --extract my-card.img.xz ./my-card
 ```
 

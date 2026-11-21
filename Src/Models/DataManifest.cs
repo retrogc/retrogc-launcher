@@ -37,4 +37,7 @@ public sealed class DataFile
     public string Name { get; set; } = string.Empty;
     public string File { get; set; } = string.Empty;
     public string Url { get; set; } = string.Empty;
+
+    /// <summary>Optional version of this file (used for the launcher entry of an installer card).</summary>
+    public string Version { get; set; } = string.Empty;
 }

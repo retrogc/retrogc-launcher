@@ -46,7 +46,7 @@ public static class DataInstaller
     public const string ManifestUrl =
         "https://raw.githubusercontent.com/retrogc/retrogc-data/refs/heads/main/retrogc-data.rgc";
 
-    private const string DataPackageName = "retrogc-data";
+    public const string DataPackageName = "retrogc-data";
     private static readonly TimeSpan ReportInterval = TimeSpan.FromMilliseconds(100);
 
     private static readonly HttpClient Http = CreateHttpClient();
@@ -82,6 +82,9 @@ public static class DataInstaller
         var json = await File.ReadAllTextAsync(manifestPath, ct);
         return CreatePlan(ParseManifest(json), Path.GetDirectoryName(Path.GetFullPath(manifestPath)));
     }
+
+    public static async Task<DataManifest> LoadManifestAsync(string manifestPath, CancellationToken ct) =>
+        ParseManifest(await File.ReadAllTextAsync(manifestPath, ct));
 
     private static DataManifest ParseManifest(string json) =>
         JsonSerializer.Deserialize(json, AppJsonContext.Default.DataManifest)

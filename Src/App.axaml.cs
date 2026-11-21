@@ -25,6 +25,10 @@ public class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            AppInstaller.CleanupOldExecutables();
+            AppInstaller.TryAcquireInstanceLock();
+            Log.Info($"RetroGC launcher {AppInstaller.CurrentVersion}: {AppPaths.CurrentExecutable}");
+
             Settings = await AppSettings.LoadAsync();
 
             _mainViewModel = new MainViewModel();
@@ -37,7 +41,10 @@ public class App : Application
 
             // Without RetroArch data the window must show up so the installer can be offered.
             var state = Settings.Main.StartupWindowState;
-            if (state == StartupWindowState.Minimized && AppPaths.GetLatestDataVersion() is null)
+            // Same when started from an installer card (the setup wizard opens right away).
+            if (InstallerCard.FindLaunchManifest() is not null)
+                state = StartupWindowState.Normal;
+            else if (state == StartupWindowState.Minimized && AppPaths.GetLatestDataVersion() is null)
                 state = StartupWindowState.Normal;
 
             _mainWindow.ApplyWindowState(state);

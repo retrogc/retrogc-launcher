@@ -396,12 +396,17 @@
     
                         <Border Classes="card" Padding="22">
                             <StackPanel Spacing="20">
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
                                     <Border Width="52" Height="52" CornerRadius="13"
                                             Background="{StaticResource AccentGradientBrush}">
                                         <PathIcon Data="{StaticResource IconArchive}" Width="26" Height="26"
                                                   Foreground="#0A0C12" />
                                     </Border>
+                                    <ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                                  OnContent="" OffContent=""
+                                                  IsChecked="{Binding InstallData}"
+                                                  IsVisible="{Binding HasLauncher}"
+                                                  ToolTip.Tip="Install the RetroArch data package" />
                                     <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding PlanTitle}" Classes="h2"
                                                    TextTrimming="CharacterEllipsis" />
@@ -433,14 +438,39 @@
                             </StackPanel>
                         </Border>
     
-                        <Border Classes="banner warning" IsVisible="{Binding PlanOverwrites}">
+                        <!-- Launcher carried by an installer card -->
+                        <Border Classes="card" Padding="22" IsVisible="{Binding HasLauncher}">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
+                                <Border Width="52" Height="52" CornerRadius="13" VerticalAlignment="Top"
+                                        Background="{StaticResource AccentGradientBrush}">
+                                    <PathIcon Data="{StaticResource IconGamepad}" Width="26" Height="26"
+                                              Foreground="#0A0C12" />
+                                </Border>
+                                <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center">
+                                    <TextBlock Text="Retro Game Card launcher" Classes="h2" />
+                                    <TextBlock Text="{Binding LauncherText}" Classes="hint" TextWrapping="Wrap" />
+                                    <SelectableTextBlock Text="{Binding LauncherDestination}"
+                                                         FontFamily="{StaticResource MonoFont}" FontSize="12"
+                                                         Foreground="{StaticResource TextMutedBrush}"
+                                                         TextWrapping="Wrap" />
+                                    <TextBlock Classes="hint" TextWrapping="Wrap"
+                                               Text="An application menu shortcut is created." />
+                                </StackPanel>
+                                <ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                              OnContent="" OffContent=""
+                                              IsChecked="{Binding InstallLauncher}"
+                                              ToolTip.Tip="Install the launcher on this computer" />
+                            </Grid>
+                        </Border>
+
+                        <Border Classes="banner warning" IsVisible="{Binding ShowOverwriteBanner}">
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                 <PathIcon Data="{StaticResource IconInfo}" />
                                 <TextBlock Grid.Column="1"
                                            Text="This version is already installed. Files from the package will be replaced; anything else in that folder (such as saves) is kept." />
                             </Grid>
                         </Border>
-                        <Border Classes="banner ok" IsVisible="{Binding !PlanOverwrites}">
+                        <Border Classes="banner ok" IsVisible="{Binding ShowFreshBanner}">
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                 <PathIcon Data="{StaticResource IconCheck}" />
                                 <TextBlock Grid.Column="1" Text="Fresh install: the destination folder will be created." />
@@ -517,8 +547,8 @@
                         <PathIcon Data="{StaticResource IconCheck}" Width="40" Height="40" Foreground="#0A0C12" />
                     </Border>
                     <TextBlock Text="You're all set!" Classes="h1" HorizontalAlignment="Center" />
-                    <TextBlock Classes="body" TextAlignment="Center"
-                               Text="{Binding PlanVersion, StringFormat='RetroArch data {0} is installed. Insert a Retro Game Card and the game starts automatically.'}" />
+                    <TextBlock Classes="body" TextAlignment="Center" TextWrapping="Wrap"
+                               Text="{Binding DoneText}" />
                     <TextBlock Text="{Binding PlanDestination}" Classes="mono" HorizontalAlignment="Center"
                                TextTrimming="LeadingCharacterEllipsis" Opacity="0.7" />
                 </StackPanel>

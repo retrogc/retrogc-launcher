@@ -31,6 +31,17 @@ public sealed partial class InstallerStep(int number, string title, string capti
 }
 
 /// <summary>
+/// How the installer is opened. From an installer card, the card manifest is preselected and the
+/// launcher executable on the card can be installed too.
+/// </summary>
+public sealed record InstallerOptions(
+    string? LocalManifestPath = null,
+    string? LauncherPath = null,
+    Version? LauncherVersion = null,
+    bool InstallLauncher = true,
+    bool InstallData = true);
+
+/// <summary>
 /// Data package installer wizard: choose source → review → install → done.
 /// </summary>
 public sealed partial class DataInstallerViewModel : ObservableObject
@@ -38,11 +49,34 @@ public sealed partial class DataInstallerViewModel : ObservableObject
     // Weight of the transfer phase in the overall progress bar (the rest is extraction).
     private const double TransferWeight = 0.65;
 
+    private readonly string? _launcherPath;
     private CancellationTokenSource? _cts;
     private DataInstallPlan? _plan;
 
-    public DataInstallerViewModel()
+    public DataInstallerViewModel() : this(null)
     {
+    }
+
+    public DataInstallerViewModel(InstallerOptions? options)
+    {
+        if (options?.LocalManifestPath is { Length: > 0 } manifest)
+        {
+            IsOnlineSource = false;
+            LocalManifestPath = manifest;
+        }
+
+        if (options?.LauncherPath is { Length: > 0 } launcher)
+        {
+            _launcherPath = launcher;
+            HasLauncher = true;
+            InstallLauncher = options.InstallLauncher;
+            InstallData = options.InstallData;
+            LauncherDestination = AppPaths.InstalledExecutable;
+            LauncherText = options.LauncherVersion is { } version
+                ? $"Version {version} from the card (this launcher is {AppInstaller.CurrentVersion})."
+                : $"From the card: {launcher}";
+        }
+
         Steps =
         [
             new InstallerStep(1, "Source", "Online or local file"),
@@ -125,8 +159,39 @@ public sealed partial class DataInstallerViewModel : ObservableObject
     [ObservableProperty] public partial string PlanSource { get; set; } = string.Empty;
     [ObservableProperty] public partial string PlanSourceKind { get; set; } = string.Empty;
     [ObservableProperty] public partial string PlanDestination { get; set; } = string.Empty;
-    [ObservableProperty] public partial bool PlanOverwrites { get; set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowOverwriteBanner), nameof(ShowFreshBanner))]
+    public partial bool PlanOverwrites { get; set; }
+
     [ObservableProperty] public partial string InstallLabel { get; set; } = "Install";
+
+    public bool ShowOverwriteBanner => InstallData && PlanOverwrites;
+    public bool ShowFreshBanner => InstallData && !PlanOverwrites;
+
+    // ------------------------------------------------------------ launcher (installer card)
+
+    /// <summary>The installer was opened from an installer card that carries the launcher.</summary>
+    public bool HasLauncher { get; }
+
+    public string LauncherText { get; } = string.Empty;
+    public string LauncherDestination { get; } = string.Empty;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(InstallCommand))]
+    public partial bool InstallLauncher { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowOverwriteBanner), nameof(ShowFreshBanner))]
+    [NotifyCanExecuteChangedFor(nameof(InstallCommand))]
+    public partial bool InstallData { get; set; } = true;
+
+    partial void OnInstallLauncherChanged(bool value) => UpdateInstallLabel();
+    partial void OnInstallDataChanged(bool value) => UpdateInstallLabel();
+
+    /// <summary>The launcher was installed or updated: the caller should start the installed copy.</summary>
+    public bool LauncherInstalled { get; private set; }
+
+    [ObservableProperty] public partial string DoneText { get; set; } = string.Empty;
 
     // ------------------------------------------------------------ progress
 
@@ -206,12 +271,15 @@ public sealed partial class DataInstallerViewModel : ObservableObject
         Stage = InstallerStage.Source;
     }
 
-    private bool CanInstall() => IsReviewStage && _plan is not null;
+    private bool CanInstall() =>
+        IsReviewStage && _plan is not null && (InstallData || (HasLauncher && InstallLauncher));
 
     [RelayCommand(CanExecute = nameof(CanInstall))]
     private async Task InstallAsync()
     {
         var plan = _plan!;
+        var installData = InstallData;
+        var installLauncher = HasLauncher && InstallLauncher;
         ErrorMessage = string.Empty;
         ResetProgress(plan);
         Stage = InstallerStage.Installing;
@@ -222,6 +290,22 @@ public sealed partial class DataInstallerViewModel : ObservableObject
 
         try
         {
+            if (installLauncher)
+            {
+                PhaseTitle = "Installing the launcher";
+                PhaseDetail = LauncherDestination;
+                await AppInstaller.InstallAsync(_launcherPath!, ct);
+                LauncherInstalled = true;
+            }
+
+            if (!installData)
+            {
+                OverallPercent = 100;
+                DoneText = "The launcher is installed. Insert a Retro Game Card and the game starts automatically.";
+                Stage = InstallerStage.Done;
+                return;
+            }
+
             IsTransferActive = true;
             var transfer = new Progress<TransferProgress>(OnTransferProgress);
             if (plan.IsRemote)
@@ -245,6 +329,9 @@ public sealed partial class DataInstallerViewModel : ObservableObject
             IsExtractActive = false;
 
             OverallPercent = 100;
+            DoneText = $"RetroArch data {plan.Version} is installed" +
+                       (installLauncher ? " along with the launcher" : string.Empty) +
+                       ". Insert a Retro Game Card and the game starts automatically.";
             Stage = InstallerStage.Done;
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
@@ -294,9 +381,12 @@ public sealed partial class DataInstallerViewModel : ObservableObject
         PlanSourceKind = plan.IsRemote ? "DOWNLOAD FROM" : "LOCAL ARCHIVE";
         PlanDestination = plan.Destination;
         PlanOverwrites = plan.DestinationExists;
-        InstallLabel = plan.DestinationExists ? "Reinstall" : "Install";
+        UpdateInstallLabel();
         InstallCommand.NotifyCanExecuteChanged();
     }
+
+    private void UpdateInstallLabel() =>
+        InstallLabel = InstallData && PlanOverwrites && !(HasLauncher && InstallLauncher) ? "Reinstall" : "Install";
 
     private void ResetProgress(DataInstallPlan plan)
     {

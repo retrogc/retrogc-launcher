@@ -24,6 +24,9 @@ public sealed class GameSession : IAsyncDisposable
 
     private Card? _card;
 
+    /// <summary>An installer card was inserted (raised on the UI thread).</summary>
+    public event EventHandler<InstallerCardInfo>? InstallerCardInserted;
+
     public GameSession(MainViewModel view, Func<AppSettings> settings)
     {
         _view = view;
@@ -74,6 +77,21 @@ public sealed class GameSession : IAsyncDisposable
         });
 
         var definition = await FindDefinitionAsync(volume.MountPoint);
+
+        // An installer card carries the launcher and the data package, not a game.
+        if (InstallerCard.FindManifest(volume.MountPoint) is { } manifest)
+        {
+            var info = await InstallerCard.LoadAsync(manifest);
+            Log.Info($"Installer card: data {info.DataVersion} (installed: {info.DataInstalled}), " +
+                     $"launcher {info.LauncherVersion?.ToString() ?? "unknown"} (running: {AppInstaller.CurrentVersion})");
+            Ui(() =>
+            {
+                _view.ShowInstallerCard(info);
+                InstallerCardInserted?.Invoke(this, info);
+            });
+            return;
+        }
+
         if (definition is null)
             throw new FileNotFoundException($"No .rgc card definition found at the root of {volume.MountPoint}.");
 

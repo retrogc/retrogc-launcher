@@ -215,7 +215,7 @@
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <Border Classes="status"
                                     Classes.running="{Binding IsRunning}"
-                                    Classes.stopped="{Binding IsStopped}"
+                                    Classes.stopped="{Binding IsIdle}"
                                     Classes.error="{Binding IsError}">
                                 <StackPanel Orientation="Horizontal" Spacing="7">
                                     <Ellipse Classes="led" Width="7" Height="7"

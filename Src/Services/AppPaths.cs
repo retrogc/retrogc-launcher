@@ -21,7 +21,28 @@ public static class AppPaths
     /// <summary>Where data packages are downloaded before extraction (same volume as <see cref="DataRoot"/>).</summary>
     public static string DownloadDirectory { get; } = Path.Combine(SettingsDirectory, "downloads");
 
+    /// <summary>Where the launcher installs itself (from an installer card).</summary>
+    public static string InstallDirectory { get; } = Path.Combine(SettingsDirectory, "app");
+
+    public static string ExecutableName { get; } =
+        OperatingSystem.IsWindows() ? "retrogc-launcher.exe" : "retrogc-launcher";
+
+    public static string InstalledExecutable { get; } = Path.Combine(InstallDirectory, ExecutableName);
+
+    /// <summary>Full path of the running launcher executable.</summary>
+    public static string? CurrentExecutable { get; } = Environment.ProcessPath;
+
+    /// <summary>True when the running launcher is the installed copy.</summary>
+    public static bool IsRunningInstalled =>
+        CurrentExecutable is not null && PathsEqual(CurrentExecutable, InstalledExecutable);
+
     public static string GetDataDirectory(string version) => Path.Combine(DataRoot, version);
+
+    public static bool PathsEqual(string first, string second) =>
+        string.Equals(
+            Path.TrimEndingDirectorySeparator(Path.GetFullPath(first)),
+            Path.TrimEndingDirectorySeparator(Path.GetFullPath(second)),
+            OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
     /// <summary>
     /// Installed data package versions, newest first. Hidden / temporary folders are ignored.

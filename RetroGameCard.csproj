@@ -5,6 +5,9 @@
         <Nullable>enable</Nullable>
         <ApplicationManifest>Src\app.manifest</ApplicationManifest>
         <AssemblyName>retrogc-launcher</AssemblyName>
+        <!-- Overridden at publish time (release.yml: -p:Version=X.Y.Z); installer cards compare it -->
+        <Version>0.0.0</Version>
+        <ApplicationIcon>Src\Assets\Icons\launcher.ico</ApplicationIcon>
         <RootNamespace>RetroGameCard</RootNamespace>
         <!-- Compiled bindings are trim-safe (release builds are trimmed) and are checked at build time -->
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>

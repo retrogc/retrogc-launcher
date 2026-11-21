@@ -15,7 +15,8 @@ public enum SessionState
     Loading,
     Running,
     Stopped,
-    Error
+    Error,
+    Installer
 }
 
 /// <summary>
@@ -63,7 +64,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsWaiting), nameof(IsLoading), nameof(IsRunning), nameof(IsStopped),
-        nameof(IsError), nameof(IsBusy), nameof(HasCard), nameof(StateLabel), nameof(MonitorText),
+        nameof(IsError), nameof(IsInstaller), nameof(IsIdle), nameof(IsBusy), nameof(HasCard), nameof(StateLabel), nameof(MonitorText),
         nameof(HintText), nameof(ProgressValue))]
     public partial SessionState State { get; set; } = SessionState.Waiting;
 
@@ -80,11 +81,16 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public bool IsRunning => State == SessionState.Running;
     public bool IsStopped => State == SessionState.Stopped;
     public bool IsError => State == SessionState.Error;
+    public bool IsInstaller => State == SessionState.Installer;
+
+    /// <summary>Nothing in progress, the card can be acted on (play again / install).</summary>
+    public bool IsIdle => State is SessionState.Stopped or SessionState.Installer;
     public bool IsBusy => State is SessionState.Waiting or SessionState.Loading;
     public bool HasCard => State != SessionState.Waiting;
 
     /// <summary>Status bar fill when not indeterminate: full while playing.</summary>
-    public double ProgressValue => State is SessionState.Running or SessionState.Stopped ? 100 : 0;
+    public double ProgressValue =>
+        State is SessionState.Running or SessionState.Stopped or SessionState.Installer ? 100 : 0;
 
     public string StateLabel => State switch
     {
@@ -92,14 +98,18 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         SessionState.Running => "PLAYING",
         SessionState.Stopped => "READY",
         SessionState.Error => "ERROR",
+        SessionState.Installer => "INSTALLER",
         _ => "WAITING"
     };
 
     public string MonitorText => State == SessionState.Waiting ? "CARD MONITOR ACTIVE" : "GAME CARD DETECTED";
 
-    public string HintText => State is SessionState.Stopped or SessionState.Error
-        ? "ENTER PLAY  ·  F11 FULLSCREEN  ·  F12 SETTINGS"
-        : "F11 FULLSCREEN  ·  F12 SETTINGS";
+    public string HintText => State switch
+    {
+        SessionState.Stopped or SessionState.Error => "ENTER PLAY  ·  F11 FULLSCREEN  ·  F12 SETTINGS",
+        SessionState.Installer => "ENTER INSTALL  ·  F11 FULLSCREEN  ·  F12 SETTINGS",
+        _ => "F11 FULLSCREEN  ·  F12 SETTINGS"
+    };
 
     // ------------------------------------------------------------ footer / header
 
@@ -143,6 +153,25 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
         SetCover(cover);
         ErrorMessage = string.Empty;
+    }
+
+    /// <summary>An installer card (retrogc-data.rgc) is inserted instead of a game card.</summary>
+    public void ShowInstallerCard(InstallerCardInfo info)
+    {
+        ShowWaiting();
+        State = SessionState.Installer;
+        Title = "Installer card";
+        Platform = "RETRO GAME CARD";
+        Description = info.HasUpdate
+            ? "This card can update the launcher and / or the RetroArch data on this computer."
+            : "Everything on this card is already installed on this computer.";
+
+        Tags.Add($"DATA {info.DataVersion}{(info.DataInstalled ? " INSTALLED" : string.Empty)}");
+        if (info.LauncherVersion is { } version)
+            Tags.Add(info.LauncherIsNewer ? $"LAUNCHER {version} AVAILABLE" : $"LAUNCHER {version}");
+        OnPropertyChanged(nameof(HasTags));
+
+        StateDetail = info.HasUpdate ? "Update available. Press Enter to install." : "Up to date. Press Enter to reinstall.";
     }
 
     public void SetLoading(string detail)

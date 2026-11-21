@@ -120,7 +120,7 @@ emulator cores), **with no internet connection needed**.
 | **1️⃣ Download** | Get `retrogc-installer-<version>.img.xz` from the [**retrogc-installer releases**](https://github.com/retrogc/retrogc-installer/releases/latest) (≈ 1.5 GB). |
 | **2️⃣ Flash** | Write it to a USB stick of **2 GB or more** with [**balenaEtcher**](https://etcher.balena.io/) (Windows, Linux, macOS), or `./retrogc-image.sh --restore` on Linux (see [Writing a card image](#-writing-a-card-image)). ⚠️ This erases the stick. |
 | **3️⃣ Install** | Open the stick and run `retrogc-launcher.exe` (Windows) or `retrogc-launcher` (Linux), then click **Install**. The launcher installs itself with a menu shortcut, installs RetroArch and its cores, then restarts from the installed copy. |
-| **4️⃣ Play** | Remove the stick, insert a [game card](#-the-rgc-card-format) and the game starts on its own. 🎉 Ready-made cards live in [**retrogc-gamecards**](https://github.com/retrogc/retrogc-gamecards). |
+| **4️⃣ Play** | Remove the stick, insert a [game card](#-the-rgc-card-format) and the game starts on its own. 🎉 |
 
 > [!TIP]
 > Keep the stick: it sets up any other computer the same way, and inserting it where the launcher
@@ -139,7 +139,7 @@ Prefer a plain download? The launcher fetches RetroArch and its cores itself on 
 |:-:|---|
 | **1️⃣ Download** | Grab the launcher for your system from the [**releases page**](https://github.com/retrogc/retrogc-launcher/releases). |
 | **2️⃣ Run** | Start `retrogc-launcher`. On first launch the **data installer** opens and downloads RetroArch and its cores (≈ 700 MB). |
-| **3️⃣ Get a card** | Write a card image to a USB stick or SD card (see [Writing a card image](#-writing-a-card-image)), or [make your own](#-creating-a-card). Ready-made cards live in [**retrogc-gamecards**](https://github.com/retrogc/retrogc-gamecards). |
+| **3️⃣ Get a card** | Write a card image to a USB stick or SD card (see [Writing a card image](#-writing-a-card-image)), or [make your own](#-creating-a-card). |
 | **4️⃣ Play** | Insert the card. The game starts on its own. 🎉 |
 
 <details>
@@ -348,8 +348,7 @@ plus the files it points to. FAT32 keeps it readable everywhere, MiSTer included
 
 </details>
 
-📚 More examples in the [**Cards**](Cards) folder (the reference), and complete prebuilt cards in
-[**retrogc-gamecards**](https://github.com/retrogc/retrogc-gamecards).
+📚 More examples in the [**Cards**](Cards) folder (the reference).
 
 ---
 

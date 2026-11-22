@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,8 +33,10 @@ public sealed class GameSession : IAsyncDisposable
         _view = view;
         _settings = settings;
 
-        _monitor.Inserted += (_, e) => _ = RunExclusiveAsync(() => OnInsertedAsync(e.Volume));
-        _monitor.Removed += (_, e) => _ = RunExclusiveAsync(() => OnRemovedAsync(e.Volume));
+        _monitor.Inserted += (_, e) =>
+            _ = RunExclusiveAsync($"Insert of {e.Volume.MountPoint}", () => OnInsertedAsync(e.Volume));
+        _monitor.Removed += (_, e) =>
+            _ = RunExclusiveAsync($"Removal of {e.Volume.MountPoint}", () => OnRemovedAsync(e.Volume));
         _launcher.Exited += OnRetroArchExited;
     }
 
@@ -46,12 +49,23 @@ public sealed class GameSession : IAsyncDisposable
             return;
 
         var card = _card;
-        _ = RunExclusiveAsync(() => LaunchAsync(card));
+        _ = RunExclusiveAsync("Relaunch", () => LaunchAsync(card));
     }
 
-    private async Task RunExclusiveAsync(Func<Task> action)
+    private static readonly TimeSpan SlowActionWarning = TimeSpan.FromSeconds(15);
+
+    private async Task RunExclusiveAsync(string name, Func<Task> action)
     {
-        await _gate.WaitAsync().ConfigureAwait(false);
+        // Logged so a blocked session shows in the log instead of "nothing happens".
+        if (!_gate.Wait(0))
+        {
+            Log.Info($"{name}: waiting for the previous action to finish");
+            await _gate.WaitAsync().ConfigureAwait(false);
+        }
+
+        var watch = Stopwatch.StartNew();
+        await using var slow = new Timer(_ => Log.Error($"{name}: still running after {watch.Elapsed.TotalSeconds:0} s"),
+            null, SlowActionWarning, SlowActionWarning);
         try
         {
             await action().ConfigureAwait(false);

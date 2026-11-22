@@ -50,6 +50,7 @@ public sealed partial class DataInstallerViewModel : ObservableObject
     private const double TransferWeight = 0.65;
 
     private readonly string? _launcherPath;
+    private readonly Version? _launcherVersion;
     private CancellationTokenSource? _cts;
     private DataInstallPlan? _plan;
 
@@ -68,6 +69,7 @@ public sealed partial class DataInstallerViewModel : ObservableObject
         if (options?.LauncherPath is { Length: > 0 } launcher)
         {
             _launcherPath = launcher;
+            _launcherVersion = options.LauncherVersion;
             HasLauncher = true;
             InstallLauncher = options.InstallLauncher;
             InstallData = options.InstallData;
@@ -294,7 +296,7 @@ public sealed partial class DataInstallerViewModel : ObservableObject
             {
                 PhaseTitle = "Installing the launcher";
                 PhaseDetail = LauncherDestination;
-                await AppInstaller.InstallAsync(_launcherPath!, ct);
+                await AppInstaller.InstallAsync(_launcherPath!, _launcherVersion, ct);
                 LauncherInstalled = true;
             }
 

@@ -32,6 +32,10 @@ public class App : Application
             Log.SetFileLogging(Settings.Main.LogToFile);
             Log.Info($"RetroGC launcher {AppInstaller.CurrentVersion}: {AppPaths.CurrentExecutable}");
 
+            // Installs made before the version was recorded get it here (needed to offer updates).
+            if (AppPaths.IsRunningInstalled)
+                AppInstaller.WriteInstalledVersion(AppInstaller.CurrentVersion);
+
             _mainViewModel = new MainViewModel();
             _session = new GameSession(_mainViewModel, () => Settings);
             _mainWindow = new MainWindow(_mainViewModel, _session);
@@ -44,6 +48,9 @@ public class App : Application
             var state = Settings.Main.StartupWindowState;
             // Same when started from an installer card (the setup wizard opens right away).
             if (InstallerCard.FindLaunchManifest() is not null)
+                state = StartupWindowState.Normal;
+            // Same when this launcher offers to install / update itself (the question is asked on open).
+            else if (state == StartupWindowState.Minimized && AppInstaller.NeedsInstallOffer(out _))
                 state = StartupWindowState.Normal;
             else if (state == StartupWindowState.Minimized && AppPaths.GetLatestDataVersion() is null)
                 state = StartupWindowState.Normal;

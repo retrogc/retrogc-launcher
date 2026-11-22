@@ -27,6 +27,12 @@ public static class AppInstaller
 
     public static string IconPath => Path.Combine(AppPaths.InstallDirectory, "retrogc.png");
 
+    /// <summary>
+    /// Version of the installed launcher. The executable itself can't tell (release builds carry no
+    /// version resource), so it is recorded next to it at install time and by the installed launcher.
+    /// </summary>
+    public static string VersionFilePath => Path.Combine(AppPaths.InstallDirectory, "version");
+
     /// <summary>"1.0.3" and "1.0.3.0" must compare equal.</summary>
     public static Version Normalize(Version version) =>
         new(version.Major, version.Minor, Math.Max(version.Build, 0));
@@ -102,8 +108,9 @@ public static class AppInstaller
     /// <summary>
     /// Copies <paramref name="sourceExecutable"/> to the install directory, then creates the
     /// application shortcut. The installed launcher may be running: it is renamed, never overwritten.
+    /// <paramref name="version"/> is recorded for later updates (null: unknown).
     /// </summary>
-    public static async Task InstallAsync(string sourceExecutable, CancellationToken ct)
+    public static async Task InstallAsync(string sourceExecutable, Version? version, CancellationToken ct)
     {
         var destination = AppPaths.InstalledExecutable;
         Directory.CreateDirectory(AppPaths.InstallDirectory);
@@ -134,10 +141,120 @@ public static class AppInstaller
 
             File.Move(temporary, destination);
             Log.Info($"Launcher installed: {sourceExecutable} -> {destination}");
+            WriteInstalledVersion(version);
         }
 
         await WriteIconAsync();
         CreateShortcut();
+    }
+
+    // ------------------------------------------------------------ installed version
+
+    /// <summary>What is installed in <see cref="AppPaths.InstallDirectory"/>.</summary>
+    /// <param name="IsInstalled">An installed executable exists.</param>
+    /// <param name="Version">Its version, null when unknown (installed before versions were recorded).</param>
+    public readonly record struct InstalledLauncher(bool IsInstalled, Version? Version);
+
+    public static InstalledLauncher ReadInstalledLauncher()
+    {
+        if (!File.Exists(AppPaths.InstalledExecutable))
+            return new InstalledLauncher(false, null);
+
+        try
+        {
+            if (File.Exists(VersionFilePath) && Version.TryParse(File.ReadAllText(VersionFilePath).Trim(), out var version))
+                return new InstalledLauncher(true, Normalize(version));
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            Log.Error("Could not read the installed launcher version", exception);
+        }
+
+        return new InstalledLauncher(true, null);
+    }
+
+    /// <summary>
+    /// True when this launcher, started from elsewhere (a download...), should offer to install itself:
+    /// nothing installed, installed version unknown, or older than this one.
+    /// </summary>
+    public static bool ShouldOfferInstall(InstalledLauncher installed, Version current) =>
+        !installed.IsInstalled || installed.Version is null || Normalize(current) > installed.Version;
+
+    /// <summary>
+    /// The running launcher isn't the installed one and should offer to install itself. Unversioned
+    /// development builds (0.0.0) never do.
+    /// </summary>
+    public static bool NeedsInstallOffer(out InstalledLauncher installed)
+    {
+        installed = default;
+        if (AppPaths.IsRunningInstalled || AppPaths.CurrentExecutable is null || CurrentVersion == new Version(0, 0, 0))
+            return false;
+
+        installed = ReadInstalledLauncher();
+        return ShouldOfferInstall(installed, CurrentVersion);
+    }
+
+    /// <summary>Records <paramref name="version"/> as the installed one (null: forget it). Never throws.</summary>
+    public static void WriteInstalledVersion(Version? version)
+    {
+        try
+        {
+            if (version is null)
+            {
+                File.Delete(VersionFilePath);
+                return;
+            }
+
+            var text = Normalize(version).ToString(3);
+            if (File.Exists(VersionFilePath) && File.ReadAllText(VersionFilePath).Trim() == text)
+                return;
+
+            Directory.CreateDirectory(AppPaths.InstallDirectory);
+            File.WriteAllText(VersionFilePath, text);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            Log.Error("Could not record the installed launcher version", exception);
+        }
+    }
+
+    /// <summary>
+    /// Stops the installed launcher if it is running (and the RetroArch it started), before it is
+    /// replaced by this one. Returns how many were stopped.
+    /// </summary>
+    public static int StopInstalledInstances()
+    {
+        var stopped = 0;
+        var currentId = Environment.ProcessId;
+        foreach (var process in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(AppPaths.ExecutableName)))
+        {
+            using (process)
+            {
+                try
+                {
+                    if (process.Id == currentId)
+                        continue;
+
+                    var path = process.MainModule?.FileName;
+                    if (path is null || !AppPaths.PathsEqual(path, AppPaths.InstalledExecutable))
+                        continue;
+
+                    Log.Info($"Stopping the installed launcher (PID {process.Id})");
+                    process.Kill(entireProcessTree: true);
+                    if (!process.WaitForExit(TimeSpan.FromSeconds(5)))
+                        Log.Error($"The installed launcher (PID {process.Id}) is still running");
+                    stopped++;
+                }
+                catch (Exception exception) when (exception is InvalidOperationException or
+                                                      System.ComponentModel.Win32Exception or
+                                                      NotSupportedException)
+                {
+                    // exited in between, or not ours to inspect
+                }
+            }
+        }
+
+        return stopped;
     }
 
     /// <summary>Deletes executables left behind by a previous update (best effort).</summary>

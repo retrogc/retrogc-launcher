@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="RetroGameCard.Views.LauncherUpdateWindow"
+        Title="Retro Game Card — Install the launcher"
+        Icon="/Assets/Icons/launcher.ico"
+        Width="560" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid RowDefinitions="Auto,Auto,Auto" Margin="28,26">
+
+        <!-- Header -->
+        <StackPanel Spacing="4">
+            <TextBlock Text="LAUNCHER" Classes="eyebrow" />
+            <TextBlock x:Name="TitleText" Classes="h1" FontSize="22" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Border Grid.Row="1" Classes="card" Margin="0,22">
+            <StackPanel Spacing="10">
+                <TextBlock x:Name="MessageText" Classes="hint" FontSize="13" TextWrapping="Wrap" />
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="14" RowSpacing="6">
+                    <TextBlock Text="THIS LAUNCHER" Classes="label" VerticalAlignment="Center" />
+                    <TextBlock x:Name="CurrentText" Grid.Column="1" Classes="hint" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="1" Text="INSTALLED" Classes="label" VerticalAlignment="Center" />
+                    <TextBlock x:Name="InstalledText" Grid.Row="1" Grid.Column="1" Classes="hint"
+                               VerticalAlignment="Center" />
+                </Grid>
+                <SelectableTextBlock x:Name="PathText" FontFamily="{StaticResource MonoFont}" FontSize="11"
+                                     Foreground="{StaticResource TextMutedBrush}" TextWrapping="Wrap" />
+                <TextBlock x:Name="ErrorText" Classes="hint" Foreground="{StaticResource ErrorBrush}"
+                           TextWrapping="Wrap" IsVisible="False" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+            <TextBlock x:Name="BusyText" Text="Installing…" Classes="hint" VerticalAlignment="Center"
+                       IsVisible="False" />
+            <Button x:Name="LaterButton" Grid.Column="1" Content="Not now" Classes="ghost" IsCancel="True"
+                    Click="OnLaterClicked" />
+            <Button x:Name="InstallButton" Grid.Column="2" Content="Install" Classes="primary" IsDefault="True"
+                    Click="OnInstallClicked" />
+        </Grid>
+    </Grid>
+</Window>

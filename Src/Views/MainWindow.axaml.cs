@@ -63,10 +63,15 @@ public partial class MainWindow : Window
             if (await RunCardSetupAsync(manifest))
                 return;
         }
-        // First run: offer the data package before watching for cards.
-        else if (AppPaths.GetLatestDataVersion() is null)
+        else
         {
-            await ShowDataInstallerAsync();
+            // Started from elsewhere (a download...): offer to install / update the installed launcher.
+            if (await OfferLauncherInstallAsync())
+                return;
+
+            // First run: offer the data package before watching for cards.
+            if (AppPaths.GetLatestDataVersion() is null)
+                await ShowDataInstallerAsync();
         }
 
         _session?.Start();
@@ -127,14 +132,67 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// After the launcher was installed or updated: start the installed copy and exit. When another
-    /// launcher is already running, this instance only exits (that launcher keeps running).
+    /// This launcher isn't the installed one: when nothing is installed, or an older / unknown version is,
+    /// ask to install it. Returns true when it was installed and this instance is shutting down.
     /// </summary>
-    private static bool SwitchToInstalledLauncher()
+    private async Task<bool> OfferLauncherInstallAsync()
+    {
+        var current = AppInstaller.CurrentVersion;
+        if (!AppInstaller.NeedsInstallOffer(out var installed) || AppPaths.CurrentExecutable is not { } executable)
+            return false;
+
+        Log.Info($"Launcher {current} not installed (installed: " +
+                 $"{(installed.IsInstalled ? installed.Version?.ToString(3) ?? "unknown version" : "none")}): asking");
+
+        if (_dialogOpen)
+            return false;
+
+        bool accepted;
+        _dialogOpen = true;
+        try
+        {
+            Cursor = ArrowCursor;
+            var window = new LauncherUpdateWindow(executable, current, installed);
+            if (IsVisible)
+            {
+                await window.ShowDialog(this);
+            }
+            else
+            {
+                var closed = new TaskCompletionSource();
+                window.Closed += (_, _) => closed.TrySetResult();
+                window.Show();
+                await closed.Task;
+            }
+
+            accepted = window.Installed;
+        }
+        finally
+        {
+            _dialogOpen = false;
+            RestoreCursor();
+        }
+
+        if (!accepted)
+        {
+            Log.Info("Launcher installation declined, running from " + executable);
+            return false;
+        }
+
+        // The installed launcher was stopped (if running): start the new one in any case.
+        return SwitchToInstalledLauncher(force: true);
+    }
+
+    /// <summary>
+    /// After the launcher was installed or updated: start the installed copy and exit. When another
+    /// launcher is already running, this instance only exits (that launcher keeps running), unless
+    /// <paramref name="force"/> (the other one was stopped to be replaced).
+    /// </summary>
+    private static bool SwitchToInstalledLauncher(bool force = false)
     {
         try
         {
-            if (AppInstaller.OwnsInstanceLock || AppPaths.IsRunningInstalled)
+            if (force || AppInstaller.OwnsInstanceLock || AppPaths.IsRunningInstalled)
             {
                 AppInstaller.ReleaseInstanceLock();
                 AppInstaller.LaunchInstalled();

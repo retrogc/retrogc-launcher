@@ -70,6 +70,9 @@ public sealed class AppSettings
 public sealed class MainSettings
 {
     public StartupWindowState StartupWindowState { get; set; } = StartupWindowState.Fullscreen;
+
+    /// <summary>Also write the launcher log to a file (to report a problem). Off by default.</summary>
+    public bool LogToFile { get; set; }
 }
 
 public sealed class RetroArchSettings

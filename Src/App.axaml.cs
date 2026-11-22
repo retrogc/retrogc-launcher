@@ -27,9 +27,10 @@ public class App : Application
         {
             AppInstaller.CleanupOldExecutables();
             AppInstaller.TryAcquireInstanceLock();
-            Log.Info($"RetroGC launcher {AppInstaller.CurrentVersion}: {AppPaths.CurrentExecutable}");
 
             Settings = await AppSettings.LoadAsync();
+            Log.SetFileLogging(Settings.Main.LogToFile);
+            Log.Info($"RetroGC launcher {AppInstaller.CurrentVersion}: {AppPaths.CurrentExecutable}");
 
             _mainViewModel = new MainViewModel();
             _session = new GameSession(_mainViewModel, () => Settings);

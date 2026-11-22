@@ -1,7 +1,10 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Win32.SafeHandles;
 
 namespace RetroGameCard.Services;
 
@@ -105,7 +108,7 @@ public sealed class CardMonitor : IAsyncDisposable
         }
     }
 
-    private static CardInfo? FindVolumeByLabel(string expectedLabel)
+    private CardInfo? FindVolumeByLabel(string expectedLabel)
     {
         foreach (var drive in DriveInfo.GetDrives())
         {
@@ -121,6 +124,9 @@ public sealed class CardMonitor : IAsyncDisposable
                     : drive.VolumeLabel;
 
                 if (!string.Equals(label, expectedLabel, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (OperatingSystem.IsWindows() && IsDeviceGone(drive.RootDirectory.FullName))
                     continue;
 
                 return new CardInfo(
@@ -140,6 +146,83 @@ public sealed class CardMonitor : IAsyncDisposable
         }
 
         return null;
+    }
+
+    // ------------------------------------------------------------ Windows: is the device still there?
+
+    // After a surprise removal, Windows can keep a volume (drive letter, cached label) alive while
+    // files on it are still open, e.g. the ROM RetroArch is running: DriveInfo keeps "finding" the
+    // card. The storage device itself is asked instead.
+    private const int GoneStrikesNeeded = 2; // two polls in a row (~1 s), one odd answer never stops a game
+
+    private string? _goneMountPoint;
+    private int _goneStrikes;
+
+    [SupportedOSPlatform("windows")]
+    private bool IsDeviceGone(string mountPoint)
+    {
+        var error = Windows.CheckDevice(mountPoint);
+        if (error == 0 || !Windows.IsGoneError(error))
+        {
+            // Present, or a driver that can't tell (e.g. no IOCTL support): keep today's behaviour.
+            if (_goneMountPoint is not null && PathsEqual(_goneMountPoint, mountPoint))
+                _goneMountPoint = null;
+            return false;
+        }
+
+        if (_goneMountPoint is null || !PathsEqual(_goneMountPoint, mountPoint))
+        {
+            _goneMountPoint = mountPoint;
+            _goneStrikes = 0;
+        }
+
+        _goneStrikes++;
+        if (_goneStrikes == GoneStrikesNeeded)
+            Log.Info($"CardMonitor: {mountPoint} is still listed but its device is gone (error {error})");
+        return _goneStrikes >= GoneStrikesNeeded;
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static class Windows
+    {
+        private const uint ShareReadWrite = 0x3, OpenExisting = 3;
+        private const uint IoctlStorageCheckVerify2 = 0x002D0800;
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern SafeFileHandle CreateFile(string name, uint access, uint share, IntPtr security,
+            uint disposition, uint flags, IntPtr template);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool DeviceIoControl(SafeFileHandle device, uint code, IntPtr input, uint inputSize,
+            IntPtr output, uint outputSize, out uint returned, IntPtr overlapped);
+
+        /// <summary>0 when the device of <paramref name="mountPoint"/> answers, else the Win32 error.</summary>
+        public static int CheckDevice(string mountPoint)
+        {
+            // "E:\" -> "\\.\E:" (the volume, not its root folder), opened without any access right:
+            // doesn't touch the volume. Anything but a drive letter: can't tell, report present.
+            if (mountPoint.Length is < 2 or > 3 || !char.IsAsciiLetter(mountPoint[0]) || mountPoint[1] != ':' ||
+                (mountPoint.Length == 3 && mountPoint[2] is not ('\\' or '/')))
+                return 0;
+
+            var volume = @"\\.\" + mountPoint[..2];
+            using var handle = CreateFile(volume, 0, ShareReadWrite, IntPtr.Zero, OpenExisting, 0, IntPtr.Zero);
+            if (handle.IsInvalid)
+                return Marshal.GetLastWin32Error();
+
+            return DeviceIoControl(handle, IoctlStorageCheckVerify2, IntPtr.Zero, 0, IntPtr.Zero, 0, out _, IntPtr.Zero)
+                ? 0
+                : Marshal.GetLastWin32Error();
+        }
+
+        /// <summary>Errors that mean the device or its media is not there any more.</summary>
+        public static bool IsGoneError(int error) => error is
+            2 or    // ERROR_FILE_NOT_FOUND
+            3 or    // ERROR_PATH_NOT_FOUND
+            21 or   // ERROR_NOT_READY
+            433 or  // ERROR_NO_SUCH_DEVICE
+            1112 or // ERROR_NO_MEDIA_IN_DRIVE
+            1167;   // ERROR_DEVICE_NOT_CONNECTED
     }
 
     private static bool PathsEqual(string first, string second) =>

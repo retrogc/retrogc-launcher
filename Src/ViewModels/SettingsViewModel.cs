@@ -30,6 +30,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         SelectedStartupState = Array.Find(StartupStates, o => o.Value == settings.Main.StartupWindowState)
                                ?? StartupStates[0];
+        LogToFile = settings.Main.LogToFile;
         SelectedShader = Array.Find(Shaders, o => o.Value == settings.RetroArch.Shader) ?? Shaders[1];
         StartFullscreen = settings.RetroArch.StartFullscreen;
         IntegerScaling = settings.RetroArch.IntegerScaling;
@@ -59,6 +60,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty] public partial Option<Shader> SelectedShader { get; set; }
     [ObservableProperty] public partial bool StartFullscreen { get; set; }
     [ObservableProperty] public partial bool IntegerScaling { get; set; }
+    [ObservableProperty] public partial bool LogToFile { get; set; }
+
+    public string LogFilePath => Log.FilePath;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ExecutableError))]
@@ -98,6 +102,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             return false;
 
         _settings.Main.StartupWindowState = SelectedStartupState.Value;
+        _settings.Main.LogToFile = LogToFile;
         _settings.RetroArch.StartFullscreen = StartFullscreen;
         _settings.RetroArch.IntegerScaling = IntegerScaling;
         _settings.RetroArch.Shader = SelectedShader.Value;
@@ -105,6 +110,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _settings.RetroArch.ExecutablePath = ExecutablePath.Trim();
 
         await _settings.SaveAsync();
+        Log.SetFileLogging(LogToFile);
         return true;
     }
 }

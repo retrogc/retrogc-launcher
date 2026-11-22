@@ -24,8 +24,11 @@ public sealed record RetroArchLaunchOptions(
 /// </summary>
 public sealed class RetroArchLauncher : IAsyncDisposable
 {
+    private static readonly TimeSpan KillTimeout = TimeSpan.FromSeconds(5);
+
     private readonly Lock _sync = new();
     private Process? _process;
+    private string? _executablePath; // RetroArch executable of the last launch
     private bool _disposed;
 
     public event EventHandler<RetroArchExitedEventArgs>? Exited;
@@ -149,6 +152,7 @@ public sealed class RetroArchLauncher : IAsyncDisposable
             process.BeginErrorReadLine();
 #endif
             _process = process;
+            _executablePath = Path.GetFullPath(env.ExecutablePath);
         }
 
         if (OperatingSystem.IsWindows())
@@ -157,17 +161,27 @@ public sealed class RetroArchLauncher : IAsyncDisposable
 
     /// <summary>
     /// Asks RetroArch to close, then kills it (and its children) if it is still alive after
-    /// <paramref name="grace"/>. Returns false when nothing was running.
+    /// <paramref name="grace"/>. Any other instance of the bundled RetroArch still running is killed
+    /// too. Never waits forever: a process stuck on the removed card must not block the launcher.
+    /// Returns false when nothing was running.
     /// </summary>
     public async Task<bool> StopAsync(TimeSpan grace)
     {
         Process? process;
+        string? executable;
         lock (_sync)
+        {
             process = GetRunningProcess();
+            executable = _executablePath;
+        }
 
-        if (process is null)
-            return false;
+        var stopped = process is not null && await StopProcessAsync(process, grace);
+        stopped |= await KillOtherInstancesAsync(executable);
+        return stopped;
+    }
 
+    private static async Task<bool> StopProcessAsync(Process process, TimeSpan grace)
+    {
         try
         {
             if (process.CloseMainWindow())
@@ -184,14 +198,74 @@ public sealed class RetroArchLauncher : IAsyncDisposable
                 }
             }
 
+            Log.Info("RetroArch did not close, killing it");
             process.Kill(entireProcessTree: true);
-            await process.WaitForExitAsync();
+            await WaitForExitAsync(process);
             return true;
         }
-        catch (InvalidOperationException)
+        catch (Exception exception) when (exception is InvalidOperationException or ObjectDisposedException)
         {
             // exited in between
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Kills the instances of the bundled RetroArch we didn't start ourselves, or lost track of
+    /// (e.g. RetroArch restarting itself). Only the bundled executable is matched (it lives in the
+    /// launcher's data folder), never a RetroArch the user runs on their own.
+    /// </summary>
+    private static async Task<bool> KillOtherInstancesAsync(string? executable)
+    {
+        if (executable is null || !IsBundled(executable))
+            return false;
+
+        var killed = false;
+        foreach (var other in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(executable)))
+        {
+            using (other)
+            {
+                try
+                {
+                    var path = other.MainModule?.FileName;
+                    if (path is null || !AppPaths.PathsEqual(path, executable))
+                        continue;
+
+                    Log.Info($"Killing a remaining RetroArch instance (PID {other.Id})");
+                    other.Kill(entireProcessTree: true);
+                    await WaitForExitAsync(other);
+                    killed = true;
+                }
+                catch (Exception exception) when (exception is InvalidOperationException or
+                                                      System.ComponentModel.Win32Exception or
+                                                      NotSupportedException)
+                {
+                    // exited in between, or not ours to inspect
+                }
+            }
+        }
+
+        return killed;
+    }
+
+    private static bool IsBundled(string executable)
+    {
+        var root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(AppPaths.DataRoot)) + Path.DirectorySeparatorChar;
+        return Path.GetFullPath(executable).StartsWith(root,
+            OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+    }
+
+    /// <summary>Waits for a killed process, at most <see cref="KillTimeout"/>.</summary>
+    private static async Task WaitForExitAsync(Process process)
+    {
+        using var timeout = new CancellationTokenSource(KillTimeout);
+        try
+        {
+            await process.WaitForExitAsync(timeout.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            Log.Error($"RetroArch (PID {process.Id}) is still running {KillTimeout.TotalSeconds:0} s after being killed");
         }
     }
 

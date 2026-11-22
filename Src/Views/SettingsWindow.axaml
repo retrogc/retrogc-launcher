@@ -59,6 +59,20 @@
                                       ItemsSource="{Binding StartupStates}"
                                       SelectedItem="{Binding SelectedStartupState}" />
                         </Grid>
+                        <Separator />
+
+                        <Grid Classes="row" ColumnDefinitions="*,Auto" ColumnSpacing="22">
+                            <StackPanel>
+                                <TextBlock Text="Log to file" Classes="setting" />
+                                <TextBlock Text="Write the launcher log to a file, to report a problem:" Classes="hint" />
+                                <SelectableTextBlock Text="{Binding LogFilePath}"
+                                                     FontFamily="{StaticResource MonoFont}" FontSize="12"
+                                                     Foreground="{StaticResource TextMutedBrush}"
+                                                     TextWrapping="Wrap" />
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="1" IsChecked="{Binding LogToFile}"
+                                          OnContent="" OffContent="" MinWidth="0" />
+                        </Grid>
                     </StackPanel>
                 </Border>
 

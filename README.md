@@ -720,8 +720,12 @@ RetroArch's `system` folder before every launch. See [`neogeo-metal_slug.rgc`](C
 
 <br />
 
-Start `retrogc-launcher` from a terminal: every step (card detection, files copied, the exact
-RetroArch command line) is printed there.
+Every step (card detection, files copied, the exact RetroArch command line) is logged:
+
+- turn on **Log to file** in the settings (<kbd>F12</kbd>): the log is written to
+  `%LOCALAPPDATA%\retrogc\launcher.log` (Windows) or `~/.local/share/retrogc/launcher.log` (Linux),
+  the previous run's as `launcher.old.log`. Attach it when you report a problem;
+- or start `retrogc-launcher` from a terminal (Linux): it's printed there.
 
 </details>
 

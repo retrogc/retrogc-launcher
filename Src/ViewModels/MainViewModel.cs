@@ -113,6 +113,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     // ------------------------------------------------------------ footer / header
 
+    public string LauncherVersionText { get; } = $"LAUNCHER {AppInstaller.CurrentVersion}";
+
     [ObservableProperty] public partial string DataVersionText { get; set; } = string.Empty;
     [ObservableProperty] public partial bool HasData { get; set; }
     [ObservableProperty] public partial string ClockText { get; set; } = "00:00";

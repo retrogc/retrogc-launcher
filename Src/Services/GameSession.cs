@@ -36,7 +36,11 @@ public sealed class GameSession : IAsyncDisposable
         _monitor.Inserted += (_, e) =>
             _ = RunExclusiveAsync($"Insert of {e.Volume.MountPoint}", () => OnInsertedAsync(e.Volume));
         _monitor.Removed += (_, e) =>
+        {
+            // Before queuing: the removal would otherwise wait for the countdown to end.
+            CancelCountdown();
             _ = RunExclusiveAsync($"Removal of {e.Volume.MountPoint}", () => OnRemovedAsync(e.Volume));
+        };
         _launcher.Exited += OnRetroArchExited;
     }
 
@@ -116,8 +120,85 @@ public sealed class GameSession : IAsyncDisposable
         var cover = await LoadCoverAsync(card.ImagePath);
         Ui(() => _view.ShowCard(card, cover, env.Version));
 
+        var delay = Math.Max(0, _settings().Main.LaunchDelaySeconds);
+        if (delay > 0 && !await CountdownAsync(delay))
+            return;
+
         await LaunchAsync(card);
     }
+
+    // ------------------------------------------------------------ launch delay
+
+    private CancellationTokenSource? _countdown;
+    private volatile bool _countdownSkipped, _countdownCancelled;
+
+    /// <summary>
+    /// Shows "Launching in N s" while the card's info stays on screen. True to launch (time out or
+    /// skipped with Enter), false when the card was removed meanwhile.
+    /// </summary>
+    private async Task<bool> CountdownAsync(int seconds)
+    {
+        using var countdown = new CancellationTokenSource();
+        _countdownSkipped = _countdownCancelled = false;
+        Volatile.Write(ref _countdown, countdown);
+        Log.Info($"Launch delay: {seconds} s");
+
+        try
+        {
+            for (var left = seconds; left > 0; left--)
+            {
+                var text = $"Launching in {left} s…  Press Enter to start now";
+                Ui(() => _view.SetLoading(text));
+                await Task.Delay(TimeSpan.FromSeconds(1), countdown.Token).ConfigureAwait(false);
+            }
+
+            return true;
+        }
+        catch (OperationCanceledException)
+        {
+            // A removal always wins over Enter.
+            if (_countdownCancelled)
+            {
+                Log.Info("Countdown cancelled (card removed)");
+                return false;
+            }
+
+            Log.Info("Countdown skipped");
+            return true;
+        }
+        finally
+        {
+            Interlocked.CompareExchange(ref _countdown, null, countdown);
+        }
+    }
+
+    /// <summary>Starts the game now instead of waiting for the end of the countdown (Enter).</summary>
+    public void SkipCountdown()
+    {
+        _countdownSkipped = true;
+        CancelCountdownToken();
+    }
+
+    private void CancelCountdown()
+    {
+        _countdownCancelled = true;
+        CancelCountdownToken();
+    }
+
+    private void CancelCountdownToken()
+    {
+        try
+        {
+            Volatile.Read(ref _countdown)?.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
+            // countdown just ended
+        }
+    }
+
+    /// <summary>True while a launch countdown is running.</summary>
+    public bool IsCountingDown => Volatile.Read(ref _countdown) is not null;
 
     private async Task LaunchAsync(Card card)
     {

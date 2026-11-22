@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -31,6 +32,13 @@ public sealed partial class SettingsViewModel : ObservableObject
         SelectedStartupState = Array.Find(StartupStates, o => o.Value == settings.Main.StartupWindowState)
                                ?? StartupStates[0];
         LogToFile = settings.Main.LogToFile;
+
+        // A value set by hand in settings.json is kept (and listed) instead of being reset.
+        var delay = Math.Max(0, settings.Main.LaunchDelaySeconds);
+        if (!LaunchDelays.Exists(o => o.Value == delay))
+            LaunchDelays.Add(new Option<int>($"{delay} seconds", delay));
+        SelectedLaunchDelay = LaunchDelays.Find(o => o.Value == delay)!;
+
         SelectedShader = Array.Find(Shaders, o => o.Value == settings.RetroArch.Shader) ?? Shaders[1];
         StartFullscreen = settings.RetroArch.StartFullscreen;
         IntegerScaling = settings.RetroArch.IntegerScaling;
@@ -47,6 +55,13 @@ public sealed partial class SettingsViewModel : ObservableObject
         new("Minimized (tray)", StartupWindowState.Minimized)
     ];
 
+    public List<Option<int>> LaunchDelays { get; } =
+    [
+        new("No delay", 0),
+        new("5 seconds", 5),
+        new("10 seconds", 10)
+    ];
+
     public Option<Shader>[] Shaders { get; } =
     [
         new("None (sharp pixels)", Shader.None),
@@ -57,6 +72,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     ];
 
     [ObservableProperty] public partial Option<StartupWindowState> SelectedStartupState { get; set; }
+    [ObservableProperty] public partial Option<int> SelectedLaunchDelay { get; set; }
     [ObservableProperty] public partial Option<Shader> SelectedShader { get; set; }
     [ObservableProperty] public partial bool StartFullscreen { get; set; }
     [ObservableProperty] public partial bool IntegerScaling { get; set; }
@@ -103,6 +119,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         _settings.Main.StartupWindowState = SelectedStartupState.Value;
         _settings.Main.LogToFile = LogToFile;
+        _settings.Main.LaunchDelaySeconds = SelectedLaunchDelay.Value;
         _settings.RetroArch.StartFullscreen = StartFullscreen;
         _settings.RetroArch.IntegerScaling = IntegerScaling;
         _settings.RetroArch.Shader = SelectedShader.Value;

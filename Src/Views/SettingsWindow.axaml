@@ -63,6 +63,18 @@
 
                         <Grid Classes="row" ColumnDefinitions="*,Auto" ColumnSpacing="22">
                             <StackPanel>
+                                <TextBlock Text="Launch delay" Classes="setting" />
+                                <TextBlock Text="Time to look at the card before its game starts (Enter starts it right away)."
+                                           Classes="hint" />
+                            </StackPanel>
+                            <ComboBox Grid.Column="1" VerticalAlignment="Center"
+                                      ItemsSource="{Binding LaunchDelays}"
+                                      SelectedItem="{Binding SelectedLaunchDelay}" />
+                        </Grid>
+                        <Separator />
+
+                        <Grid Classes="row" ColumnDefinitions="*,Auto" ColumnSpacing="22">
+                            <StackPanel>
                                 <TextBlock Text="Log to file" Classes="setting" />
                                 <TextBlock Text="Write the launcher log to a file, to report a problem:" Classes="hint" />
                                 <SelectableTextBlock Text="{Binding LogFilePath}"

@@ -170,6 +170,9 @@ public partial class MainWindow : Window
             case Key.Enter or Key.Space when _viewModel.IsStopped || _viewModel.IsError:
                 _session?.Relaunch();
                 break;
+            case Key.Enter or Key.Space when _session is { IsCountingDown: true }:
+                _session.SkipCountdown();
+                break;
             case Key.Enter or Key.Space when _viewModel.IsInstaller && _installerCard is not null:
                 _ = ShowInstallerCardAsync(_installerCard);
                 break;

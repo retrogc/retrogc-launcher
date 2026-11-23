@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="using:RetroGameCard.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:RetroGameCard.ViewModels"
@@ -32,17 +33,17 @@
         </Style>
 
         <!-- ================= Step rail ================= -->
+        <!-- Square step markers: magenta when active, cyan when done, red on error -->
         <Style Selector="Border.dot">
             <Setter Property="Width" Value="32" />
             <Setter Property="Height" Value="32" />
-            <Setter Property="CornerRadius" Value="16" />
-            <Setter Property="Background" Value="#141C2A" />
-            <Setter Property="BorderBrush" Value="#2A354B" />
-            <Setter Property="BorderThickness" Value="1.5" />
+            <Setter Property="Background" Value="{StaticResource SurfaceSunkenBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
         </Style>
         <Style Selector="Border.dot TextBlock">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontFamily" Value="{StaticResource PixelFont}" />
+            <Setter Property="(v:PixelPerfect.FontSize)" Value="11" />
             <Setter Property="Foreground" Value="{StaticResource TextFaintBrush}" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -50,61 +51,64 @@
         <Style Selector="Border.dot PathIcon">
             <Setter Property="Width" Value="14" />
             <Setter Property="Height" Value="14" />
-            <Setter Property="Foreground" Value="#0A0C12" />
+            <Setter Property="Foreground" Value="{StaticResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="TextBlock.step-title">
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontFamily" Value="{StaticResource PixelFont}" />
+            <Setter Property="(v:PixelPerfect.FontSize)" Value="10" />
             <Setter Property="Foreground" Value="{StaticResource TextFaintBrush}" />
         </Style>
         <Style Selector="TextBlock.step-caption">
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="#4C5669" />
+            <Setter Property="Foreground" Value="{StaticResource TextFaintBrush}" />
         </Style>
         <Style Selector="Rectangle.rail">
-            <Setter Property="Fill" Value="#222C3F" />
+            <Setter Property="Fill" Value="{StaticResource BorderBrush}" />
         </Style>
 
         <Style Selector="Grid.step.active Border.dot">
-            <Setter Property="Background" Value="{StaticResource AccentSoftBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
-            <Setter Property="BoxShadow" Value="0 0 18 0 #705CE1B7" />
+            <Setter Property="Background" Value="{StaticResource MagentaBrush}" />
+            <Setter Property="BorderBrush" Value="#000000" />
+            <Setter Property="BoxShadow" Value="3 3 0 0 #000000" />
         </Style>
         <Style Selector="Grid.step.active Border.dot TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource AccentStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Grid.step.active TextBlock.step-title">
-            <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource MagentaBrush}" />
         </Style>
         <Style Selector="Grid.step.active TextBlock.step-caption">
-            <Setter Property="Foreground" Value="{StaticResource TextDimBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
         </Style>
 
         <Style Selector="Grid.step.done Border.dot">
-            <Setter Property="Background" Value="{StaticResource AccentGradientBrush}" />
-            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="{StaticResource CyanBrush}" />
+            <Setter Property="BorderBrush" Value="#000000" />
         </Style>
         <Style Selector="Grid.step.done TextBlock.step-title">
-            <Setter Property="Foreground" Value="#C3CCDC" />
+            <Setter Property="Foreground" Value="{StaticResource CyanBrush}" />
         </Style>
         <Style Selector="Grid.step.done Rectangle.rail">
-            <Setter Property="Fill" Value="{StaticResource AccentBorderBrush}" />
+            <Setter Property="Fill" Value="{StaticResource CyanBrush}" />
         </Style>
 
         <Style Selector="Grid.step.error Border.dot">
-            <Setter Property="Background" Value="#2E1719" />
-            <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}" />
-            <Setter Property="BoxShadow" Value="0 0 18 0 #60F2777A" />
+            <Setter Property="Background" Value="{StaticResource RedSoftBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource RedBrush}" />
         </Style>
         <Style Selector="Grid.step.error Border.dot TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+        </Style>
+        <Style Selector="Grid.step.error TextBlock.step-title">
+            <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
         </Style>
 
         <!-- ================= Source tiles (radio buttons) ================= -->
+        <!-- Tile colour: cyan by default, .yellow for the second one -->
         <Style Selector="RadioButton.tile">
             <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
-            <Setter Property="BorderThickness" Value="1.5" />
+            <Setter Property="BorderThickness" Value="2" />
             <Setter Property="Padding" Value="20" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
@@ -115,7 +119,6 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="14"
                             Padding="{TemplateBinding Padding}">
                         <Border.Transitions>
                             <Transitions>
@@ -131,21 +134,26 @@
             </Setter>
         </Style>
         <Style Selector="RadioButton.tile:pointerover">
-            <Setter Property="Background" Value="#151E2E" />
+            <Setter Property="Background" Value="{StaticResource SurfaceAltBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
         </Style>
         <Style Selector="RadioButton.tile:checked">
-            <Setter Property="Background" Value="#0F221E" />
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+            <Setter Property="Background" Value="{StaticResource CyanSoftBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource CyanBrush}" />
+        </Style>
+        <Style Selector="RadioButton.tile.yellow:checked">
+            <Setter Property="Background" Value="{StaticResource YellowSoftBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource YellowBrush}" />
         </Style>
         <Style Selector="RadioButton.tile:checked /template/ Border#PART_Border">
-            <Setter Property="BoxShadow" Value="0 8 30 0 #285CE1B7" />
+            <Setter Property="BoxShadow" Value="5 5 0 0 #000000" />
         </Style>
 
         <Style Selector="RadioButton.tile Border.tile-icon">
             <Setter Property="Width" Value="48" />
             <Setter Property="Height" Value="48" />
-            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
             <Setter Property="Background" Value="{StaticResource SurfaceAltBrush}" />
         </Style>
         <Style Selector="RadioButton.tile Border.tile-icon PathIcon">
@@ -154,17 +162,20 @@
             <Setter Property="Foreground" Value="{StaticResource TextDimBrush}" />
         </Style>
         <Style Selector="RadioButton.tile:checked Border.tile-icon">
-            <Setter Property="Background" Value="{StaticResource AccentGradientBrush}" />
+            <Setter Property="Background" Value="{StaticResource CyanBrush}" />
+            <Setter Property="BorderBrush" Value="#000000" />
+        </Style>
+        <Style Selector="RadioButton.tile.yellow:checked Border.tile-icon">
+            <Setter Property="Background" Value="{StaticResource YellowBrush}" />
         </Style>
         <Style Selector="RadioButton.tile:checked Border.tile-icon PathIcon">
-            <Setter Property="Foreground" Value="#0A0C12" />
+            <Setter Property="Foreground" Value="{StaticResource TextOnAccentBrush}" />
         </Style>
 
         <Style Selector="RadioButton.tile Border.tick">
             <Setter Property="Width" Value="22" />
             <Setter Property="Height" Value="22" />
-            <Setter Property="CornerRadius" Value="11" />
-            <Setter Property="BorderThickness" Value="1.5" />
+            <Setter Property="BorderThickness" Value="2" />
             <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="VerticalAlignment" Value="Top" />
@@ -172,19 +183,22 @@
         <Style Selector="RadioButton.tile Border.tick PathIcon">
             <Setter Property="Width" Value="12" />
             <Setter Property="Height" Value="12" />
-            <Setter Property="Foreground" Value="#0A0C12" />
+            <Setter Property="Foreground" Value="{StaticResource TextOnAccentBrush}" />
             <Setter Property="Opacity" Value="0" />
         </Style>
         <Style Selector="RadioButton.tile:checked Border.tick">
-            <Setter Property="Background" Value="{StaticResource AccentBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+            <Setter Property="Background" Value="{StaticResource CyanBrush}" />
+            <Setter Property="BorderBrush" Value="#000000" />
+        </Style>
+        <Style Selector="RadioButton.tile.yellow:checked Border.tick">
+            <Setter Property="Background" Value="{StaticResource YellowBrush}" />
         </Style>
         <Style Selector="RadioButton.tile:checked Border.tick PathIcon">
             <Setter Property="Opacity" Value="1" />
         </Style>
         <Style Selector="RadioButton.tile TextBlock.tile-title">
-            <Setter Property="FontSize" Value="17" />
-            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontFamily" Value="{StaticResource PixelFont}" />
+            <Setter Property="(v:PixelPerfect.FontSize)" Value="13" />
             <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}" />
         </Style>
 
@@ -192,8 +206,7 @@
         <Style Selector="Border.stat">
             <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource BorderSubtleBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="BorderThickness" Value="2" />
             <Setter Property="Padding" Value="18,16" />
             <Setter Property="Opacity" Value="0.6" />
             <Setter Property="Transitions">
@@ -206,19 +219,19 @@
         <Style Selector="Border.stat.active">
             <Setter Property="Opacity" Value="1" />
             <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+            <Setter Property="BoxShadow" Value="4 4 0 0 #000000" />
         </Style>
         <Style Selector="TextBlock.big-percent">
-            <Setter Property="FontSize" Value="54" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="{StaticResource TextStrongBrush}" />
+            <Setter Property="FontFamily" Value="{StaticResource PixelFont}" />
+            <Setter Property="(v:PixelPerfect.FontSize)" Value="44" />
+            <Setter Property="Foreground" Value="{StaticResource YellowBrush}" />
         </Style>
 
         <!-- Key / value rows of the review card -->
         <Style Selector="TextBlock.key">
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="LetterSpacing" Value="1.6" />
-            <Setter Property="Foreground" Value="{StaticResource TextFaintBrush}" />
+            <Setter Property="FontFamily" Value="{StaticResource PixelFont}" />
+            <Setter Property="(v:PixelPerfect.FontSize)" Value="9" />
+            <Setter Property="Foreground" Value="{StaticResource VioletBrush}" />
             <Setter Property="Margin" Value="0,2,0,0" />
         </Style>
     </Window.Styles>
@@ -226,22 +239,21 @@
     <Grid ColumnDefinitions="270,*">
 
         <!-- ===================================================== Sidebar -->
-        <Border BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="0,0,1,0" ClipToBounds="True">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                    <GradientStop Offset="0" Color="#111A29" />
-                    <GradientStop Offset="1" Color="#0B0F18" />
-                </LinearGradientBrush>
-            </Border.Background>
+        <Border Background="{StaticResource SurfaceSunkenBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,2,0" ClipToBounds="True">
             <Grid RowDefinitions="Auto,*,Auto">
-                <Ellipse Grid.RowSpan="3" Width="320" Height="320" Fill="#1B3B3A" Opacity="0.35"
-                         HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-170,-170,0,0"
-                         Effect="blur(60)" IsHitTestVisible="False" />
-
                 <!-- Brand -->
-                <StackPanel Margin="28,34,24,0" Spacing="4">
-                    <TextBlock Text="RETRO GAME CARD" Classes="eyebrow" />
-                    <TextBlock Text="Data Installer" Classes="h2" FontSize="20" />
+                <StackPanel Margin="28,34,24,0" Spacing="12">
+                    <TextBlock Text="RETRO GAME CARD" Classes="eyebrow" v:PixelPerfect.FontSize="8" />
+                    <TextBlock Text="Data Installer" Classes="h2" v:PixelPerfect.FontSize="16" TextWrapping="Wrap" />
+                    <UniformGrid Classes="stripe">
+                        <Rectangle Fill="{StaticResource MagentaBrush}" />
+                        <Rectangle Fill="{StaticResource OrangeBrush}" />
+                        <Rectangle Fill="{StaticResource YellowBrush}" />
+                        <Rectangle Fill="{StaticResource GreenBrush}" />
+                        <Rectangle Fill="{StaticResource CyanBrush}" />
+                        <Rectangle Fill="{StaticResource VioletBrush}" />
+                    </UniformGrid>
                 </StackPanel>
 
                 <!-- Steps -->
@@ -265,7 +277,7 @@
                                                IsVisible="{Binding !IsLast}" />
                                 </Grid>
                                 <StackPanel Grid.Column="1" Spacing="2" Margin="0,6,0,0">
-                                    <TextBlock Text="{Binding Title}" Classes="step-title" />
+                                    <TextBlock Text="{Binding Title}" Classes="step-title" Margin="0,4,0,4" />
                                     <TextBlock Text="{Binding Caption}" Classes="step-caption" />
                                 </StackPanel>
                             </Grid>
@@ -274,10 +286,11 @@
                 </ItemsControl>
 
                 <!-- Currently installed -->
-                <Border Grid.Row="2" Margin="20,0,20,22" Padding="14,12" CornerRadius="10"
-                        Background="#0D131E" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1">
+                <Border Grid.Row="2" Margin="20,0,20,22" Padding="14,12"
+                        Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="2">
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                        <Ellipse Classes="led" Margin="0,4,0,0" VerticalAlignment="Top"
+                        <Rectangle Classes="led" Margin="0,4,0,0" VerticalAlignment="Top"
                                  Fill="{Binding HasInstalledData, Converter={x:Static vm:Converters.BoolToBrush}}" />
                         <TextBlock Grid.Column="1" Text="{Binding InstalledText}" Classes="hint" />
                     </Grid>
@@ -303,7 +316,7 @@
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                 <PathIcon Data="{StaticResource IconWarning}" />
                                 <SelectableTextBlock Grid.Column="1" Text="{Binding ErrorMessage}" TextWrapping="Wrap"
-                                                     FontSize="13" Foreground="#F3C6C8" />
+                                                     FontSize="13" Foreground="{StaticResource TextBrush}" />
                             </Grid>
                         </Border>
     
@@ -325,7 +338,7 @@
                                 </Grid>
                             </RadioButton>
     
-                            <RadioButton Grid.Column="1" Classes="tile" IsChecked="{Binding IsLocalSource}">
+                            <RadioButton Grid.Column="1" Classes="tile yellow" IsChecked="{Binding IsLocalSource}">
                                 <Grid RowDefinitions="Auto,Auto,Auto,Auto">
                                     <Border Classes="tile-icon" HorizontalAlignment="Left">
                                         <PathIcon Data="{StaticResource IconFolderOpen}" />
@@ -336,7 +349,7 @@
                                     <TextBlock Grid.Row="1" Text="Local file" Classes="tile-title" Margin="0,18,0,6" />
                                     <TextBlock Grid.Row="2" Classes="hint" FontSize="13"
                                                Text="Install from a retrogc-data.rgc manifest and its archive on disk." />
-                                    <Border Grid.Row="3" Classes="chip" HorizontalAlignment="Left" Margin="0,16,0,0">
+                                    <Border Grid.Row="3" Classes="chip yellow" HorizontalAlignment="Left" Margin="0,16,0,0">
                                         <TextBlock Text="WORKS OFFLINE" />
                                     </Border>
                                 </Grid>
@@ -390,17 +403,15 @@
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                 <PathIcon Data="{StaticResource IconWarning}" />
                                 <SelectableTextBlock Grid.Column="1" Text="{Binding ErrorMessage}" TextWrapping="Wrap"
-                                                     FontSize="13" Foreground="#F3C6C8" />
+                                                     FontSize="13" Foreground="{StaticResource TextBrush}" />
                             </Grid>
                         </Border>
     
                         <Border Classes="card" Padding="22">
                             <StackPanel Spacing="20">
                                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
-                                    <Border Width="52" Height="52" CornerRadius="13"
-                                            Background="{StaticResource AccentGradientBrush}">
-                                        <PathIcon Data="{StaticResource IconArchive}" Width="26" Height="26"
-                                                  Foreground="#0A0C12" />
+                                    <Border Classes="icon-box" Background="{StaticResource YellowBrush}">
+                                        <PathIcon Data="{StaticResource IconArchive}" />
                                     </Border>
                                     <ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
                                                   OnContent="" OffContent=""
@@ -426,12 +437,12 @@
                                 <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto" RowSpacing="14">
                                     <TextBlock Text="{Binding PlanSourceKind}" Classes="key" />
                                     <SelectableTextBlock Grid.Column="1" Text="{Binding PlanSource}"
-                                                         FontFamily="{StaticResource MonoFont}" FontSize="12"
+                                                         Classes="mono"
                                                          Foreground="{StaticResource TextMutedBrush}"
                                                          TextWrapping="Wrap" />
                                     <TextBlock Grid.Row="1" Text="INSTALL TO" Classes="key" />
                                     <SelectableTextBlock Grid.Row="1" Grid.Column="1" Text="{Binding PlanDestination}"
-                                                         FontFamily="{StaticResource MonoFont}" FontSize="12"
+                                                         Classes="mono"
                                                          Foreground="{StaticResource TextMutedBrush}"
                                                          TextWrapping="Wrap" />
                                 </Grid>
@@ -441,16 +452,15 @@
                         <!-- Launcher carried by an installer card -->
                         <Border Classes="card" Padding="22" IsVisible="{Binding HasLauncher}">
                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
-                                <Border Width="52" Height="52" CornerRadius="13" VerticalAlignment="Top"
-                                        Background="{StaticResource AccentGradientBrush}">
-                                    <PathIcon Data="{StaticResource IconGamepad}" Width="26" Height="26"
-                                              Foreground="#0A0C12" />
+                                <Border Classes="icon-box" VerticalAlignment="Top"
+                                        Background="{StaticResource MagentaBrush}">
+                                    <PathIcon Data="{StaticResource IconGamepad}" />
                                 </Border>
                                 <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center">
                                     <TextBlock Text="Retro Game Card launcher" Classes="h2" />
                                     <TextBlock Text="{Binding LauncherText}" Classes="hint" TextWrapping="Wrap" />
                                     <SelectableTextBlock Text="{Binding LauncherDestination}"
-                                                         FontFamily="{StaticResource MonoFont}" FontSize="12"
+                                                         Classes="mono"
                                                          Foreground="{StaticResource TextMutedBrush}"
                                                          TextWrapping="Wrap" />
                                     <TextBlock Classes="hint" TextWrapping="Wrap"
@@ -541,10 +551,11 @@
             <!-- ================= Done ================= -->
             <Panel Classes="page" IsVisible="{Binding IsDoneStage}">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16" MaxWidth="460">
-                    <Border Width="88" Height="88" CornerRadius="44" HorizontalAlignment="Center"
-                            Background="{StaticResource AccentGradientBrush}"
-                            BoxShadow="0 0 50 0 #605CE1B7" Margin="0,0,0,10">
-                        <PathIcon Data="{StaticResource IconCheck}" Width="40" Height="40" Foreground="#0A0C12" />
+                    <Border Width="88" Height="88" HorizontalAlignment="Center"
+                            Background="{StaticResource CyanBrush}" BorderBrush="#000000" BorderThickness="3"
+                            BoxShadow="6 6 0 0 #000000" Margin="0,0,0,10">
+                        <PathIcon Data="{StaticResource IconCheck}" Width="40" Height="40"
+                                  Foreground="{StaticResource TextOnAccentBrush}" />
                     </Border>
                     <TextBlock Text="You're all set!" Classes="h1" HorizontalAlignment="Center" />
                     <TextBlock Classes="body" TextAlignment="Center" TextWrapping="Wrap"

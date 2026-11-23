@@ -37,7 +37,12 @@ public static class UiScale
     {
         var scale = ForScreen(window, owner);
         if (scale < 1.01 || window.Content is not Control content)
+        {
+            PixelPerfect.Track(window, 1);
             return;
+        }
+
+        PixelPerfect.Track(window, scale);
 
         window.Content = null;
         window.Content = new LayoutTransformControl

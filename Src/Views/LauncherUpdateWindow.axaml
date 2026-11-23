@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="using:RetroGameCard.Views"
         x:Class="RetroGameCard.Views.LauncherUpdateWindow"
         Title="Retro Game Card — Install the launcher"
         Icon="/Assets/Icons/launcher.ico"
@@ -9,9 +10,17 @@
     <Grid RowDefinitions="Auto,Auto,Auto" Margin="28,26">
 
         <!-- Header -->
-        <StackPanel Spacing="4">
+        <StackPanel Spacing="10">
             <TextBlock Text="LAUNCHER" Classes="eyebrow" />
-            <TextBlock x:Name="TitleText" Classes="h1" FontSize="22" TextWrapping="Wrap" />
+            <TextBlock x:Name="TitleText" Classes="h1" v:PixelPerfect.FontSize="16" TextWrapping="Wrap" />
+            <UniformGrid Classes="stripe">
+                <Rectangle Fill="{StaticResource MagentaBrush}" />
+                <Rectangle Fill="{StaticResource OrangeBrush}" />
+                <Rectangle Fill="{StaticResource YellowBrush}" />
+                <Rectangle Fill="{StaticResource GreenBrush}" />
+                <Rectangle Fill="{StaticResource CyanBrush}" />
+                <Rectangle Fill="{StaticResource VioletBrush}" />
+            </UniformGrid>
         </StackPanel>
 
         <Border Grid.Row="1" Classes="card" Margin="0,22">
@@ -24,7 +33,7 @@
                     <TextBlock x:Name="InstalledText" Grid.Row="1" Grid.Column="1" Classes="hint"
                                VerticalAlignment="Center" />
                 </Grid>
-                <SelectableTextBlock x:Name="PathText" FontFamily="{StaticResource MonoFont}" FontSize="11"
+                <SelectableTextBlock x:Name="PathText" Classes="mono"
                                      Foreground="{StaticResource TextMutedBrush}" TextWrapping="Wrap" />
                 <TextBlock x:Name="ErrorText" Classes="hint" Foreground="{StaticResource ErrorBrush}"
                            TextWrapping="Wrap" IsVisible="False" />

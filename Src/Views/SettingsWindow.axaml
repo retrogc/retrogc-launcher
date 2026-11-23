@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="using:RetroGameCard.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:RetroGameCard.ViewModels"
@@ -35,20 +36,28 @@
     <Grid RowDefinitions="Auto,*,Auto" Margin="28,26">
 
         <!-- Header -->
-        <StackPanel Spacing="4">
+        <StackPanel Spacing="10">
             <TextBlock Text="SETTINGS" Classes="eyebrow" />
-            <TextBlock Text="Retro Game Card" Classes="h1" FontSize="22" />
+            <TextBlock Text="Retro Game Card" Classes="h1" v:PixelPerfect.FontSize="16" />
+            <UniformGrid Classes="stripe" Margin="0,10,0,0">
+                <Rectangle Fill="{StaticResource MagentaBrush}" />
+                <Rectangle Fill="{StaticResource OrangeBrush}" />
+                <Rectangle Fill="{StaticResource YellowBrush}" />
+                <Rectangle Fill="{StaticResource GreenBrush}" />
+                <Rectangle Fill="{StaticResource CyanBrush}" />
+                <Rectangle Fill="{StaticResource VioletBrush}" />
+            </UniformGrid>
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" Margin="0,22" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Spacing="16" Margin="0,0,14,0">
+            <StackPanel Spacing="20" Margin="0,0,18,6">
 
                 <!-- Launcher -->
                 <Border Classes="card">
                     <StackPanel Spacing="16">
-                        <StackPanel Spacing="3">
-                            <TextBlock Text="LAUNCHER" Classes="label" />
-                            <TextBlock Text="Application startup" Classes="h2" FontSize="16" />
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="LAUNCHER" Classes="label" Foreground="{StaticResource CyanBrush}" />
+                            <TextBlock Text="Application startup" Classes="h2" v:PixelPerfect.FontSize="12" />
                         </StackPanel>
                         <Grid Classes="row" ColumnDefinitions="*,Auto" ColumnSpacing="22">
                             <StackPanel>
@@ -78,7 +87,7 @@
                                 <TextBlock Text="Log to file" Classes="setting" />
                                 <TextBlock Text="Write the launcher log to a file, to report a problem:" Classes="hint" />
                                 <SelectableTextBlock Text="{Binding LogFilePath}"
-                                                     FontFamily="{StaticResource MonoFont}" FontSize="12"
+                                                     Classes="mono"
                                                      Foreground="{StaticResource TextMutedBrush}"
                                                      TextWrapping="Wrap" />
                             </StackPanel>
@@ -91,9 +100,9 @@
                 <!-- RetroArch -->
                 <Border Classes="card">
                     <StackPanel Spacing="16">
-                        <StackPanel Spacing="3">
-                            <TextBlock Text="RETROARCH" Classes="label" />
-                            <TextBlock Text="Emulator launch settings" Classes="h2" FontSize="16" />
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="RETROARCH" Classes="label" Foreground="{StaticResource MagentaBrush}" />
+                            <TextBlock Text="Emulator launch settings" Classes="h2" v:PixelPerfect.FontSize="12" />
                         </StackPanel>
 
                         <Grid Classes="row" ColumnDefinitions="*,Auto" ColumnSpacing="22">
@@ -153,9 +162,9 @@
                 <!-- Data package -->
                 <Border Classes="card">
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
-                        <Border Width="44" Height="44" CornerRadius="10" Background="{StaticResource SurfaceAltBrush}">
-                            <PathIcon Data="{StaticResource IconArchive}" Width="22" Height="22"
-                                      Foreground="{Binding HasData, Converter={x:Static vm:Converters.BoolToBrush}}" />
+                        <Border Classes="icon-box"
+                                Background="{Binding HasData, Converter={x:Static vm:Converters.BoolToBrush}}">
+                            <PathIcon Data="{StaticResource IconArchive}" />
                         </Border>
                         <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
                             <TextBlock Text="RetroArch data package" Classes="setting" />
@@ -171,7 +180,7 @@
 
         <!-- Footer -->
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
-            <TextBlock Text="{Binding SettingsPath}" Classes="mono" FontSize="11"
+            <TextBlock Text="{Binding SettingsPath}" Classes="mono" FontSize="16"
                        Foreground="{StaticResource TextFaintBrush}"
                        VerticalAlignment="Center" TextTrimming="LeadingCharacterEllipsis" />
             <Button Grid.Column="1" Content="Cancel" Classes="ghost" IsCancel="True" Click="OnCancelClicked" />

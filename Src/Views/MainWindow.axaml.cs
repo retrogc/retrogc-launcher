@@ -32,6 +32,7 @@ public partial class MainWindow : Window
         _session = session;
         DataContext = viewModel;
         InitializeComponent();
+        PixelPerfect.Track(this, _scale);
 
         KeyDown += OnKeyDown;
         Opened += OnOpened;
@@ -365,5 +366,6 @@ public partial class MainWindow : Window
 
         _scale = scale;
         ScaleRoot.LayoutTransform = new ScaleTransform(scale, scale);
+        PixelPerfect.Track(this, scale);
     }
 }

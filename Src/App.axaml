@@ -8,9 +8,9 @@
             <FluentTheme.Palettes>
                 <!-- Fluent controls (toggles, combos, focus rings) follow the launcher accent -->
                 <ColorPaletteResources x:Key="Dark"
-                                       Accent="#2FA383"
-                                       RegionColor="#0A0C12"
-                                       AltHigh="#0A0C12" />
+                                       Accent="#FF3E8A"
+                                       RegionColor="#120E24"
+                                       AltHigh="#120E24" />
             </FluentTheme.Palettes>
         </FluentTheme>
         <StyleInclude Source="/Src/Styles/Theme.axaml" />

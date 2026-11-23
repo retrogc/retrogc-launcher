@@ -76,7 +76,7 @@ public static class PixelPerfect
             text.LineHeight = Math.Round(device * 1.5) / scale;
 
         // Whole font pixels: no antialiasing needed, and none of its blur.
-        RenderOptions.SetTextRenderingMode(control, TextRenderingMode.Alias);
+        TextOptions.SetTextRenderingMode(control, TextRenderingMode.Alias);
     }
 
     /// <summary>One dark line of <c>k</c> screen pixels every <c>3k</c>, in layout units of the given scale.</summary>

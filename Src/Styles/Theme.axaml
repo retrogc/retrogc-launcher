@@ -286,6 +286,11 @@
         <Setter Property="BoxShadow" Value="0 0 0 0 #00000000" />
     </Style>
 
+    <!-- Icon + label buttons: centre the label on the icon (it would draw at the top of the row) -->
+    <Style Selector="Button StackPanel > TextBlock">
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
     <Style Selector="Button.primary">
         <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
         <Setter Property="BorderBrush" Value="#000000" />

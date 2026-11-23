@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
+using Avalonia.Media;
 using RetroGameCard.Models;
 using RetroGameCard.Services;
 using RetroGameCard.ViewModels;
@@ -153,6 +154,7 @@ public partial class MainWindow : Window
         {
             Cursor = ArrowCursor;
             var window = new LauncherUpdateWindow(executable, current, installed);
+            UiScale.Apply(window, IsVisible ? this : null);
             if (IsVisible)
             {
                 await window.ShowDialog(this);
@@ -277,6 +279,7 @@ public partial class MainWindow : Window
             // Dialogs need a pointer even in fullscreen.
             Cursor = ArrowCursor;
             var window = new SettingsWindow(new SettingsViewModel(App.Settings), _viewModel.RefreshDataVersion);
+            UiScale.Apply(window, this);
             await window.ShowDialog(this);
         }
         catch (Exception exception)
@@ -306,6 +309,7 @@ public partial class MainWindow : Window
 
             var viewModel = new DataInstallerViewModel(options);
             var window = new DataDownloadWindow(viewModel);
+            UiScale.Apply(window, owner);
             if (owner is not null)
                 await window.ShowDialog<bool>(owner);
             else
@@ -333,4 +337,33 @@ public partial class MainWindow : Window
 
     private void RestoreCursor() =>
         Cursor = WindowState == WindowState.FullScreen ? HiddenCursor : ArrowCursor;
+
+    // ------------------------------------------------------------ scaling
+
+    // The layout is sized for this window size (in DIPs); bigger windows scale it up uniformly, so a
+    // fullscreen 4K display (even at 100% OS scaling) looks like 1080p. Smaller ones keep it as is.
+    private const double ReferenceWidth = 1600;
+    private const double ReferenceHeight = 900;
+
+    private double _scale = 1;
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == ClientSizeProperty)
+            UpdateScale(ClientSize);
+    }
+
+    private void UpdateScale(Size size)
+    {
+        if (ScaleRoot is null || size.Width <= 0 || size.Height <= 0)
+            return;
+
+        var scale = Math.Max(1, Math.Min(size.Width / ReferenceWidth, size.Height / ReferenceHeight));
+        if (Math.Abs(scale - _scale) < 0.01)
+            return;
+
+        _scale = scale;
+        ScaleRoot.LayoutTransform = new ScaleTransform(scale, scale);
+    }
 }

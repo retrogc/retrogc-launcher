@@ -47,7 +47,9 @@ public partial class SettingsWindow : Window
 
     private async void OnManageDataClicked(object? sender, RoutedEventArgs e)
     {
-        await new DataDownloadWindow(new DataInstallerViewModel()).ShowDialog<bool>(this);
+        var window = new DataDownloadWindow(new DataInstallerViewModel());
+        UiScale.Apply(window, this);
+        await window.ShowDialog<bool>(this);
         _viewModel.RefreshDataInfo();
         _dataChanged?.Invoke();
     }

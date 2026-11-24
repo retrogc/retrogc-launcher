@@ -218,7 +218,7 @@ plus the files it points to. FAT32 keeps it readable everywhere, MiSTer included
 ```text
 📀 RETROGC/                         ← volume label (required)
 ├── 📄 mygame.rgc                   ← card definition (required, at the root)
-├── 🖼️ mygame.png                   ← cover art (optional)
+├── 🖼️ mygame.png                   ← cover art (optional, square)
 └── 📁 games/
     └── 📁 nes/
         └── 🎮 Super Mario Bros. (World).nes
@@ -252,7 +252,7 @@ folder and flash a new image.
 | `description` | string | | Short blurb shown under the title. |
 | `platform` | string | | Platform tag, e.g. `NES`, `CPS-1`, `PSX`. |
 | `year` | string | | Release year, e.g. `1989`. |
-| `image` | string | | Cover art (PNG), relative to the `.rgc` file. |
+| `image` | string | | Cover art (PNG), relative to the `.rgc` file. **Square** images fit the cover frame exactly (other shapes are letterboxed). |
 | `developer` | string | | 🆕 Developer / studio, e.g. `Capcom`. |
 | `genre` | string | | 🆕 Genre badge, e.g. `Beat 'em up`. |
 | `players` | string | | 🆕 Player count badge, e.g. `1-2`. |

@@ -149,10 +149,11 @@
                     </UniformGrid>
 
                     <!-- ===== Main ===== -->
-                    <Grid Grid.Row="2" ColumnDefinitions="1.05*,*" ColumnSpacing="40">
+                    <!-- Square cover as tall as the row, details on the rest of the width -->
+                    <v:SquareSplitPanel Grid.Row="2" Spacing="40" MaxSquareFraction="0.55">
 
-                        <!-- Cover frame: border in the platform colour, hard pixel shadow -->
-                        <Border MinHeight="220" MaxHeight="720" Margin="0,0,6,6"
+                        <!-- Cover frame (square: covers are made square): border in the platform colour, hard pixel shadow -->
+                        <Border Margin="0,0,6,6"
                                 Background="{StaticResource SurfaceSunkenBrush}"
                                 BorderBrush="{Binding Platform, Converter={x:Static vm:Converters.TextToAccentBrush}}"
                                 BorderThickness="3"
@@ -170,6 +171,7 @@
                                        Opacity="{Binding HasCover, Converter={x:Static vm:Converters.BoolToOpacity}}" />
                                 <Border Background="{DynamicResource ScanlinesBrush}" Opacity="0.35" IsHitTestVisible="False" />
 
+                                <!-- Caption bar: title and platform over the bottom of the cover -->
                                 <Border VerticalAlignment="Bottom" Padding="14,10" Background="#E60D0A1A"
                                         BorderBrush="{Binding Platform, Converter={x:Static vm:Converters.TextToAccentBrush}}"
                                         BorderThickness="0,3,0,0"
@@ -186,7 +188,7 @@
                         </Border>
 
                         <!-- Game details -->
-                        <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto" RowSpacing="14">
+                        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="14">
                             <!-- Title block: hidden items take no space (unlike grid rows) -->
                             <StackPanel Spacing="14">
                                 <StackPanel Spacing="12">
@@ -261,7 +263,7 @@
                                              Maximum="100" Height="14" />
                             </StackPanel>
                         </Grid>
-                    </Grid>
+                    </v:SquareSplitPanel>
 
                     <!-- ===== Footer ===== -->
                     <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="0,22,0,0">

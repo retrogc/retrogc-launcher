@@ -244,6 +244,38 @@ public partial class MainWindow : Window
         e.Handled = true;
     }
 
+    /// <summary>
+    /// A gamepad button (see <see cref="GamepadInput"/>): the main screen only, like Enter. Ignored while
+    /// the window is hidden or minimized, or a dialog is open (those are keyboard / mouse only).
+    /// While RetroArch runs, A / B do nothing here: the launcher is in its "playing" state.
+    /// </summary>
+    public void OnGamepad(object? sender, GamepadAction action)
+    {
+        if (!IsVisible || WindowState == WindowState.Minimized || _dialogOpen)
+            return;
+
+        switch (action)
+        {
+            case GamepadAction.Confirm when _viewModel.IsStopped || _viewModel.IsError:
+                _session?.Relaunch();
+                break;
+            case GamepadAction.Confirm when _session is { IsCountingDown: true }:
+                _session.SkipCountdown();
+                break;
+            case GamepadAction.Back when _session is { IsCountingDown: true }:
+                _session.AbortCountdown();
+                break;
+            case GamepadAction.ScrollUp:
+                DescriptionScroll.LineUp();
+                DescriptionScroll.LineUp();
+                break;
+            case GamepadAction.ScrollDown:
+                DescriptionScroll.LineDown();
+                DescriptionScroll.LineDown();
+                break;
+        }
+    }
+
     public void ApplyWindowState(StartupWindowState state)
     {
         switch (state)

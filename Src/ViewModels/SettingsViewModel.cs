@@ -34,7 +34,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         LogToFile = settings.Main.LogToFile;
 
         // A value set by hand in settings.json is kept (and listed) instead of being reset.
-        var delay = Math.Max(0, settings.Main.LaunchDelaySeconds);
+        var delay = Math.Max(-1, settings.Main.LaunchDelaySeconds);
         if (!LaunchDelays.Exists(o => o.Value == delay))
             LaunchDelays.Add(new Option<int>($"{delay} seconds", delay));
         SelectedLaunchDelay = LaunchDelays.Find(o => o.Value == delay)!;
@@ -59,7 +59,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     [
         new("No delay", 0),
         new("5 seconds", 5),
-        new("10 seconds", 10)
+        new("10 seconds", 10),
+        new("Wait for a button (A / Enter)", -1)
     ];
 
     public Option<Shader>[] Shaders { get; } =

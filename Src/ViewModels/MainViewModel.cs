@@ -106,7 +106,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     public string HintText => State switch
     {
-        SessionState.Stopped or SessionState.Error => "ENTER PLAY  ·  F11 FULLSCREEN  ·  F12 SETTINGS",
+        SessionState.Stopped or SessionState.Error => "A / ENTER PLAY  ·  F11 FULLSCREEN  ·  F12 SETTINGS",
         SessionState.Installer => "ENTER INSTALL  ·  F11 FULLSCREEN  ·  F12 SETTINGS",
         _ => "F11 FULLSCREEN  ·  F12 SETTINGS"
     };
@@ -191,7 +191,14 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public void SetStopped()
     {
         State = SessionState.Stopped;
-        StateDetail = "RetroArch closed. Press Enter to play again.";
+        StateDetail = "RetroArch closed. Press A or Enter to play again.";
+    }
+
+    /// <summary>The card is shown and waits for A / Enter (launch delay "wait for a button", or B).</summary>
+    public void SetReady()
+    {
+        State = SessionState.Stopped;
+        StateDetail = "Press A or Enter to play.";
     }
 
     public void SetError(string message)

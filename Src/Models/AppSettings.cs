@@ -74,7 +74,10 @@ public sealed class MainSettings
     /// <summary>Also write the launcher log to a file (to report a problem). Off by default.</summary>
     public bool LogToFile { get; set; }
 
-    /// <summary>Seconds the card's info stays on screen before its game starts (0: right away).</summary>
+    /// <summary>
+    /// Seconds the card's info stays on screen before its game starts (0: right away,
+    /// -1: until A / Enter is pressed).
+    /// </summary>
     public int LaunchDelaySeconds { get; set; }
 }
 

@@ -615,11 +615,20 @@ flowchart LR
 
 ## ⌨️ Controls
 
-| Key | Action |
-|:-:|---|
-| <kbd>F11</kbd> / <kbd>Esc</kbd> | Toggle fullscreen / windowed |
-| <kbd>F12</kbd> | Open the settings |
-| <kbd>Enter</kbd> / <kbd>Space</kbd> | Relaunch the inserted card (after RetroArch was closed or failed), or open the installer for an inserted installer card |
+| Key | 🎮 Gamepad | Action |
+|:-:|:-:|---|
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | **A** / **Start** | Play the inserted card: start it now during the countdown, start it when the launcher waits for a button, or relaunch it after RetroArch was closed or failed |
+| | **B** | Stop the countdown: the game info stays on screen until you press **A** |
+| | D-pad ↑ / ↓ | Scroll the game description |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | | Open the installer for an inserted installer card |
+| <kbd>F11</kbd> / <kbd>Esc</kbd> | | Toggle fullscreen / windowed |
+| <kbd>F12</kbd> | | Open the settings |
+
+> [!TIP]
+> 🎮 Xbox, PlayStation, Switch and most USB pads work out of the box (A is the bottom face
+> button: Cross on PlayStation). The pad drives the main screen only: the settings window and
+> the installer stay keyboard and mouse. And while you play, your button presses go to the
+> game: the launcher ignores the pad while a game runs, so your Hadouken is safe.
 
 From the **tray icon**: click to show the launcher, or right-click for **Open**, **Settings** and **Exit**.
 
@@ -636,6 +645,7 @@ Press <kbd>F12</kbd> (or tray icon → **Settings**).
 | Setting | Default | What it does |
 |---|:-:|---|
 | 🪟 **Window at startup** | Fullscreen | Open the launcher fullscreen, windowed, or minimized to the tray. |
+| ⏱️ **Launch delay** | No delay | How long the game info stays on screen before the game starts: no delay, 5 or 10 seconds, or **wait for a button** (A / Enter, like flipping the power switch yourself). |
 | 🖥️ **Fullscreen** | On | Start games in fullscreen. |
 | 📐 **Integer scaling** | Off | Scale by whole numbers for perfectly even pixels. |
 | ✨ **Shader** | Bilinear | `None` (sharp pixels), `Bilinear` (smooth), `CRT`, `Retro LCD` or `Scanlines`. |

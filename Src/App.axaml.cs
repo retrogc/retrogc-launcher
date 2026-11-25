@@ -18,6 +18,7 @@ public class App : Application
     private MainWindow? _mainWindow;
     private MainViewModel? _mainViewModel;
     private GameSession? _session;
+    private GamepadInput? _gamepad;
 
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
@@ -39,6 +40,10 @@ public class App : Application
             _mainViewModel = new MainViewModel();
             _session = new GameSession(_mainViewModel, () => Settings);
             _mainWindow = new MainWindow(_mainViewModel, _session);
+
+            _gamepad = new GamepadInput();
+            _gamepad.Pressed += _mainWindow.OnGamepad;
+            _gamepad.Start();
 
             desktop.MainWindow = _mainWindow;
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -78,6 +83,7 @@ public class App : Application
             Log.Error("Shutdown", exception);
         }
 
+        _gamepad?.Dispose();
         _mainViewModel?.Dispose();
     }
 

@@ -23,6 +23,9 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+        <!-- Gamepads (main screen): SDL3 bindings + the native SDL3 library for win-x64 / linux-x64 -->
+        <PackageReference Include="SDL3-CS" Version="3.4.20" />
+        <PackageReference Include="SDL3-CS.Native" Version="3.4.2" />
     </ItemGroup>
 
     <ItemGroup>

@@ -120,7 +120,15 @@ public sealed class GameSession : IAsyncDisposable
         var cover = await LoadCoverAsync(card.ImagePath);
         Ui(() => _view.ShowCard(card, cover, env.Version));
 
-        var delay = Math.Max(0, _settings().Main.LaunchDelaySeconds);
+        var delay = _settings().Main.LaunchDelaySeconds;
+        if (delay < 0)
+        {
+            // "Wait for a button": the info stays on screen until A / Enter (Relaunch).
+            Log.Info("Waiting for A / Enter to start the game");
+            Ui(_view.SetReady);
+            return;
+        }
+
         if (delay > 0 && !await CountdownAsync(delay))
             return;
 
@@ -130,16 +138,16 @@ public sealed class GameSession : IAsyncDisposable
     // ------------------------------------------------------------ launch delay
 
     private CancellationTokenSource? _countdown;
-    private volatile bool _countdownSkipped, _countdownCancelled;
+    private volatile bool _countdownSkipped, _countdownCancelled, _countdownAborted;
 
     /// <summary>
     /// Shows "Launching in N s" while the card's info stays on screen. True to launch (time out or
-    /// skipped with Enter), false when the card was removed meanwhile.
+    /// skipped with Enter / A), false when the card was removed or the countdown stopped (B).
     /// </summary>
     private async Task<bool> CountdownAsync(int seconds)
     {
         using var countdown = new CancellationTokenSource();
-        _countdownSkipped = _countdownCancelled = false;
+        _countdownSkipped = _countdownCancelled = _countdownAborted = false;
         Volatile.Write(ref _countdown, countdown);
         Log.Info($"Launch delay: {seconds} s");
 
@@ -147,7 +155,7 @@ public sealed class GameSession : IAsyncDisposable
         {
             for (var left = seconds; left > 0; left--)
             {
-                var text = $"Launching in {left} s…  Press Enter to start now";
+                var text = $"Launching in {left} s…  A / Enter: start now  ·  B: wait";
                 Ui(() => _view.SetLoading(text));
                 await Task.Delay(TimeSpan.FromSeconds(1), countdown.Token).ConfigureAwait(false);
             }
@@ -160,6 +168,14 @@ public sealed class GameSession : IAsyncDisposable
             if (_countdownCancelled)
             {
                 Log.Info("Countdown cancelled (card removed)");
+                return false;
+            }
+
+            // B: keep the game info on screen, A / Enter starts it.
+            if (_countdownAborted)
+            {
+                Log.Info("Countdown stopped (B): waiting for A / Enter");
+                Ui(_view.SetReady);
                 return false;
             }
 
@@ -176,6 +192,13 @@ public sealed class GameSession : IAsyncDisposable
     public void SkipCountdown()
     {
         _countdownSkipped = true;
+        CancelCountdownToken();
+    }
+
+    /// <summary>Stops the countdown and waits for A / Enter instead (B on a gamepad).</summary>
+    public void AbortCountdown()
+    {
+        _countdownAborted = true;
         CancelCountdownToken();
     }
 

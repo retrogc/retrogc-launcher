@@ -97,7 +97,7 @@ even offline. No RetroArch knowledge needed.
 |:-:|---|---|---|
 | 🪟 | **Windows** x64 | `retrogc-launcher.exe` | Standalone, self-contained build |
 | 🐧 | **Linux** x64 | `retrogc-launcher` | Standalone, self-contained build |
-| 🔲 | **MiSTer FPGA** | `retrogc.sh` | Background script, no desktop app needed |
+| 🔲 | **MiSTer FPGA** | [`retrogc-mister`](https://github.com/retrogc/retrogc-launcher-mister) or `retrogc.sh` | The launcher screen on your TV (✨ new), or a silent background script |
 | 🟦 | **Recalbox** | `retrogc.sh` | Background script, games start through Recalbox (🧪 new) |
 
 > [!NOTE]
@@ -165,6 +165,46 @@ Or simply use the [installer card](#-recommended-the-installer-card), which work
 > keep working. Use the tray menu → **Exit** to really quit.
 
 ### 🔲 MiSTer FPGA
+
+Two flavours, same cards. Pick one (only one can be ON at a time):
+
+| | Flavour | What you get |
+|:-:|---|---|
+| 📺 | **Launcher screen** ([`retrogc-launcher-mister`](https://github.com/retrogc/retrogc-launcher-mister), ✨ new) | This launcher's screen, on the MiSTer: cover, details, press **A** to play. |
+| 📜 | **Script only** (`retrogc.sh`) | No screen at all: insert a card and the core loads straight away. |
+
+<div align="center">
+<img src="docs/screenshots/mister-crt.jpg" alt="The RetroGC launcher on a MiSTer, on a Sony Trinitron CRT at 15 kHz" width="640" />
+<br /><sub>Yes, that's a Trinitron. Caveman Ninja approves. 🦖</sub>
+</div>
+
+#### 📺 Launcher screen (`retrogc-mister`)
+
+The full "insert a card" experience, drawn natively by the MiSTer next to the stock menu (no menu
+core to replace, the MiSTer menu stays one button away):
+
+- 🖼️ **Cover art and game details**, with the same look as on the PC.
+- 🎮 **Your pad, your mapping**: **A** plays, **X** opens the settings, the **OSD button** goes to
+  the MiSTer menu, and inserting a card brings the launcher back.
+- ⚙️ **Settings on screen**: auto start (off, at once, 5 / 10 / 30 s), what happens at boot,
+  scanlines.
+- 📺 **HDMI or CRT**: a 960×540 layout on HDMI and a dedicated 15 kHz layout with sharp pixel
+  text and a cover that stays square on a 4:3 tube.
+- 🔄 **Pull the card out** and you're back on the launcher, about a second after the menu core loads.
+
+Install:
+
+1. **Download** `retrogc-launcher-mister.zip` from the
+   [**latest retrogc-launcher-mister release**](https://github.com/retrogc/retrogc-launcher-mister/releases/latest).
+2. **Unzip** it at the root of the MiSTer SD card (`/media/fat`): it holds `retrogc/retrogc-mister`
+   and the `Scripts/retrogc_ui.sh` + `retrogc_ui_show.sh` scripts.
+3. **Run** *Main menu → Scripts → retrogc_ui.sh*. The launcher shows when the script window
+   closes, and on every boot after that. Run it again to turn it OFF.
+
+📖 Controls, settings and how it works: the
+[retrogc-launcher-mister README](https://github.com/retrogc/retrogc-launcher-mister#readme).
+
+#### 📜 Script only (`retrogc.sh`)
 
 1. **Download** [`retrogc.sh`](https://raw.githubusercontent.com/retrogc/retrogc-launcher/refs/heads/main/Platforms/MisterFPGA/retrogc.sh).
 2. **Copy** it to `/media/fat/Scripts/retrogc.sh` and make it executable:
